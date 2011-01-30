@@ -1,0 +1,27 @@
+# Visual Studio Related
+*.vcxproj.user
+*.opensdf
+*.sdf
+*.tlog
+*.lastbuildstate
+*.log
+*.pdb
+*.idb
+*.obj
+*.exe
+*.dll
+*.lib
+*.ilk
+*.res
+*.manifest
+*.exp
+*_manifest.rc
+
+# VIM related
+*.swp
+
+# Generic
+*.com
+*.o
+*.so
+
