@@ -27,9 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --*/
 
 /**
- * @file	ihulib.h
+ * @file    ihulib.h
  * 
- * @brief	The helper library for various intellectualheaven.com projects.
+ * @brief   The helper library for various intellectualheaven.com projects.
  *
  **/
 
@@ -47,13 +47,13 @@ extern "C"
 //
 // Version related Macros
 //
-#define IHU_MAKE_STR(_X_)			IHU_MAKE_STR_REAL(_X_)
-#define IHU_MAKE_STR_REAL(_X_)		#_X_
+#define IHU_MAKE_STR(_X_)           IHU_MAKE_STR_REAL(_X_)
+#define IHU_MAKE_STR_REAL(_X_)      #_X_
 
 #define IHU_CASTBYTE(b) ((DWORD)(b) & 0xFF)
 
-#define IHU_DWORD_VERSION(VER_MAJOR, VER_MINOR, VER_BUILD, VER_STEP)	\
-			(IHU_CASTBYTE(VER_MAJOR) << 24 | \
+#define IHU_DWORD_VERSION(VER_MAJOR, VER_MINOR, VER_BUILD, VER_STEP)    \
+            (IHU_CASTBYTE(VER_MAJOR) << 24 | \
              IHU_CASTBYTE(VER_MINOR) << 16 | \
              IHU_CASTBYTE(VER_BUILD) << 8  | \
              IHU_CASTBYTE(VER_STEP))
@@ -194,16 +194,16 @@ typedef struct _IHU_MODULE_INFO
 }IHU_MODULE_INFO;
 
 //! Stores a list of processes and their information
-typedef std::vector<IHU_PROCESS_INFO>		IHU_PROCESS_LIST;
+typedef std::vector<IHU_PROCESS_INFO>       IHU_PROCESS_LIST;
 
 //! Iterator for IHU_PROCESS_LIST
-typedef IHU_PROCESS_LIST::iterator			IHU_PROCESS_LIST_ITER;
+typedef IHU_PROCESS_LIST::iterator          IHU_PROCESS_LIST_ITER;
 
 //! Stores a list of modules and their information
-typedef std::vector<IHU_MODULE_INFO>		IHU_MODULE_LIST;
+typedef std::vector<IHU_MODULE_INFO>        IHU_MODULE_LIST;
 
 //! Iterator for IHU_MODULE_LIST
-typedef IHU_MODULE_LIST::iterator			IHU_MODULE_LIST_ITER;
+typedef IHU_MODULE_LIST::iterator           IHU_MODULE_LIST_ITER;
 
 /**
  * @brief   Get the list of running processes.
@@ -226,7 +226,7 @@ DWORD
 __cdecl
 IhuGetProcessList(
     IHU_PROCESS_LIST &oProcessList
-	);
+    );
 
 /**
  * @brief   Get the list of loaded modules in a process.

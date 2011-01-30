@@ -34,8 +34,8 @@ Module Name:
 
 Module Description:
 
-	Declares data types, structure and functions to implement
-	DLL injection in another process.
+    Declares data types, structure and functions to implement
+    DLL injection in another process.
 
 --*/
 
@@ -45,38 +45,38 @@ Module Description:
 //
 // Application specific error codes
 //
-#define ERR_INJDLL_ERROR_BASE		0x20001000
-#define ERR_PROCESS_NOT_FOUND		(ERR_INJDLL_ERROR_BASE + 1)
-#define ERR_INVALID_PROCESS_ID		(ERR_INJDLL_ERROR_BASE + 2)
+#define ERR_INJDLL_ERROR_BASE       0x20001000
+#define ERR_PROCESS_NOT_FOUND       (ERR_INJDLL_ERROR_BASE + 1)
+#define ERR_INVALID_PROCESS_ID      (ERR_INJDLL_ERROR_BASE + 2)
 
-#define MAX_INC_EXC_SIZE			5120
-#define MAX_FN_NAME_LENGTH			64
+#define MAX_INC_EXC_SIZE            5120
+#define MAX_FN_NAME_LENGTH          64
 
 typedef struct _INJECTION_DATA
 {
-	// Required to inject DLL
-	LPVOID			mLoadLibraryW;
-	LPVOID			mGetProcAddr;
-	LPVOID			mFreeLibrary;
-	LPVOID			mGetModuleHandleW;
-	LPVOID			mDeleteFileW;
-	LPVOID			mSleep;
+    // Required to inject DLL
+    LPVOID          mLoadLibraryW;
+    LPVOID          mGetProcAddr;
+    LPVOID          mFreeLibrary;
+    LPVOID          mGetModuleHandleW;
+    LPVOID          mDeleteFileW;
+    LPVOID          mSleep;
 
-	// Full path of DLL
-	WCHAR	mDllName[MAX_PATH];
+    // Full path of DLL
+    WCHAR   mDllName[MAX_PATH];
 
-	// Injector DLL's initialize function
-	CHAR    mInitFnName[MAX_FN_NAME_LENGTH];
+    // Injector DLL's initialize function
+    CHAR    mInitFnName[MAX_FN_NAME_LENGTH];
 
-	// Injector DLL's de-initialize function
-	CHAR	mDeInitFnName[MAX_FN_NAME_LENGTH];
+    // Injector DLL's de-initialize function
+    CHAR    mDeInitFnName[MAX_FN_NAME_LENGTH];
 
-	// Injector DLL's Thread reference count function
-	CHAR	mThreadUsageFnName[MAX_FN_NAME_LENGTH];
+    // Injector DLL's Thread reference count function
+    CHAR    mThreadUsageFnName[MAX_FN_NAME_LENGTH];
 
-	// Injector's Init function parameters
-	CHAR	mFnIncludes[MAX_INC_EXC_SIZE];
-	CHAR	mFnExcludes[MAX_INC_EXC_SIZE];
+    // Injector's Init function parameters
+    CHAR    mFnIncludes[MAX_INC_EXC_SIZE];
+    CHAR    mFnExcludes[MAX_INC_EXC_SIZE];
 
 }INJECTION_DATA, *PINJECTION_DATA;
 
@@ -91,7 +91,7 @@ typedef HMODULE (WINAPI *PFNGETMODULEHANDLE)(LPCWSTR);
 
 // GetProcAddress typedef
 typedef FARPROC (WINAPI *PFNGETPROCADDRESS)(HMODULE,
-											LPCSTR);
+                                            LPCSTR);
 
 // DeleteFileW typedef
 typedef BOOL (WINAPI *PFNDELETEFILE)(LPCWSTR);
@@ -112,41 +112,41 @@ typedef volatile LONG (WINAPI *PFNSERUMGETREFCOUNT)(void);
 DWORD
 WINAPI
 ihiGetProcessIdByName(
-	LPCWSTR	inProcessName);
+    LPCWSTR inProcessName);
 
 
 DWORD
 WINAPI
 ihiLaunchNewProcess(
-	LPCWSTR	inExePath);
+    LPCWSTR inExePath);
 
 
 bool
 ihiInitInjectionData(
-	PINJECTION_DATA 	injData,
-	LPCWSTR		inDllPath,
-	LPCSTR			inFnIncludes,
-	LPCSTR			inFnExcludes);
+    PINJECTION_DATA     injData,
+    LPCWSTR     inDllPath,
+    LPCSTR          inFnIncludes,
+    LPCSTR          inFnExcludes);
 
 
 bool
 WINAPI
 ihiInjectDll(
-	HANDLE			hProcess,	
-	LPCWSTR	inDllPath,
-	LPCSTR		inFnIncludes,
-	LPCSTR		inFnExcludes);
+    HANDLE          hProcess,   
+    LPCWSTR inDllPath,
+    LPCSTR      inFnIncludes,
+    LPCSTR      inFnExcludes);
 
 bool
 WINAPI
 ihiUninjectDll(
-	HANDLE			hProcess,
-	LPCWSTR	inDllPath);
+    HANDLE          hProcess,
+    LPCWSTR inDllPath);
 
 static
 void
 ihiInjectedCode(
-	LPVOID *inAddress);
+    LPVOID *inAddress);
 
 static
 void
@@ -155,7 +155,7 @@ ihiInjectedCodeEnd();
 static
 void
 ihiUnloadCode(
-	LPVOID *inAddress);
+    LPVOID *inAddress);
 
 static
 void

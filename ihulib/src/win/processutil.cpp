@@ -34,10 +34,10 @@ Module Name:
 
 Module Description:
 
-	Implements various helper routines for process management.
-	These routines are dependent upon psapi.lib which is only
-	availalbe on Windows NT, 2000, XP and 2003, so these
-	routines will not work on Windows 9x series and ME.
+    Implements various helper routines for process management.
+    These routines are dependent upon psapi.lib which is only
+    availalbe on Windows NT, 2000, XP and 2003, so these
+    routines will not work on Windows 9x series and ME.
 
 --*/
 
@@ -46,8 +46,8 @@ Module Description:
 #include <tlhelp32.h>
 #include "ihulib.h"
 
-#define M_MAX_PROCESSES		512
-#define M_MAX_MODULES		512
+#define M_MAX_PROCESSES     512
+#define M_MAX_MODULES       512
 
 //
 // PSAPI Functions
@@ -60,346 +60,346 @@ typedef BOOL (WINAPI *PFN_ENUM_PROCESSES)(DWORD*, DWORD, DWORD*);
 //
 // Toolhelp functions
 //
-typedef HANDLE	(WINAPI *PFN_CREATE_TOOLHELP32_SNAPSHOT)(DWORD, DWORD);
-typedef BOOL	(WINAPI *PFN_PROCESS32_FIRST)(HANDLE, LPPROCESSENTRY32W);
-typedef BOOL	(WINAPI *PFN_PROCESS32_NEXT)(HANDLE, LPPROCESSENTRY32W);
+typedef HANDLE  (WINAPI *PFN_CREATE_TOOLHELP32_SNAPSHOT)(DWORD, DWORD);
+typedef BOOL    (WINAPI *PFN_PROCESS32_FIRST)(HANDLE, LPPROCESSENTRY32W);
+typedef BOOL    (WINAPI *PFN_PROCESS32_NEXT)(HANDLE, LPPROCESSENTRY32W);
 
 
 DWORD
 __cdecl
 IhuGetProcessList(
-	IHU_PROCESS_LIST &oProcessList)
+    IHU_PROCESS_LIST &oProcessList)
 {
-	DWORD	funcResult	= 0;
-	DWORD			errorCode	= 0;
+    DWORD   funcResult  = 0;
+    DWORD           errorCode   = 0;
 
-	oProcessList.clear();
+    oProcessList.clear();
 
-	HMODULE hKernel32	= GetModuleHandleA("kernel32");
+    HMODULE hKernel32   = GetModuleHandleA("kernel32");
 
-	if (!hKernel32)
-	{
-		//
-		// To-Do!!!
-		// Handle error
-		//
-		goto funcEnd;
-	}
+    if (!hKernel32)
+    {
+        //
+        // To-Do!!!
+        // Handle error
+        //
+        goto funcEnd;
+    }
 
-	//
-	// We don't use ToolHelp for UNICODE because ToolHelp is only
-	// used by us for WIndows 9x and for Windows 9x we only build
-	// ANSI tools
-	//
-	HMODULE hPsapi = LoadLibraryA("psapi");
-	if (hPsapi)
-	{
+    //
+    // We don't use ToolHelp for UNICODE because ToolHelp is only
+    // used by us for WIndows 9x and for Windows 9x we only build
+    // ANSI tools
+    //
+    HMODULE hPsapi = LoadLibraryA("psapi");
+    if (hPsapi)
+    {
         PFN_ENUM_PROCESSES pfnEnumProcesses;
         PFN_ENUM_PROCESS_MODULES pfnEnumProcessModules;
         PFN_GET_MODULE_BASE_NAME pfnGetModuleBaseNameW;
         PFN_GET_MODULE_FILE_NAME_EX pfnGetModuleFileNameExW;
 
-		pfnEnumProcesses = 
+        pfnEnumProcesses = 
             (PFN_ENUM_PROCESSES)GetProcAddress(hPsapi,
-										       "EnumProcesses");
+                                               "EnumProcesses");
 
-		pfnEnumProcessModules = 
+        pfnEnumProcessModules = 
             (PFN_ENUM_PROCESS_MODULES)GetProcAddress(hPsapi,
-											         "EnumProcessModules");
+                                                     "EnumProcessModules");
 
-		pfnGetModuleBaseNameW = 
+        pfnGetModuleBaseNameW = 
             (PFN_GET_MODULE_BASE_NAME)GetProcAddress(hPsapi,
-										          "GetModuleBaseNameW");
+                                                  "GetModuleBaseNameW");
 
-		pfnGetModuleFileNameExW = 
+        pfnGetModuleFileNameExW = 
             (PFN_GET_MODULE_FILE_NAME_EX)GetProcAddress(hPsapi,
                                                         "GetModuleFileNameExW");
 
-		if (!pfnEnumProcesses ||
-			!pfnEnumProcessModules ||
-			!pfnGetModuleBaseNameW ||
-			!pfnGetModuleFileNameExW)
-		{
-			goto funcEnd;
-		}
+        if (!pfnEnumProcesses ||
+            !pfnEnumProcessModules ||
+            !pfnGetModuleBaseNameW ||
+            !pfnGetModuleFileNameExW)
+        {
+            goto funcEnd;
+        }
 
-		DWORD *processIdList		= NULL;
-		DWORD listSizeUsed			= 0;
-		BOOL status = FALSE;
+        DWORD *processIdList        = NULL;
+        DWORD listSizeUsed          = 0;
+        BOOL status = FALSE;
 
-		processIdList = new DWORD[M_MAX_PROCESSES];
+        processIdList = new DWORD[M_MAX_PROCESSES];
 
-		if (processIdList == NULL)
-		{
-			errorCode	= ERROR_NOT_ENOUGH_MEMORY;
-			funcResult	= -1;
-			goto funcEnd;
-		}
+        if (processIdList == NULL)
+        {
+            errorCode   = ERROR_NOT_ENOUGH_MEMORY;
+            funcResult  = -1;
+            goto funcEnd;
+        }
 
-		status = pfnEnumProcesses(	
-								processIdList,
-								M_MAX_PROCESSES * sizeof(DWORD),
-								&listSizeUsed);
+        status = pfnEnumProcesses(  
+                                processIdList,
+                                M_MAX_PROCESSES * sizeof(DWORD),
+                                &listSizeUsed);
 
-		DWORD actualNumProcess = listSizeUsed / sizeof(DWORD);
+        DWORD actualNumProcess = listSizeUsed / sizeof(DWORD);
 
-		if (status)
-		{
-			for (	DWORD procIndex = 0;
-					procIndex < actualNumProcess;
-					++procIndex)
-			{
-				HANDLE hProcess = OpenProcess( 
-									PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
-									FALSE,
-									processIdList[procIndex]);
+        if (status)
+        {
+            for (   DWORD procIndex = 0;
+                    procIndex < actualNumProcess;
+                    ++procIndex)
+            {
+                HANDLE hProcess = OpenProcess( 
+                                    PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+                                    FALSE,
+                                    processIdList[procIndex]);
 
-				if (NULL != hProcess)
-				{
-					HMODULE hMod;
-					DWORD	bytesNeeded;
-					
-					if (pfnEnumProcessModules(
-											hProcess,
-											&hMod,
-											sizeof(hMod),
-											&bytesNeeded))
-					{
-						wchar_t processName[MAX_PATH]	= {0};
-						wchar_t binaryPath[MAX_PATH]	= {0};
+                if (NULL != hProcess)
+                {
+                    HMODULE hMod;
+                    DWORD   bytesNeeded;
+                    
+                    if (pfnEnumProcessModules(
+                                            hProcess,
+                                            &hMod,
+                                            sizeof(hMod),
+                                            &bytesNeeded))
+                    {
+                        wchar_t processName[MAX_PATH]   = {0};
+                        wchar_t binaryPath[MAX_PATH]    = {0};
 
-						//
-						// Get process name and full path of process binary.
-						// failures can be safely ignored here
-						//
-						pfnGetModuleBaseNameW(
-										hProcess,
-										hMod,
-										processName,
-										sizeof(processName));
+                        //
+                        // Get process name and full path of process binary.
+                        // failures can be safely ignored here
+                        //
+                        pfnGetModuleBaseNameW(
+                                        hProcess,
+                                        hMod,
+                                        processName,
+                                        sizeof(processName));
 
-						pfnGetModuleFileNameExW(
-											hProcess,
-											hMod,
-											binaryPath,
-											MAX_PATH);
+                        pfnGetModuleFileNameExW(
+                                            hProcess,
+                                            hMod,
+                                            binaryPath,
+                                            MAX_PATH);
 
-						//
-						// Add the process data to process list
-						//
-						IHU_PROCESS_INFO processInfo;
+                        //
+                        // Add the process data to process list
+                        //
+                        IHU_PROCESS_INFO processInfo;
 
-						processInfo.mProcessId		= processIdList[procIndex];
-						processInfo.mProcessName	= processName;
-						processInfo.mBinaryName		= binaryPath;
+                        processInfo.mProcessId      = processIdList[procIndex];
+                        processInfo.mProcessName    = processName;
+                        processInfo.mBinaryName     = binaryPath;
 
-						oProcessList.push_back(processInfo);
-					}
+                        oProcessList.push_back(processInfo);
+                    }
 
-					CloseHandle(hProcess);
-				}
-			}
-		}
-		else
-		{
-			errorCode	= GetLastError();
-			funcResult	= -1;
-		}
+                    CloseHandle(hProcess);
+                }
+            }
+        }
+        else
+        {
+            errorCode   = GetLastError();
+            funcResult  = -1;
+        }
 
-		if (processIdList)
-		{
-			delete [] processIdList;
-		}
+        if (processIdList)
+        {
+            delete [] processIdList;
+        }
 
-		FreeLibrary(hPsapi);
-	}
-	else
-	{
-		//
-		// Use ToolHelp functions exported by kernel32
-		//
-		HANDLE hProcessSnap				= NULL;
-		PROCESSENTRY32W processEntry	= {0};
-		PFN_CREATE_TOOLHELP32_SNAPSHOT pfnCreateToolhelp32Snapshot;
-		PFN_PROCESS32_FIRST pfnProcess32FirstW;
-		PFN_PROCESS32_NEXT pfnProcess32NextW;
+        FreeLibrary(hPsapi);
+    }
+    else
+    {
+        //
+        // Use ToolHelp functions exported by kernel32
+        //
+        HANDLE hProcessSnap             = NULL;
+        PROCESSENTRY32W processEntry    = {0};
+        PFN_CREATE_TOOLHELP32_SNAPSHOT pfnCreateToolhelp32Snapshot;
+        PFN_PROCESS32_FIRST pfnProcess32FirstW;
+        PFN_PROCESS32_NEXT pfnProcess32NextW;
 
-		pfnCreateToolhelp32Snapshot =
+        pfnCreateToolhelp32Snapshot =
             (PFN_CREATE_TOOLHELP32_SNAPSHOT)GetProcAddress(hKernel32,
-												           "CreateToolhelp32Snapshot");
+                                                           "CreateToolhelp32Snapshot");
 
-		pfnProcess32FirstW =
+        pfnProcess32FirstW =
             (PFN_PROCESS32_FIRST)GetProcAddress(hKernel32,
-										        "Process32FirstW");
+                                                "Process32FirstW");
 
-		pfnProcess32NextW = 
+        pfnProcess32NextW = 
             (PFN_PROCESS32_NEXT)GetProcAddress(hKernel32,
-										       "Process32NextW");
+                                               "Process32NextW");
 
-		if (!pfnCreateToolhelp32Snapshot ||
-			!pfnProcess32FirstW ||
-			!pfnProcess32NextW)
-		{
-			goto funcEnd;
-		}
+        if (!pfnCreateToolhelp32Snapshot ||
+            !pfnProcess32FirstW ||
+            !pfnProcess32NextW)
+        {
+            goto funcEnd;
+        }
 
-		hProcessSnap = pfnCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        hProcessSnap = pfnCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
-		if (hProcessSnap != INVALID_HANDLE_VALUE)
-		{
-			processEntry.dwSize = sizeof(processEntry);
+        if (hProcessSnap != INVALID_HANDLE_VALUE)
+        {
+            processEntry.dwSize = sizeof(processEntry);
 
-			if (pfnProcess32FirstW(hProcessSnap, &processEntry))
-			{
-				do
-				{
-					//
-					// Add the process data to process list
-					//
-					IHU_PROCESS_INFO processInfo;
+            if (pfnProcess32FirstW(hProcessSnap, &processEntry))
+            {
+                do
+                {
+                    //
+                    // Add the process data to process list
+                    //
+                    IHU_PROCESS_INFO processInfo;
 
-					std::wstring processName = processEntry.szExeFile;
+                    std::wstring processName = processEntry.szExeFile;
 
-					//
-					// We could use find_last_of here but it use ntdll export
-					// memchr which doesn't work on win9x
-					//
-					int nPos = -1;
+                    //
+                    // We could use find_last_of here but it use ntdll export
+                    // memchr which doesn't work on win9x
+                    //
+                    int nPos = -1;
 
-					for (	int n = processName.length() - 1;
-							n >= 0;
-							--n)
-					{
-						if (processName[n] == L'\\')
-						{
-							nPos = n;
-							break;
-						}
-					}
+                    for (   int n = processName.length() - 1;
+                            n >= 0;
+                            --n)
+                    {
+                        if (processName[n] == L'\\')
+                        {
+                            nPos = n;
+                            break;
+                        }
+                    }
 
-					if (nPos != -1)
-					{
-						processName = processName.substr(nPos + 1, processName.length() - nPos - 1);
-					}
+                    if (nPos != -1)
+                    {
+                        processName = processName.substr(nPos + 1, processName.length() - nPos - 1);
+                    }
 
-					processInfo.mProcessId		= processEntry.th32ProcessID;
-					processInfo.mProcessName	= processName;
-					processInfo.mBinaryName		= processEntry.szExeFile;
+                    processInfo.mProcessId      = processEntry.th32ProcessID;
+                    processInfo.mProcessName    = processName;
+                    processInfo.mBinaryName     = processEntry.szExeFile;
 
-					oProcessList.push_back(processInfo);
+                    oProcessList.push_back(processInfo);
 
-				}while(pfnProcess32NextW(
-							hProcessSnap,
-							&processEntry));
-			}
+                }while(pfnProcess32NextW(
+                            hProcessSnap,
+                            &processEntry));
+            }
 
-			CloseHandle(hProcessSnap);
-		}
-	}
+            CloseHandle(hProcessSnap);
+        }
+    }
 
 funcEnd:
 
-	SetLastError(errorCode);
-	return funcResult;
+    SetLastError(errorCode);
+    return funcResult;
 }
 
 
 DWORD
 __cdecl
 IhuGetModuleList(
-	DWORD inProcessId,
-	IHU_MODULE_LIST	&oModuleList)
+    DWORD inProcessId,
+    IHU_MODULE_LIST &oModuleList)
 {
-	DWORD	funcResult	= 0;
-	DWORD			errorCode	= 0;
+    DWORD   funcResult  = 0;
+    DWORD           errorCode   = 0;
 
-	oModuleList.clear();
-
-
-	HANDLE hProcess = OpenProcess(
-							PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
-							FALSE,
-							inProcessId);
-
-	if (hProcess == NULL)
-	{
-		errorCode	= GetLastError();
-		funcResult	= -1;
-
-		goto FuncEnd;
-	}
+    oModuleList.clear();
 
 
-	HMODULE *hModuleList = new HMODULE[M_MAX_MODULES];
+    HANDLE hProcess = OpenProcess(
+                            PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+                            FALSE,
+                            inProcessId);
 
-	if (hModuleList == NULL)
-	{
-		errorCode	= ERROR_NOT_ENOUGH_MEMORY;
-		funcResult	= -1;
+    if (hProcess == NULL)
+    {
+        errorCode   = GetLastError();
+        funcResult  = -1;
 
-		goto FuncEnd;
-	}
+        goto FuncEnd;
+    }
 
 
-	BOOL status		= FALSE;
-	DWORD cbNeeded	= 0;
+    HMODULE *hModuleList = new HMODULE[M_MAX_MODULES];
 
-	status = EnumProcessModules(
-							hProcess,
-							hModuleList,
-							M_MAX_MODULES * sizeof(HMODULE),
-							&cbNeeded);
+    if (hModuleList == NULL)
+    {
+        errorCode   = ERROR_NOT_ENOUGH_MEMORY;
+        funcResult  = -1;
 
-	if (status)
-	{
-		ULONG numModules = cbNeeded / sizeof(HMODULE);
+        goto FuncEnd;
+    }
 
-		wchar_t moduleName[MAX_PATH]	= {0};
 
-		for (ULONG moduleIndex = 0; moduleIndex < numModules; ++moduleIndex)
-		{
-			GetModuleBaseNameW(
-							hProcess,
-							hModuleList[moduleIndex],
-							moduleName,
-							sizeof(moduleName));
+    BOOL status     = FALSE;
+    DWORD cbNeeded  = 0;
 
-			MODULEINFO moduleInfo;
-			GetModuleInformation(
-								hProcess,
-								hModuleList[moduleIndex],
-								&moduleInfo,
-								sizeof(moduleInfo));
+    status = EnumProcessModules(
+                            hProcess,
+                            hModuleList,
+                            M_MAX_MODULES * sizeof(HMODULE),
+                            &cbNeeded);
 
-			IHU_MODULE_INFO ourModuleInfo;
+    if (status)
+    {
+        ULONG numModules = cbNeeded / sizeof(HMODULE);
 
-			ourModuleInfo.mModuleHandle			= hModuleList[moduleIndex];
-			ourModuleInfo.mModuleBaseName		= moduleName;
-			ourModuleInfo.mModuleBaseAddress	= moduleInfo.lpBaseOfDll;
+        wchar_t moduleName[MAX_PATH]    = {0};
 
-			oModuleList.push_back(ourModuleInfo);
-		}
-	}
-	else
-	{
-		errorCode	= GetLastError();
-		funcResult	= -1;
-	}
+        for (ULONG moduleIndex = 0; moduleIndex < numModules; ++moduleIndex)
+        {
+            GetModuleBaseNameW(
+                            hProcess,
+                            hModuleList[moduleIndex],
+                            moduleName,
+                            sizeof(moduleName));
+
+            MODULEINFO moduleInfo;
+            GetModuleInformation(
+                                hProcess,
+                                hModuleList[moduleIndex],
+                                &moduleInfo,
+                                sizeof(moduleInfo));
+
+            IHU_MODULE_INFO ourModuleInfo;
+
+            ourModuleInfo.mModuleHandle         = hModuleList[moduleIndex];
+            ourModuleInfo.mModuleBaseName       = moduleName;
+            ourModuleInfo.mModuleBaseAddress    = moduleInfo.lpBaseOfDll;
+
+            oModuleList.push_back(ourModuleInfo);
+        }
+    }
+    else
+    {
+        errorCode   = GetLastError();
+        funcResult  = -1;
+    }
 
 
 FuncEnd:
 
-	if (hModuleList)
-	{
-		delete [] hModuleList;
-	}
+    if (hModuleList)
+    {
+        delete [] hModuleList;
+    }
 
-	if (hProcess)
-	{
-		CloseHandle(hProcess);
-	}
+    if (hProcess)
+    {
+        CloseHandle(hProcess);
+    }
 
-	SetLastError(errorCode);
-	return funcResult;
+    SetLastError(errorCode);
+    return funcResult;
 }
 
