@@ -1,0 +1,126 @@
+CrashDoctor:
+============
+CrashDoctor is a program developed to recover crashing programs. It works
+as a JIT windows debugger and activates when a windows program crashes. It
+then attaches to the program and tries to recover the program from crashing
+state by careful analysis of the program. It is developed by Pankaj Garg for
+IntellectualHeaven (http://www.intellectualheaven.com)
+
+CrashDoctor has another useful feature, once a program crashes, CrashDoctor
+monitors the execution of the program. If the program tries to open an existing
+file for writing CrashDoctor intercepts this and copies the original file
+to a backup location. This prevents any further damage done by the misbehaving
+program. The current version of CrashDoctor however doesn't prevent this if
+program already has these files open.
+
+CrashDoctor also works like a debugger chooser. After installing CrashDoctor
+if a program crashes, the CrashDoctor recovery screen shows up. This screen
+lists debuggers available on the system and you can select a debugger to debug
+the crashing program instead of recovering its crash. Note here that once you
+start debugging the program, you won't be able to recover it.
+
+
+Words about Crash:
+==================
+A crash can happen in a process due to various reasons like accessing invalid
+memory locations, resource constraints, resource unavailability etc. One thing
+to note here is that a crash almost always occur due to bad programming such as
+not handling error conditions properly.
+
+CrashDoctor tries to recover all the crashes, sometime the crash is so fatal
+that repeated attempts to recover it fails and in such case, CrashDoctor
+terminates the process and displays the exit code of the process.
+
+
+Updates:
+========
+Please check http://www.intellectualheaven.com to make sure that you have
+the latest version of CrashDoctor
+
+
+Installation:
+=============
+1. Extract all the files in CrashDoctor distribution to a folder
+2. Double-click on CrashDoctor.exe
+3. Click Install to install it
+
+
+Features:
+=========
+- Runs as JIT debugger so no overhead when no program is crashing
+- Extremely light-weight and doesn't slow down the process even when recovering
+  it from the crash
+- Once a process crashes, CrashDoctor intercepts if the process tries to open
+  a file for write and makes a backup copy of the file to prevent data loss
+- Works as a debugger chooser also if you have multiple debuggers in your
+  system. Upon a program crash, you can chose which debugger to use to debug
+  the program (in case you don't want to recover the process from crashing).
+- Comes with an easy to use graphical user interface
+- 100% free of cost
+
+
+Known Limitation:
+=================
+- Does not create backup copy of files that are already open by the crashing
+  program, thus CrashDoctor doesn't prevent data corruption of files that are
+  already open by the crashing program.
+
+
+Version:
+========
+v1.0 (Released) (2005/04/18)
+- Created a version for AMD64
+- Improved crash recovery for x86 as well as added enhanced crash recovery
+  for AMD64
+- Improved the color-scheme for better readability
+
+v0.9 (Beta1) (2005/03/20)
+This is the first public release of CrashDoctor and it is also declared Beta1.
+This means that even though the program is throughly tested, there may be some
+unearthed bugs. If you encounter a bug or have a feature request, please drop
+a mail to x_pankaj_x@intellectualheaven.com
+
+
+Supported platforms:
+====================
+Windows 95
+Windows 98
+Windows ME
+Windows NT 4.0
+Windows 2000
+Windows XP (32-bit)
+Windows 2003 (32-bit)
+Windows XP (AMD 64-bit) - For 64 bit processes as well as 32bit processes
+Windows 2003 (AMD 64-bit) - For 64 bit processes as well as 32bit processes
+
+
+License:
+========
+These files are distributed under "Shared Binary License 1.0". Please take a
+look at the file binarylicense.txt for details. If this file is missing, you
+can get an electronic copy of the same from x_pankaj_x@intellectualheaven.com
+or visit http://www.intellectualheaven.com
+
+
+Warning:
+========
+Once you tries to recovery a process, you won't be able to debug it or generate
+a crash dump for that process.
+
+
+Usage:
+======
+After installation of CrashDoctor, it will activate itself whenever a program
+crashes.
+
+
+Questions:
+==========
+For questions or suggestions, contact x_pankaj_x@intellectualheaven.com
+
+
+--
+Regards,
+Pankaj Garg
+www.intellectualheaven.com
+

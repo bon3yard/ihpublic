@@ -1,0 +1,191 @@
+/*++
+
+Copyright (c) : Pankaj Garg & www.intellectualheaven.com
+
+Module Name:
+
+    cd.rc
+
+Module Description:
+
+	Resource file for the CrashDoctor application
+
+Author:
+
+    Pankaj Garg		2004-09-26
+    
+Latest update:
+
+    Pankaj Garg		2005-04-18
+
+--*/
+
+#include "windows.h"
+#include "ntverp.h"
+#include "resource.h"
+
+
+//
+// Version Resources
+//
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION		CRASH_DOCTOR_BIN_VERSION
+ PRODUCTVERSION		CRASH_DOCTOR_BIN_VERSION
+ FILETYPE 0x00000001L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName",		COMPANY_NAME
+            VALUE "LegalCopyright",		LEGAL_COPYRIGHT
+			VALUE "ProductName",		PRODUCT_NAME
+            VALUE "ProductVersion",     ST_MAKE_STR(CRASH_DOCTOR_STR_VERSION)
+            VALUE "FileVersion",        ST_MAKE_STR(CRASH_DOCTOR_STR_VERSION)
+			VALUE "FileDescription",	"CrashDoctor 1.0\0"
+            VALUE "OriginalFilename",	"CrashDoctor.exe\0"
+			VALUE "InternalName",		"CrashDoctor.exe\0"
+            
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+//
+// Bitmaps
+//
+IDB_IH_SYMBOL           BITMAP  DISCARDABLE     "res\\ihSymbol.bmp"
+
+
+//
+// Icons
+//
+IDI_APP_ICON            ICON    DISCARDABLE     "res\\appIcon.ico"
+IDI_APP_ICON_SM         ICON    DISCARDABLE     "res\\appIconSmall.ico"
+IDI_PROCESS_ICON        ICON    DISCARDABLE     "res\\processIcon.ico"
+
+
+
+//
+// Dialogs
+//
+
+// Main Application Dialog if -p is an argument
+IDD_DIALOG_HANDLE_CRASH DIALOGEX 0, 0, 266, 243
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_BORDER | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    GROUPBOX        "",IDC_STATIC,7,3,252,232
+    LTEXT           "The following process has performed an illegal operation.",
+                    IDC_STATIC,43,18,149,16
+    EDITTEXT        IDC_EDIT_PROCESS_NAME,42,38,145,24,ES_MULTILINE | NOT WS_BORDER | NOT WS_TABSTOP | ES_READONLY
+    LTEXT           "CrashDoctor can attempt to recover the process from the crashing state. Alternatively, you can chose to terminate the faulty process or debug it using one of the debugger listed below.",
+                    IDC_STATIC,15,65,236,25
+    ICON            IDI_PROCESS_ICON,IDC_ICON_PROCESS,14,22,21,20
+    
+    CONTROL         "",IDC_LIST_DEBUGGER,"SysListView32",WS_VISIBLE | WS_BORDER | WS_TABSTOP |
+                    LVS_REPORT | LVS_SORTASCENDING | LVS_SHOWSELALWAYS | LVS_SINGLESEL |
+                    LVS_NOSORTHEADER,14,95,179,82
+    PUSHBUTTON      "&Debug",IDC_BTN_DEBUG,200,95,54,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Add Debugger",IDC_BTN_ADD_DEBUGGER,200,117,54,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Modify",IDC_BTN_MODIFY_DEBUGGER,200,139,54,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "De&lete",IDC_BTN_DELETE_DEBUGGER,200,161,54,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Recover",IDC_BTN_RECOVER,200,18,54,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Terminate",IDC_BTN_TERMINATE,200,40,54,14,0,WS_EX_STATICEDGE
+    
+    GROUPBOX        "",IDC_STATIC,43,179,174,46
+    CTEXT           "IntellectualHeaven (R) CrashDoctor 1.0",IDC_STATIC,48,
+                    188,164,8
+    CTEXT           "Copyright (C) http://www.intellectualheaven.com",
+                    IDC_STATIC,48,199,164,8
+    CTEXT           "Developed by: Pankaj Garg. All Rights Reserved.",
+                    IDC_STATIC,48,210,164,8
+    
+END
+
+
+// Main application dialog if no arguments given
+IDD_DIALOG_INSTALL DIALOGEX 0, 0, 189, 102
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "IntellectualHeaven (R) CrashDoctor"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    ICON            IDI_APP_ICON,IDC_STATIC,14,17,21,20,WS_TABSTOP
+    PUSHBUTTON      "&Install",IDC_BTN_INSTALL,12,74,50,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Uninstall",IDC_BTN_UNINSTALL,69,74,50,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Close",IDC_BTN_CLOSE,127,73,50,14,0,WS_EX_STATICEDGE
+    GROUPBOX        "",IDC_STATIC,7,7,175,88
+    LTEXT           "IntellectualHeaven (R) CrashDoctor 1.0",IDC_STATIC,40,
+                    18,132,8
+    LTEXT           "Copyright (c) www.intellectualheaven.com",IDC_STATIC,40,
+                    29,137,8
+    LTEXT           "Developed by: Pankaj Garg. All Rights Reserved.",
+                    IDC_STATIC,14,40,158,8
+    LTEXT           "You should be an Administrator to Install/Uninstall CrashDoctor.",
+                    IDC_STATIC,14,52,160,16
+END
+
+
+// Application dialog for Add debugger
+IDD_DIALOG_ADD_DEBUGGER DIALOGEX 0, 0, 246, 89
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "IntellectualHeaven (R) CrashDoctor"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    EDITTEXT        IDC_EDIT_CMDLINE,65,42,166,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "&OK",IDOK,181,64,50,14,0,WS_EX_STATICEDGE
+    LTEXT           "",IDC_TEXT_DEBUGGER,65,15,166,21
+    GROUPBOX        "",IDC_STATIC,7,3,232,80
+    LTEXT           "Debugger:",IDC_STATIC,14,15,35,8
+    LTEXT           "Command Line:",IDC_STATIC,14,42,50,8
+END
+
+
+// Application dialog for Modify debugger
+IDD_DIALOG_MODIFY_DEBUGGER DIALOGEX 0, 0, 246, 89
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "IntellectualHeaven (R) CrashDoctor"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    EDITTEXT        IDC_EDIT_CMDLINE,14,27,218,32,ES_MULTILINE
+    PUSHBUTTON      "&OK",IDOK,181,64,50,14,0,WS_EX_STATICEDGE
+    GROUPBOX        "",IDC_STATIC,7,3,232,80
+    LTEXT           "Debugger Command Line:",IDC_STATIC,14,13,83,8
+END
+
+// Recovering status
+IDD_DIALOG_RECOVER_STATUS DIALOGEX 0, 0, 400, 234
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU | WS_BORDER
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL         "",IDC_LIST_STATUS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | 
+                    LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,20,40,360,152
+    PUSHBUTTON      "&Terminate",IDC_BTN_TERMINATE,330,201,50,14,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Close",IDC_BTN_CLOSE,265,201,50,14,0,WS_EX_STATICEDGE
+    GROUPBOX        "",IDC_STATIC,8,3,384,225
+    LTEXT           "CrashDoctor will try to recover your process from crash. Even if your process is recovered, there is no guarantee that it will be stable, so you should try to save your work immediately and close it.",
+                    IDC_STATIC,20,15,360,18
+END
+
+// About
+IDD_DIALOG_ABOUT DIALOG DISCARDABLE  0, 0, 202, 78
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About CrashDoctor"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,82,57,114,14
+    CONTROL         IDB_IH_SYMBOL,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE | 
+                    SS_REALSIZEIMAGE,7,7,68,64, WS_EX_TRANSPARENT
+    LTEXT           "Yahoo Messenger Archive Decoder",IDC_STATIC,82,7,114,8
+    LTEXT           "Copyright (c) : Pankaj Garg",IDC_STATIC,82,31,88,8
+    LTEXT           "http://www.intellectualheaven.com",IDC_STATIC,82,43,114,
+                    8
+    LTEXT           "Version 0.4 (Beta)",IDC_STATIC,82,19,59,8
+END
+
+

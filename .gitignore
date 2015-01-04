@@ -16,9 +16,12 @@
 *.manifest
 *.exp
 *_manifest.rc
+Thumbs.db
+*.suo
 
 # VIM related
 *.swp
+*.un~
 
 # Generic
 *.com

@@ -38,15 +38,76 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 #include <vector>
+#include <windows.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-//
-// Version related Macros
-//
+/**
+* @addtogroup  DebugHelper Debugging Helper Functions.
+*
+* @brief       Functions and Macros are useful for debugging.
+*
+*              An application can use these macros to do tracing
+*              logging and other debugging actions.
+*
+* @{
+**/
+#define IHU_LEVEL_FATAL     1
+#define IHU_LEVEL_ERROR     11
+#define IHU_LEVEL_WARN      21
+#define IHU_LEVEL_INFO      31
+#define IHU_LEVEL_LOUD      41
+#define IHU_LEVEL_FLOOD     51
+
+//! Macro for turning Unit level logging ON
+#define IHU_LOGGING_ON      1
+
+//! Macro for turning Unit level logging OFF
+#define IHU_LOGGING_OFF     0
+
+/*
+#define HX_DBG_ENTER                HX_DBG_ENTERW
+#define HX_DBG_LEAVE                HX_DBG_LEAVEW
+#define HX_DBG_FN_ENTER             HX_DBG_FN_ENTERW
+#define HX_DBG_FN_LEAVE             HX_DBG_FN_LEAVEW
+*/
+
+typedef void(__cdecl *PFN_IHU_DBG_LOG)(LPCWSTR fmt, ...);
+
+// Global debug logging function
+extern PFN_IHU_DBG_LOG _IhuDbgLogFn;
+
+// Global debug logging level
+extern DWORD _IhuDbgLogLevel;
+
+#define IHU_DBG_LOG(unit, level, format)        \
+{                                               \
+    if (level <= _IhuDbgLogLevel &&            \
+        unit == IHU_LOGGING_ON)                 \
+    {                                           \
+        (*_IhuDbgLogFn)(L"[U] - ");               \
+        (*_IhuDbgLogFn) format;                  \
+    }                                           \
+}
+
+//! Function to configure debug logging attributes
+void IhuSetDbgLogLevel(DWORD DebugLogLevel);
+DWORD IhuGetDbgLogLevel();
+void __cdecl IhuDbgLog(LPCWSTR sFormat, ...);
+
+/**
+* @addtogroup  VersionHelpers Version related macros.
+*
+* @brief       These macros are useful for version related management.
+*
+*              An application can use these macros to define version
+*              strings and version numbers.
+*
+* @{
+**/
 #define IHU_MAKE_STR(_X_)           IHU_MAKE_STR_REAL(_X_)
 #define IHU_MAKE_STR_REAL(_X_)      #_X_
 
