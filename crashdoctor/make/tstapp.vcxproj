@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="testCrash.cpp" />
+    <ClCompile Include="..\src\tstapp\testCrash.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9EC916E7-8C91-40A9-955C-6318D9F5A35D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>StraceNt</RootNamespace>
-    <ProjectName>TestApp</ProjectName>
+    <ProjectName>TstApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

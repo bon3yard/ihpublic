@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="6106D49D-8787-4d02-B532-30B81B0CE96E" Name="CrashDoctor 1.1" Language="1033" Version="1.1.0.0" Manufacturer="IntellectualHeaven" UpgradeCode="8D32E55E-12BF-49aa-AF11-1E1CC136FACB">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+        <Condition Message="You need to be an administrator to install this product.">
+            AdminUser
+        </Condition>
+        
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+        
+		<MediaTemplate />
+
+		<Feature Id="ProductFeature" Title="CrashDoctor" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+                <Directory Id='IH' Name='IntellectualHeaven'>
+				    <Directory Id="INSTALLFOLDER" Name="CrashDoctor" />
+                </Directory>
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- </Component> -->
+            <Component Id="MainEXE" Guid="60F3260C-C923-4bd1-BC5C-82ECDE906F8F">
+                <File Id="CrashDoctorEXE" Source="..\bld\bin\CrashDoctor.exe" KeyPath="yes" Checksum="yes" />
+            </Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>
