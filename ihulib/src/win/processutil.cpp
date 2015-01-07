@@ -264,9 +264,9 @@ IhuGetProcessList(
                     // We could use find_last_of here but it use ntdll export
                     // memchr which doesn't work on win9x
                     //
-                    int nPos = -1;
+                    size_t nPos = -1;
 
-                    for (   int n = processName.length() - 1;
+                    for (   size_t n = processName.length() - 1;
                             n >= 0;
                             --n)
                     {

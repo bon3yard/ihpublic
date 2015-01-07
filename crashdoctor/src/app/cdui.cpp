@@ -144,7 +144,7 @@ Return:
 			0,
 			REG_SZ,
 			(LPBYTE)inDebuggerPath.c_str(),
-			inDebuggerPath.length() * sizeof(TCHAR));
+			(DWORD)(inDebuggerPath.length() * sizeof(TCHAR)));
 
 	numDebuggers++;
 
@@ -573,7 +573,7 @@ Returns:
 						
 						if (ListView_GetItem(hListCtrl, &lvItem))
 						{
-							int regIndex = lvItem.lParam;
+							LPARAM regIndex = lvItem.lParam;
 
 							if (_tcslen(debugCmdLine) > 0)
 							{
@@ -612,7 +612,7 @@ Returns:
 													0,
 													REG_SZ,
 													(LPBYTE)debuggerInfo.cmdLine.c_str(),
-													debuggerInfo.cmdLine.length() * sizeof(TCHAR)) != ERROR_SUCCESS)
+													(DWORD)(debuggerInfo.cmdLine.length() * sizeof(TCHAR))) != ERROR_SUCCESS)
 										{
 											cdHandleError(
 													hDlg,
@@ -657,7 +657,7 @@ Returns:
 						
 						if (ListView_GetItem(hListCtrl, &lvItem))
 						{
-							int regIndex = lvItem.lParam;
+							LPARAM regIndex = lvItem.lParam;
 									
 							//
 							// Modify the particular registry entry
@@ -931,7 +931,7 @@ Returns:
 						SetWindowLong(
 									hDlg,
 									DWLP_MSGRESULT,
-									pRecoveryHandler->HandleCustomDraw(pCD));
+									(LONG)pRecoveryHandler->HandleCustomDraw(pCD));
 						return TRUE;
 					}
 				}
@@ -1337,7 +1337,7 @@ Returns:
 
 	std::wstring trcMsg = szMsg;
 
-	int i_CR = 0;
+	size_t i_CR = 0;
 
 	while (i_CR != -1)
 	{
@@ -1373,8 +1373,8 @@ Returns:
 		}
 	}
 
-	DWORD i_begin = 0;
-	DWORD i_end = 0;
+	size_t i_begin = 0;
+    size_t i_end = 0;
 
 	do
 	{

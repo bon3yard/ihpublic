@@ -88,19 +88,27 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bld\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bld\int\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\bld\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\bld\int\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSdk_71A_LibraryPath_x86);..\..\ihulib\lib\$(Platform)\$(Configuration)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)..\bld\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\bld\int\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSdk_71A_LibraryPath_x64);..\..\ihulib\lib\$(Platform)\$(Configuration)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bld\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bld\int\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\bld\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\bld\int\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSdk_71A_LibraryPath_x86);..\..\ihulib\lib\$(Platform)\$(Configuration)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)..\bld\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\bld\int\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSdk_71A_LibraryPath_x64);..\..\ihulib\lib\$(Platform)\$(Configuration)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -115,13 +123,13 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);psapi.lib;ihulib.lib;ihinjection.lib;comctl32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);psapi.lib;ihulib.lib;dbghelp.lib;comctl32.lib;Shlwapi.lib;</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)inc;$(OutDir);$(SolutionDir)app;</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /EY $(OutDir)CrashDoctor.exe $(SolutionDir)bld\bin\</Command>
+      <Command>xcopy /EY $(OutDir)CrashDoctor.exe $(SolutionDir)..\bld\bin\</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy binaries to bld folder</Message>
@@ -134,13 +142,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)app;$(SolutionDir)inc;$(SolutionDir)..\ihulib\inc;$(SolutionDir)..\ihulib\inc\win;$(SolutionDir)..\ihinjection;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\ihulib\inc\win;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);psapi.lib;ihulib.lib;ihinjection.lib;comctl32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);psapi.lib;ihulib.lib;dbghelp.lib;comctl32.lib;Shlwapi.lib;</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)inc;$(OutDir);$(SolutionDir)app;</AdditionalIncludeDirectories>
@@ -169,7 +177,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)inc;$(OutDir);$(SolutionDir)app;</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /EY $(OutDir)CrashDoctor.exe $(SolutionDir)bld\bin\</Command>
+      <Command>xcopy /EY $(OutDir)CrashDoctor.exe $(SolutionDir)..\bld\bin\</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy binaries to bld folder</Message>
@@ -184,7 +192,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)app;$(SolutionDir)inc;$(SolutionDir)..\ihulib\inc;$(SolutionDir)..\ihulib\inc\win;$(SolutionDir)..\ihinjection;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\ihulib\inc\win;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

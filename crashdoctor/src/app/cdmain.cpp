@@ -136,7 +136,7 @@ Returns:
 	{
 		HWND hwnd = GetDesktopWindow();
 		int err = GetLastError();
-		int n =
+
 		DialogBoxParam(
 				ghInstance,
 				MAKEINTRESOURCE(IDD_DIALOG_INSTALL),
@@ -159,7 +159,7 @@ Returns:
 			procDbgData.processId	= pid;
 			procDbgData.eventHandle	= hEvent;
 
-			int dlgResult = DialogBoxParam(
+			INT_PTR dlgResult = DialogBoxParam(
 								ghInstance,
 								MAKEINTRESOURCE(IDD_DIALOG_HANDLE_CRASH),
 								GetDesktopWindow(),
@@ -172,12 +172,12 @@ Returns:
 										procDbgData.processId,
 										procDbgData.eventHandle);
 
-				int tempResult = DialogBoxParam(
-									ghInstance,
-									MAKEINTRESOURCE(IDD_DIALOG_RECOVER_STATUS),
-									GetDesktopWindow(),
-									(DLGPROC)RecoveryStatusDlgProc,
-									(LPARAM)&recoveryHandler);
+				DialogBoxParam(
+                            ghInstance,
+							MAKEINTRESOURCE(IDD_DIALOG_RECOVER_STATUS),
+							GetDesktopWindow(),
+							(DLGPROC)RecoveryStatusDlgProc,
+							(LPARAM)&recoveryHandler);
 				
 			} 
 			else if(dlgResult == IDC_BTN_TERMINATE)

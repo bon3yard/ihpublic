@@ -614,7 +614,7 @@ CInstallCrashDoctor::CreateRegistry(
 							0,
 							REG_SZ,
 							(LPBYTE)crashDoctorDebugger.c_str(),
-							crashDoctorDebugger.length() * sizeof(TCHAR));
+							(DWORD)(crashDoctorDebugger.length() * sizeof(TCHAR)));
 
 	if (nReturnValue != ERROR_SUCCESS)
 	{
@@ -666,7 +666,7 @@ CInstallCrashDoctor::CreateRegistry(
 				0,
 				REG_SZ,
 				(LPBYTE)currentDebugger.c_str(),
-				currentDebugger.length() * sizeof(TCHAR));
+				(DWORD)(currentDebugger.length() * sizeof(TCHAR)));
 
 		RegSetValueEx(
 				hAppDebuggerKey,
@@ -674,7 +674,7 @@ CInstallCrashDoctor::CreateRegistry(
 				0,
 				REG_SZ,
 				(LPBYTE)currentDebugger.c_str(),
-				currentDebugger.length() * sizeof(TCHAR));
+				(DWORD)(currentDebugger.length() * sizeof(TCHAR)));
 	}
 
 	//
@@ -686,7 +686,7 @@ CInstallCrashDoctor::CreateRegistry(
 				0,
 				REG_SZ,
 				(LPBYTE)m_InstallPath.c_str(),
-				m_InstallPath.length() * sizeof(TCHAR));
+				(DWORD)(m_InstallPath.length() * sizeof(TCHAR)));
 
 	RegSetValueEx(
 				hAppInfoKey,
@@ -694,7 +694,7 @@ CInstallCrashDoctor::CreateRegistry(
 				0,
 				REG_SZ,
 				(LPBYTE)m_StartMenuPath.c_str(),
-				m_StartMenuPath.length() * sizeof(TCHAR));
+				(DWORD)(m_StartMenuPath.length() * sizeof(TCHAR)));
 
 	funcStatus = true;
 
@@ -804,7 +804,7 @@ CInstallCrashDoctor::RestoreRegistry(
 			0,
 			REG_SZ,
 			(LPBYTE)originalDebugger.c_str(),
-			originalDebugger.length() * sizeof(TCHAR));
+			(DWORD)(originalDebugger.length() * sizeof(TCHAR)));
 	
 	RegSetValueEx(
 			hAeDebugKey,

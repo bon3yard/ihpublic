@@ -400,7 +400,7 @@ Return:
 	filePath = ansiPath;
 #endif
 
-	int index = filePath.find_last_of(_T('\\'));
+	size_t index = filePath.find_last_of(_T('\\'));
 
 	if (index != -1)
 	{
