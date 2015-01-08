@@ -35,6 +35,17 @@
     <Content Include="..\src\msi\license.rtf">
       <Link>license.rtf</Link>
     </Content>
+    <Content Include="..\src\msi\PgWixBanner.bmp">
+      <Link>PgWixBanner.bmp</Link>
+    </Content>
+    <Content Include="..\src\msi\PgWixBannerTop.bmp">
+      <Link>PgWixBannerTop.bmp</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\src\msi\msi.wxl">
+      <Link>msi.wxl</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

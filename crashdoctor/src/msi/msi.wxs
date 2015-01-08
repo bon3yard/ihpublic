@@ -4,10 +4,14 @@
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
         <Condition Message="You need to be an administrator to install this product.">
-            AdminUser
+            Privileged
         </Condition>
 
-        <UIRef Id="WixUI_Minimal" />
+        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" ></Property>
+        <UIRef Id="WixUI_InstallDir"/>
+        <!-- <UIRef Id="WixUI_Minimal" /> -->
+        <WixVariable Id="WixUIDialogBmp" Value="..\src\msi\PgWixBanner.bmp" />
+        <WixVariable Id="WixUIBannerBmp" Value="..\src\msi\PgWixBannerTop.bmp" />
         <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
         
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
