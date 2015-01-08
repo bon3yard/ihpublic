@@ -21,7 +21,20 @@
     <IntermediateOutputPath>$(SolutionDir)..\bld\msi\obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="msi.wxs" />
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\src\msi\msi.wxs">
+      <Link>msi.wxs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\src\msi\license.rtf">
+      <Link>license.rtf</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

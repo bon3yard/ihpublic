@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="6106D49D-8787-4d02-B532-30B81B0CE96E" Name="CrashDoctor 1.1" Language="1033" Version="1.1.0.0" Manufacturer="IntellectualHeaven" UpgradeCode="8D32E55E-12BF-49aa-AF11-1E1CC136FACB">
+	<Product Id="6106D49D-8787-4d02-B532-30B81B0CE96E" Name="IntellectualHeaven CrashDoctor 1.1" Language="1033" Version="1.1.0.0" Manufacturer="IntellectualHeaven" UpgradeCode="8D32E55E-12BF-49aa-AF11-1E1CC136FACB">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
         <Condition Message="You need to be an administrator to install this product.">
             AdminUser
         </Condition>
+
+        <UIRef Id="WixUI_Minimal" />
+        <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
         
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
         
-		<MediaTemplate />
+		<MediaTemplate EmbedCab="yes" />
 
 		<Feature Id="ProductFeature" Title="CrashDoctor" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
