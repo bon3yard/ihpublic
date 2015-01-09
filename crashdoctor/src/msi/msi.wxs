@@ -1,47 +1,179 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="6106D49D-8787-4d02-B532-30B81B0CE96E" Name="IntellectualHeaven CrashDoctor 1.1" Language="1033" Version="1.1.0.0" Manufacturer="IntellectualHeaven" UpgradeCode="8D32E55E-12BF-49aa-AF11-1E1CC136FACB">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-        <Condition Message="You need to be an administrator to install this product.">
-            Privileged
-        </Condition>
+<?define ProductName = "IntellectualHeaven CrashDoctor" ?>
+<?define ProductVersion = "1.1" ?>
+<?define ProductFullVersion = "1.1.0.0" ?>
+<?define ProductAuthor = "IntellectualHeaven" ?>
+<?define ProductAppFolder = "InstallLocation" ?>
+    
+<?if $(var.Platform) = x64 ?>
+    <?define ProductId = "6106D49D-8787-4d02-B532-30B81B0CE96E" ?>
+    <?define ProductUpgradeCode = "8D32E55E-12BF-49aa-AF11-1E1CC136FACB" ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?define WindowsSystemFolder = "System64Folder" ?>
+<?else ?>
+    <?define ProductId = "227F6D16-3CE4-4592-A0DE-09835B0A5F0F" ?>
+    <?define ProductUpgradeCode = "B970D48F-BDB1-4e40-88AB-26A0BDFA06D6" ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?define WindowsSystemFolder = "SystemFolder" ?>
+<?endif ?>
 
-        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" ></Property>
-        <UIRef Id="WixUI_InstallDir"/>
-        <!-- <UIRef Id="WixUI_Minimal" /> -->
-        <WixVariable Id="WixUIDialogBmp" Value="..\src\msi\PgWixBanner.bmp" />
-        <WixVariable Id="WixUIBannerBmp" Value="..\src\msi\PgWixBannerTop.bmp" />
-        <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
-        
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-        
-		<MediaTemplate EmbedCab="yes" />
+<Product 
+    Id="$(var.ProductId)"
+    Name="$(var.ProductDisplayName) $(var.ProductVersion)"
+    Language="1033"
+    Version="$(var.ProductFullVersion)"
+	Manufacturer="$(var.ProductAuthor)"
+    UpgradeCode="$(var.ProductUpgradeCode)">
+    
+	<Package 
+        InstallerVersion="200"
+        Compressed="yes"
+        InstallScope="perMachine" />
 
-		<Feature Id="ProductFeature" Title="CrashDoctor" Level="1">
-			<ComponentGroupRef Id="ProductComponents" />
-		</Feature>
-	</Product>
+    <MediaTemplate 
+        EmbedCab="yes" />
 
-	<Fragment>
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder">
-                <Directory Id='IH' Name='IntellectualHeaven'>
-				    <Directory Id="INSTALLFOLDER" Name="CrashDoctor" />
-                </Directory>
-			</Directory>
+    <MajorUpgrade 
+        DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <Condition Message="You need to be an administrator to install this product.">
+        Privileged
+    </Condition>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" ></Property>
+    <UIRef Id="WixUI_InstallDir"/>
+    <WixVariable Id="WixUIDialogBmp" Value="..\src\msi\PgWixBanner.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="..\src\msi\PgWixBannerTop.bmp" />
+    <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
+
+    <Feature Id="CrashDoctorProgram" Title="CrashDoctor Application" Level="1">
+		<ComponentRef Id="MainEXE" />
+        <ComponentRef Id="MainEXEShortcut" />
+        <ComponentRef Id="TestEXE" />
+        <ComponentRef Id="TestEXEShortcut" />
+        <ComponentRef Id="UninstallShortcut" />
+        <?if $(var.Platform) = x64 ?>
+            <ComponentRef Id="MainEXE64" />
+            <ComponentRef Id="MainEXE64Shortcut" />
+            <ComponentRef Id="TestEXE64" />
+            <ComponentRef Id="TestEXE64Shortcut" />
+        <?endif ?>
+	</Feature>
+
+    <Feature Id="CrashDoctorHelp" Title="CrashDoctor Help" Level="1">
+        <ComponentRef Id="HelpFiles" />
+        <ComponentRef Id="HelpShortcut" />
+    </Feature>
+</Product>
+
+<Fragment>
+	<Directory Id="TARGETDIR" Name="SourceDir">
+		<Directory Id="ProgramFilesFolder">
+			<Directory Id="INSTALLFOLDER" Name="$(var.ProductName)" />
 		</Directory>
-	</Fragment>
+        <?if $(var.Platform) = x64 ?>
+            <Directory Id="ProgramFiles64Folder">
+                <Directory Id="INSTALLFOLDER64" Name="$(var.ProductName)" />
+            </Directory>
+        <?endif ?>
+        <Directory Id="ProgramMenuFolder" >
+            <Directory Id="ShortcutsFolder" Name="$(var.ProductName)"/>
+        </Directory>
+	</Directory>
+</Fragment>
 
-	<Fragment>
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<!-- <Component Id="ProductComponent"> -->
-				<!-- TODO: Insert files, registry keys, and other resources here. -->
-			<!-- </Component> -->
-            <Component Id="MainEXE" Guid="60F3260C-C923-4bd1-BC5C-82ECDE906F8F">
-                <File Id="CrashDoctorEXE" Source="..\bld\bin\CrashDoctor.exe" KeyPath="yes" Checksum="yes" />
+<Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+        <Component 
+            Id="MainEXE"
+            Guid="B9338926-BA55-4200-89CC-E730ACFB9116"
+            Win64="no">
+            
+            <File Id="CrashDoctorEXE" Source="..\bld\bin\Win32\CrashDoctor.exe" KeyPath="yes" Checksum="yes" />
+            
+        </Component>
+    </DirectoryRef>
+
+    <?if $(var.Platform) = x64 ?>
+        <DirectoryRef Id="INSTALLFOLDER64">
+            <Component
+                Id="MainEXE64"
+                Guid="4727677D-DF3C-41f7-931E-55EEBE4E5E94"
+                Win64="yes">
+
+                <File Id="CrashDoctorEXE64" Source="..\bld\bin\x64\CrashDoctor.exe" KeyPath="yes" Checksum="yes" />
+
             </Component>
-		</ComponentGroup>
-	</Fragment>
+        </DirectoryRef>
+    <?endif ?>
+
+    <DirectoryRef Id="ShortcutsFolder">
+
+        <!-- Shortcuts for readme file and uninstaller -->
+        <Component
+			Id="UninstallShortcut"
+			Guid="FF8AFEE3-4451-4058-B97C-03D0AECEB253"
+			Win64="$(var.Win64)">
+
+            <Shortcut
+				Id="UninstallShortcut"
+				Name="Uninstall CrashDoctor"
+				Description="Uninstall IntellectualHeaven CrashDoctor"
+				Target="[$(var.WindowsSystemFolder)]msiexec.exe"
+				Arguments="/x [ProductCode]"
+			/>
+
+            <RemoveFolder
+				Id="ShortcutsRemoveFolder"
+				On="uninstall"
+			/>
+        </Component>
+
+        <Component
+			Id="HelpShortcut"
+			Guid="BF173FC0-7952-43DB-9EE9-4825B368C860"
+			Win64="$(var.Win64)">
+
+            <Shortcut
+                Id="HelpShortcutId"
+                Name="CrashDoctor Help"
+                Description="CrashDoctor Help"
+                Target="[INSTALLFOLDER]info.txt"
+                WorkingDirectory="INSTALLFOLDER"/>
+
+            <Shortcut
+				Id="ClientShortcut"
+				Name="$(var.ProductName) Client GUI"
+				Description="Launch $(var.ProductName) Client GUI"
+				Target="[APPLICATIONFOLDER]$(var.WixDemoClient.TargetFileName)"
+				WorkingDirectory="APPLICATIONFOLDER"
+				Icon="Client.exe">
+
+                <!-- Icon ID must have an EXE (or possibly other, e.g. ICO) extension -->
+                <Icon
+					Id="Client.exe"
+					SourceFile="$(var.WixDemoClient.TargetPath)"
+				/>
+            </Shortcut>
+
+            <RemoveFolder
+				Id="ClientShortcutRemoveFolder"
+				On="uninstall"
+			/>
+
+            <RegistryValue
+				Root="HKCU"
+				Key="Software\$(var.ProductName)\Client"
+				Name="installed"
+				Type="integer"
+				Value="1"
+				KeyPath="yes"
+			/>
+        </Component>
+    </DirectoryRef>
+</Fragment>
 </Wix>
