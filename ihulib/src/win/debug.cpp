@@ -26,6 +26,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 --*/
 
+/* ++
+
+Module Name
+
+    debug.cpp
+
+Module Description
+
+    Platform independent debugging module helper functions.
+
+-- */
+
 #include "ihulib.h"
 
 extern "C"

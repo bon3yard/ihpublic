@@ -26,6 +26,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 --*/
 
+/*++
+
+Module Name:
+
+    cdui.cpp
+
+Module Description:
+
+    This file implements most of the UI handling code including Crash handling
+    dialog, install dialog and recovery status dialog box code. It also
+    implements the CRecoveryHandler class.
+
+--*/
+
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>

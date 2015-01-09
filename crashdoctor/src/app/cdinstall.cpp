@@ -26,6 +26,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 --*/
 
+/*++
+
+Module Name:
+
+    cdinstall.cpp
+
+Module Description:
+
+    CrashDoctor installation module. The installation module is implemented
+    as a part of CrashDoctor itself. If CrashDoctor is invoked without any
+    arguments, it brings up the install/uninstall dialog
+
+--*/
+
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>

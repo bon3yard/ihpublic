@@ -26,6 +26,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 --*/
 
+/*++
+
+Module Name:
+    
+    cdcore.cpp
+
+Module Description:
+
+    Implements CrashDoctor as a debugger to protect an application from
+    crashing. This file implements the core functionality of CrashDoctor, It
+    attaches to the application as a debugger, if the application generates an
+    exception, it generates a call stack and tries to bypass the faulting
+    function such that application can continue execution.
+
+--*/
+
 //System-Includes!!!
 #include <windows.h>
 #include <stdio.h>
