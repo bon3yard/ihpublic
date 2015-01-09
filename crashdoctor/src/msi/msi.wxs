@@ -1,29 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    
+<!-- 
 
+Copyright (c) 2015, Pankaj Garg <pankaj@intellectualheaven.com>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 <?define ProductName = "IntellectualHeaven CrashDoctor" ?>
+<?define ProductNameShort = "CrashDoctor" ?>
 <?define ProductVersion = "1.1" ?>
 <?define ProductFullVersion = "1.1.0.0" ?>
 <?define ProductAuthor = "IntellectualHeaven" ?>
 <?define ProductAppFolder = "InstallLocation" ?>
+<?define HelpFile = "..\hlp\info.txt" ?>
     
+
 <?if $(var.Platform) = x64 ?>
     <?define ProductId = "6106D49D-8787-4d02-B532-30B81B0CE96E" ?>
     <?define ProductUpgradeCode = "8D32E55E-12BF-49aa-AF11-1E1CC136FACB" ?>
     <?define Win64 = "yes" ?>
     <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
     <?define WindowsSystemFolder = "System64Folder" ?>
-<?else ?>
+    <?define BldPlatform = "x64" ?>
+    <?define MainExe = "..\bld\bin\x64\CrashDoctor.exe" ?>
+    <?define MainExe32 = "..\bld\bin\Win32\CrashDoctor.exe" ?>
+    <?define TestExe = "..\bld\bin\x64\TstApp.exe" ?>
+    <?define TestExe32 = "..\bld\bin\Win32\TstApp.exe" ?>
+<?else?>
     <?define ProductId = "227F6D16-3CE4-4592-A0DE-09835B0A5F0F" ?>
     <?define ProductUpgradeCode = "B970D48F-BDB1-4e40-88AB-26A0BDFA06D6" ?>
     <?define Win64 = "no" ?>
     <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
     <?define WindowsSystemFolder = "SystemFolder" ?>
-<?endif ?>
+    <?define BldPlatform = "Win32" ?>
+    <?define MainExe = "..\bld\bin\Win32\CrashDoctor.exe" ?>
+    <?define TestExe = "..\bld\bin\Win32\TstApp.exe" ?>
+<?endif?>
 
 <Product 
     Id="$(var.ProductId)"
-    Name="$(var.ProductDisplayName) $(var.ProductVersion)"
+    Name="$(var.ProductName) $(var.ProductVersion)"
     Language="1033"
     Version="$(var.ProductFullVersion)"
 	Manufacturer="$(var.ProductAuthor)"
@@ -53,14 +92,9 @@
     <Feature Id="CrashDoctorProgram" Title="CrashDoctor Application" Level="1">
 		<ComponentRef Id="MainEXE" />
         <ComponentRef Id="MainEXEShortcut" />
-        <ComponentRef Id="TestEXE" />
-        <ComponentRef Id="TestEXEShortcut" />
-        <ComponentRef Id="UninstallShortcut" />
         <?if $(var.Platform) = x64 ?>
-            <ComponentRef Id="MainEXE64" />
-            <ComponentRef Id="MainEXE64Shortcut" />
-            <ComponentRef Id="TestEXE64" />
-            <ComponentRef Id="TestEXE64Shortcut" />
+            <ComponentRef Id="MainEXE32" />
+            <ComponentRef Id="MainEXE32Shortcut" />
         <?endif ?>
 	</Feature>
 
@@ -72,12 +106,12 @@
 
 <Fragment>
 	<Directory Id="TARGETDIR" Name="SourceDir">
-		<Directory Id="ProgramFilesFolder">
+		<Directory Id="$(var.PlatformProgramFilesFolder)">
 			<Directory Id="INSTALLFOLDER" Name="$(var.ProductName)" />
 		</Directory>
         <?if $(var.Platform) = x64 ?>
-            <Directory Id="ProgramFiles64Folder">
-                <Directory Id="INSTALLFOLDER64" Name="$(var.ProductName)" />
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="INSTALLFOLDER32" Name="$(var.ProductName)" />
             </Directory>
         <?endif ?>
         <Directory Id="ProgramMenuFolder" >
@@ -87,49 +121,98 @@
 </Fragment>
 
 <Fragment>
-    <DirectoryRef Id="INSTALLFOLDER">
+    <DirectoryRef Id="INSTALLFOLDER">        
         <Component 
             Id="MainEXE"
             Guid="B9338926-BA55-4200-89CC-E730ACFB9116"
-            Win64="no">
+            Win64="$(var.Win64)">
+
+            <File Id="CrashDoctorEXE" Source="$(var.MainExe)" KeyPath="yes" Checksum="yes" />
+            <File Id="TestAppEXE" Source="$(var.TestExe)" Checksum="yes" />
             
-            <File Id="CrashDoctorEXE" Source="..\bld\bin\Win32\CrashDoctor.exe" KeyPath="yes" Checksum="yes" />
-            
+        </Component>
+        
+        <Component
+            Id="HelpFiles"
+            Guid="A1A45611-F9FD-4a70-A5BE-843C9458892F"
+            Win64="$(var.Win64)">
+
+            <File Id="HelpFilesTxt" Source="$(var.HelpFile)" KeyPath="yes" Checksum="yes" />
+
         </Component>
     </DirectoryRef>
 
     <?if $(var.Platform) = x64 ?>
-        <DirectoryRef Id="INSTALLFOLDER64">
+        <DirectoryRef Id="INSTALLFOLDER32">
             <Component
-                Id="MainEXE64"
+                Id="MainEXE32"
                 Guid="4727677D-DF3C-41f7-931E-55EEBE4E5E94"
-                Win64="yes">
+                Win64="no">
 
-                <File Id="CrashDoctorEXE64" Source="..\bld\bin\x64\CrashDoctor.exe" KeyPath="yes" Checksum="yes" />
+                <File Id="CrashDoctorEXE32" Source="$(var.MainExe32)" KeyPath="yes" Checksum="yes" />
+                <File Id="TestAppEXE32" Source="$(var.TestExe32)" Checksum="yes" />
 
             </Component>
         </DirectoryRef>
-    <?endif ?>
+    <?endif?>
 
     <DirectoryRef Id="ShortcutsFolder">
 
         <!-- Shortcuts for readme file and uninstaller -->
         <Component
-			Id="UninstallShortcut"
+			Id="MainEXEShortcut"
 			Guid="FF8AFEE3-4451-4058-B97C-03D0AECEB253"
 			Win64="$(var.Win64)">
 
             <Shortcut
+				Id="AppExeShortcut"
+				Name="$(var.ProductNameShort)"
+				Description="Launch $(var.ProductName)"
+				Target="[INSTALLFOLDER]CrashDoctor.exe"
+				WorkingDirectory="INSTALLFOLDER"
+				Icon="CrashDoctorEXEIcon">
+
+                <!-- Icon ID must have an EXE (or possibly other, e.g. ICO) extension -->
+                <Icon
+					Id="CrashDoctorEXEIcon"
+					SourceFile="$(var.MainExe)"
+				/>
+            </Shortcut>
+
+            <Shortcut
+				Id="TstAppShortcut"
+				Name="$(var.ProductNameShort) Test Application"
+				Description="Launch $(var.ProductName) Test Application"
+				Target="[INSTALLFOLDER]TstApp.exe"
+				WorkingDirectory="INSTALLFOLDER"
+				Icon="TestEXEIcon">
+
+                <Icon
+					Id="TestEXEIcon"
+					SourceFile="$(var.TestExe)"
+                />
+            </Shortcut>
+
+            <Shortcut
 				Id="UninstallShortcut"
-				Name="Uninstall CrashDoctor"
-				Description="Uninstall IntellectualHeaven CrashDoctor"
+				Name="Uninstall $(var.ProductNameShort)"
+				Description="Uninstall $(var.ProductName)"
 				Target="[$(var.WindowsSystemFolder)]msiexec.exe"
 				Arguments="/x [ProductCode]"
 			/>
 
             <RemoveFolder
-				Id="ShortcutsRemoveFolder"
+				Id="ShortcutsFolder"
 				On="uninstall"
+			/>
+
+            <RegistryValue
+				Root="HKCU"
+				Key="Software\$(var.ProductName)"
+				Name="AppShortcutInstalled"
+				Type="integer"
+				Value="1"
+				KeyPath="yes"
 			/>
         </Component>
 
@@ -139,40 +222,21 @@
 			Win64="$(var.Win64)">
 
             <Shortcut
-                Id="HelpShortcutId"
-                Name="CrashDoctor Help"
-                Description="CrashDoctor Help"
+                Id="HlpFileShortcut"
+                Name="$(var.ProductNameShort) Help"
+                Description="$(var.ProductNameShort) Help"
                 Target="[INSTALLFOLDER]info.txt"
-                WorkingDirectory="INSTALLFOLDER"/>
-
-            <Shortcut
-				Id="ClientShortcut"
-				Name="$(var.ProductName) Client GUI"
-				Description="Launch $(var.ProductName) Client GUI"
-				Target="[APPLICATIONFOLDER]$(var.WixDemoClient.TargetFileName)"
-				WorkingDirectory="APPLICATIONFOLDER"
-				Icon="Client.exe">
-
-                <!-- Icon ID must have an EXE (or possibly other, e.g. ICO) extension -->
-                <Icon
-					Id="Client.exe"
-					SourceFile="$(var.WixDemoClient.TargetPath)"
-				/>
-            </Shortcut>
-
-            <RemoveFolder
-				Id="ClientShortcutRemoveFolder"
-				On="uninstall"
-			/>
+                WorkingDirectory="INSTALLFOLDER"
+            />
 
             <RegistryValue
 				Root="HKCU"
-				Key="Software\$(var.ProductName)\Client"
-				Name="installed"
+				Key="Software\$(var.ProductName)"
+				Name="HelpShortcutInstalled"
 				Type="integer"
 				Value="1"
 				KeyPath="yes"
-			/>
+            />
         </Component>
     </DirectoryRef>
 </Fragment>

@@ -37,6 +37,9 @@
     <ClInclude Include="..\src\app\resource.h" />
     <ClInclude Include="..\src\app\trcdefs.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="make.licenseheader" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FE15209A-9026-4B4C-9D52-83EC133EECA3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -129,7 +132,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)inc;$(OutDir);$(SolutionDir)app;</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /EY $(OutDir)CrashDoctor.exe $(SolutionDir)..\bld\bin\</Command>
+      <Command>xcopy /EY $(TargetPath) $(SolutionDir)..\bld\bin\$(Platform)\</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy binaries to bld folder</Message>
@@ -153,6 +156,10 @@
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)inc;$(OutDir);$(SolutionDir)app;</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>xcopy /EY $(TargetPath) $(SolutionDir)..\bld\bin\$(Platform)\</Command>
+      <Message>Copy binaries to bld folder</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -177,7 +184,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)inc;$(OutDir);$(SolutionDir)app;</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /EY $(OutDir)CrashDoctor.exe $(SolutionDir)..\bld\bin\</Command>
+      <Command>xcopy /EY $(TargetPath) $(SolutionDir)..\bld\bin\$(Platform)\</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy binaries to bld folder</Message>
@@ -205,6 +212,10 @@
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)inc;$(OutDir);$(SolutionDir)app;</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>xcopy /EY $(TargetPath) $(SolutionDir)..\bld\bin\$(Platform)\</Command>
+      <Message>Copy binaries to bld folder</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

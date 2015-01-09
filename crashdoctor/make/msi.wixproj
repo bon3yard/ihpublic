@@ -41,6 +41,7 @@
     <Content Include="..\src\msi\PgWixBannerTop.bmp">
       <Link>PgWixBannerTop.bmp</Link>
     </Content>
+    <Content Include="make.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\src\msi\msi.wxl">
