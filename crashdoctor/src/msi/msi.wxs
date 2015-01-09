@@ -80,25 +80,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 
     <Condition Message="You need to be an administrator to install this product.">
-        Privileged
+        AdminUser
+    </Condition>
+
+    <Condition Message="$(var.ProductName) can only be installed on OS Windows XP">
+        <![CDATA[(VersionNT >= 501)]]>
     </Condition>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" ></Property>
-    <UIRef Id="WixUI_InstallDir"/>
+    <!--<UIRef Id="WixUI_FeatureTree"/>-->
+    <UIRef Id="WixUI_Minimal"/>
     <WixVariable Id="WixUIDialogBmp" Value="..\src\msi\PgWixBanner.bmp" />
     <WixVariable Id="WixUIBannerBmp" Value="..\src\msi\PgWixBannerTop.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
 
-    <Feature Id="CrashDoctorProgram" Title="CrashDoctor Application" Level="1">
+    <Feature Id="CrashDoctorProgram" Title="CrashDoctor Application" Level="1" Absent="disallow" AllowAdvertise="no">
 		<ComponentRef Id="MainEXE" />
         <ComponentRef Id="MainEXEShortcut" />
         <?if $(var.Platform) = x64 ?>
             <ComponentRef Id="MainEXE32" />
             <ComponentRef Id="MainEXE32Shortcut" />
         <?endif ?>
-	</Feature>
-
-    <Feature Id="CrashDoctorHelp" Title="CrashDoctor Help" Level="1">
+    </Feature>
+    <Feature Id="CrashDoctorHelp" Title="CrashDoctor Help" Level="1" AllowAdvertise="no">
         <ComponentRef Id="HelpFiles" />
         <ComponentRef Id="HelpShortcut" />
     </Feature>
@@ -129,7 +133,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             <File Id="CrashDoctorEXE" Source="$(var.MainExe)" KeyPath="yes" Checksum="yes" />
             <File Id="TestAppEXE" Source="$(var.TestExe)" Checksum="yes" />
-            
+
+            <RegistryValue
+				Root="HKLM"
+				Key="Software\Microsoft\Windows NT\CurrentVersion\AeDebug"
+				Name="Debugger"
+				Type="string"
+				Value="[INSTALLFOLDER]CrashDoctor.exe -p %ld -e %ld"
+            />            
         </Component>
         
         <Component
