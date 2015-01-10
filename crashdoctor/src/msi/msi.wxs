@@ -49,6 +49,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <?define MainExe32 = "..\bld\bin\Win32\CrashDoctor.exe" ?>
     <?define TestExe = "..\bld\bin\x64\TstApp.exe" ?>
     <?define TestExe32 = "..\bld\bin\Win32\TstApp.exe" ?>
+    <?define VCRedistDllA = "..\src\msi\redist\x64\msvcp120.dll" ?>
+    <?define VCRedistDllB = "..\src\msi\redist\x64\msvcr120.dll" ?>
+    <?define VCRedistDllA32 = "..\src\msi\redist\x86\msvcp120.dll" ?>
+    <?define VCRedistDllB32 = "..\src\msi\redist\x86\msvcr120.dll" ?>
 <?else?>
     <?define ProductId = "227F6D16-3CE4-4592-A0DE-09835B0A5F0F" ?>
     <?define ProductUpgradeCode = "B970D48F-BDB1-4e40-88AB-26A0BDFA06D6" ?>
@@ -58,6 +62,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <?define BldPlatform = "Win32" ?>
     <?define MainExe = "..\bld\bin\Win32\CrashDoctor.exe" ?>
     <?define TestExe = "..\bld\bin\Win32\TstApp.exe" ?>
+    <?define VCRedistDllA = "..\src\msi\redist\x86\msvcp120.dll" ?>
+    <?define VCRedistDllB = "..\src\msi\redist\x86\msvcr120.dll" ?>
 <?endif?>
 
 <Product 
@@ -80,7 +86,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 
     <Condition Message="You need to be an administrator to install this product.">
-        AdminUser
+        Privileged
     </Condition>
 
     <Condition Message="$(var.ProductName) can only be installed on OS Windows XP">
@@ -94,8 +100,83 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <WixVariable Id="WixUIBannerBmp" Value="..\src\msi\PgWixBannerTop.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
 
+    <Binary 
+        Id="RestoreRegistry"
+		SourceFile="..\bld\bin\Win32\MsiCa.dll" />
+
+    <CustomAction 
+        Id="RegRstr"
+		BinaryKey="RestoreRegistry"
+        Return="check"		
+		Execute="deferred"
+        DllEntry="CrashDoctorRestoreRegistry"
+        />
+
+    <CustomAction 
+        Id="SetCustomActionDataValue"
+        Return="check"
+        Property="RegRstr"
+        Value="DEBUGSTRING=[ORIGDEBUGSTRING];DEBUGSTRING32=[ORIGDEBUGSTRING32]"
+        />
+
+    <InstallExecuteSequence>
+        <Custom Action="SetCustomActionDataValue" Before="RegRstr">
+            Installed AND NOT UPGRADINGPRODUCTCODE
+        </Custom>
+        <Custom Action="RegRstr" Before="InstallFinalize">
+            Installed AND NOT UPGRADINGPRODUCTCODE
+        </Custom>
+    </InstallExecuteSequence>
+
+    <Property Id="AEDEBUGSTRING">
+        <RegistrySearch 
+            Id="DebuggerString"
+            Root="HKLM"
+            Key="Software\Microsoft\Windows NT\CurrentVersion\AeDebug"
+            Name="Debugger"
+			Type="raw"
+            Win64="$(var.Win64)" />
+    </Property>
+
+    <?if $(var.Platform) = x64 ?>
+        <Property Id="AEDEBUGSTRING32" Secure="yes">
+            <RegistrySearch
+                Id="DebuggerString32"
+                Root="HKLM"
+                Key="Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\AeDebug"
+                Name="Debugger"
+			    Type="raw"
+                Win64="$(var.Win64)" />
+        </Property>
+    <?endif?>
+
+    <Property Id="ORIGDEBUGSTRING">
+        <RegistrySearch
+            Id="OrigDebuggerString"
+            Root="HKLM"
+            Key="Software\$(var.ProductName)\Debuggers"
+            Name="PreCrashDoctorDebugger"
+			Type="raw"
+            Win64="$(var.Win64)" />
+    </Property>
+
+    <!-- On 32-bit platforms this would be blank, which is fine, as we need to pass
+         both values to our custom action dll. The custom action dll in-turn ignores
+         blank values. This allows us to have common code for invoking custom action
+         in this file.
+    -->
+    <Property Id="ORIGDEBUGSTRING32" Secure="yes">
+        <RegistrySearch
+            Id="OrigDebuggerString32"
+            Root="HKLM"
+            Key="Software\Wow6432Node\$(var.ProductName)\Debuggers"
+            Name="PreCrashDoctorDebugger"
+            Type="raw"
+            Win64="$(var.Win64)" />
+    </Property>
+
     <Feature Id="CrashDoctorProgram" Title="CrashDoctor Application" Level="1" Absent="disallow" AllowAdvertise="no">
-		<ComponentRef Id="MainEXE" />
+        <ComponentRef Id="MainEXE" />
         <ComponentRef Id="MainEXEShortcut" />
         <?if $(var.Platform) = x64 ?>
             <ComponentRef Id="MainEXE32" />
@@ -133,6 +214,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             <File Id="CrashDoctorEXE" Source="$(var.MainExe)" KeyPath="yes" Checksum="yes" />
             <File Id="TestAppEXE" Source="$(var.TestExe)" Checksum="yes" />
+            <File Id="RedistDllA" Source="$(var.VCRedistDllA)" Checksum="yes" />
+            <File Id="RedistDllB" Source="$(var.VCRedistDllB)" Checksum="yes" />
+
+            
+            
+            <RegistryKey 
+                Root="HKLM"
+                Key="Software\$(var.ProductName)\Debuggers">
+
+                <RegistryValue Type="integer" Name="Count" Value="1"/>
+                <RegistryValue Type="string" Name="Debugger00" Value="[AEDEBUGSTRING]"/>
+                <RegistryValue Type="string" Name="PreCrashDoctorDebugger" Value="[AEDEBUGSTRING]"/>
+
+            </RegistryKey>
 
             <RegistryValue
 				Root="HKLM"
@@ -140,7 +235,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				Name="Debugger"
 				Type="string"
 				Value="[INSTALLFOLDER]CrashDoctor.exe -p %ld -e %ld"
-            />            
+            />
+            
+            <RegistryValue
+				Root="HKLM"
+				Key="Software\Microsoft\Windows NT\CurrentVersion\AeDebug"
+				Name="Auto"
+				Type="string"
+				Value="1"
+            />
         </Component>
         
         <Component

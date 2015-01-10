@@ -1,0 +1,5 @@
+LIBRARY "msica"
+
+EXPORTS
+
+CrashDoctorRestoreRegistry

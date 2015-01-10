@@ -55,8 +55,8 @@ Module Description:
 #include "resource.h"
 #include "cdmain.h"
 
-#define REG_APP_ROOT			_T("Software\\InellectualHeaven\\CrashDoctor")
-#define REG_APP_ROOT_6432		_T("Software\\Wow6432Node\\InellectualHeaven\\CrashDoctor")
+#define REG_APP_ROOT			_T("Software\\IntellectualHeaven CrashDoctor")
+#define REG_APP_ROOT_6432		_T("Software\\Wow6432Node\\IntellectualHeaven CrashDoctor")
 #define REG_APP_DEBUGGERS		_T("\\Debuggers")
 #define REG_AEDEBUG_PATH		_T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug")
 #define REG_AEDEBUG_PATH_6432	_T("SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug")

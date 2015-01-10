@@ -63,7 +63,7 @@ Module Description:
 //
 // Persistent registry keys for storing CrashDoctor configuration information
 //
-#define REG_APP_ROOT			_T("Software\\InellectualHeaven\\CrashDoctor")
+#define REG_APP_ROOT			_T("Software\\IntellectualHeaven CrashDoctor")
 #define REG_APP_DEBUGGERS		_T("\\Debuggers")
 
 

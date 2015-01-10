@@ -148,7 +148,7 @@
     <ClCompile Include="src\win\servicemanager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\crashdoctor\make\make.licenseheader" />
+    <None Include="make.licenseheader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
