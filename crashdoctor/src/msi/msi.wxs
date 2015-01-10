@@ -100,6 +100,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <WixVariable Id="WixUIBannerBmp" Value="..\src\msi\PgWixBannerTop.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
 
+    <!-- Disable Change and Repair button if installer is ran again.
+         These are disabled because they interfere with our custom
+         action handler. So it is better to ask user to uninstall/install. -->
+    <!--<Property Id='ARPNOMODIFY'>1</Property>-->
+    <Property Id='ARPNOREPAIR'>1</Property>
+
     <Binary 
         Id="RestoreRegistry"
 		SourceFile="..\bld\bin\Win32\MsiCa.dll" />
@@ -217,8 +223,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <File Id="RedistDllA" Source="$(var.VCRedistDllA)" Checksum="yes" />
             <File Id="RedistDllB" Source="$(var.VCRedistDllB)" Checksum="yes" />
 
-            
-            
             <RegistryKey 
                 Root="HKLM"
                 Key="Software\$(var.ProductName)\Debuggers">
@@ -265,7 +269,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
                 <File Id="CrashDoctorEXE32" Source="$(var.MainExe32)" KeyPath="yes" Checksum="yes" />
                 <File Id="TestAppEXE32" Source="$(var.TestExe32)" Checksum="yes" />
+                <File Id="RedistDllA32" Source="$(var.VCRedistDllA32)" Checksum="yes" />
+                <File Id="RedistDllB32" Source="$(var.VCRedistDllB32)" Checksum="yes" />
 
+                <RegistryKey
+                    Root="HKLM"
+                    Key="Software\Wow6432Node\$(var.ProductName)\Debuggers">
+
+                    <RegistryValue Type="integer" Name="Count" Value="1"/>
+                    <RegistryValue Type="string" Name="Debugger00" Value="[AEDEBUGSTRING]"/>
+                    <RegistryValue Type="string" Name="PreCrashDoctorDebugger" Value="[AEDEBUGSTRING]"/>
+
+                </RegistryKey>
+
+                <RegistryValue
+                    Root="HKLM"
+                    Key="Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\AeDebug"
+                    Name="Debugger"
+                    Type="string"
+                    Value="[INSTALLFOLDER]CrashDoctor.exe -p %ld -e %ld"
+                />
+
+                <RegistryValue
+                    Root="HKLM"
+                    Key="Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\AeDebug"
+                    Name="Auto"
+                    Type="string"
+                    Value="1"
+                />
             </Component>
         </DirectoryRef>
     <?endif?>
