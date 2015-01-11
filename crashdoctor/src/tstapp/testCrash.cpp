@@ -58,17 +58,6 @@ main()
 
 	printf("main application routine exiting..= %x\n", xx);
 
-    try
-    {
-		ULONG *pp = (ULONG *)(DWORD_PTR)0x8294F000;
-		printf("0x%X 0x%X\n", pp[0], p[1]);
-    }
-    catch(...)
-    {
-    }
-
-	printf("passed...\n");
-
     HANDLE hFile = CreateFileW(
                         L"c:\\test.txt",
                         GENERIC_READ | GENERIC_WRITE,
@@ -105,8 +94,10 @@ main()
     }
 
     printf("All CreateFile Done\n");
+    printf("PASSED!\n");
 
 	fflush(stdin);
+    printf("Enter a key to exit.\n");
 	scanf("%d", &xx);
 	getchar();
 

@@ -63,7 +63,7 @@ Module Description:
 #include "cdmain.h"
 
 
-
+#if 0
 //
 // Functions only available in redistributable DLL
 //
@@ -78,6 +78,7 @@ PFN_SymGetModuleBase64			pSymGetModuleBase64;
 // Handle to DBGHelp dll
 //
 HMODULE ghDbgHelp;
+#endif
 
 
 //
@@ -124,16 +125,11 @@ Routine Description:
 	//
 	// Initialize the functions information that we should map
 	//
-#ifdef UNICODE
-	mFunctionNameToHandlerMap["CreateFileW"] = 
-										&CRecoverCrash::HandleCreateFileW;
-#else
 	mFunctionNameToHandlerMap["CreateFileW"] = 
 										&CRecoverCrash::HandleCreateFileW;
 
 	mFunctionNameToHandlerMap["CreateFileA"] = 
 										&CRecoverCrash::HandleCreateFileA;
-#endif
 }
 
 
@@ -363,45 +359,10 @@ Return:
 		goto funcEnd;
 	}
 
-	if (inUnicodeFileName)
+	if (!inUnicodeFileName)
 	{
-		// For ANSI build, if CreateFileW is called, then unicode file name
-		// is read from the debuggee process. We will convert the unicode name
-		// to ANSI.
-#ifndef UNICODE
-
-		HMODULE hKernel32 = GetModuleHandle(_T("kernel32.dll"));
-
-		if (!hKernel32)
-		{
-			goto funcEnd;
-		}
-
-		PFN_WideCharToMultiByte pfnWideCharToMultiByte = 
-					(PFN_WideCharToMultiByte)
-							GetProcAddress(hKernel32, "WideCharToMultiByte");
-
-		if (pfnWideCharToMultiByte)
-		{
-			pfnWideCharToMultiByte(
-								CP_ACP,
-								0,
-								unicodePath,
-								-1,
-								ansiPath,
-								MAX_PATH,
-								NULL,
-								NULL);
-
-		}
-
-#endif
-	}
-	else
-	{
-		// If the file name read from debuggee is not unicode then for unicode
-		// build, convert it to unicode. For ansi build don't do anything
-#ifdef UNICODE
+		// If the file name read from debuggee is not unicode then 
+        // convert it to unicode.
 		MultiByteToWideChar(
 						CP_UTF8,
 						0,
@@ -409,17 +370,11 @@ Return:
 						-1,
 						unicodePath,
 						MAX_PATH);
-#endif
 	}
 	
-#ifdef UNICODE
-	filePath = unicodePath;	
-#else
-	filePath = ansiPath;
-#endif
+	filePath = unicodePath;
 
 	size_t index = filePath.find_last_of(_T('\\'));
-
 	if (index != -1)
 	{
 		fileName = filePath.substr(index + 1, filePath.length() - index);
@@ -1473,107 +1428,15 @@ Return:
 
 --*/
 {
-    if (gOSVersion != WIN32_9X)
-	{
-		HMODULE hKernel32 = GetModuleHandle(_T("Kernel32.dll"));
-
-		if (hKernel32)
-		{
-			PFN_VirtualAllocEx pfnVirtualAllocEx =
-						(PFN_VirtualAllocEx)GetProcAddress(
-													hKernel32,
-													"VirtualAllocEx");
-
-			if (pfnVirtualAllocEx)
-			{
-				return pfnVirtualAllocEx(
-								mCrashedProcessInfo.hProcess,
-								NULL,
-								inSize,
-								MEM_COMMIT,
-								PAGE_EXECUTE_READWRITE);
-			}
-		}
-
-		// For windows NT et al. if we reach here, that means VirtualAllocEx
-		// is not found, this is impossible so just return memory allocation
-		// failure
-        return NULL;
-    }
-
-    // For Win9x we create a shared mapped file. this will be automatically
-    // mapped into all the processes in the system (win9x cookie :-)
- 
-	char	szTempPath[MAX_PATH]		= {0};
-    char	szTempFileName[MAX_PATH]	= {0};
-    HANDLE	hSharedFile					= NULL;
-	HANDLE	hSharedFileMapping			= NULL;
-
-    if (GetTempPathA(sizeof(szTempPath), szTempPath) == 0)
-	{
-		HandleError(
-				GetLastError(),
-				_T("Failed to generate temporary file path."));
-
-        return NULL;
-    }
-
-    if (GetTempFileNameA(szTempPath, "SHR", NULL, szTempFileName) == 0)
-	{
-		HandleError(
-				GetLastError(),
-				_T("Failed to generate a temporary file name."));
-
-        return NULL;
-    }
-
-    hSharedFile = CreateFileA(
-						szTempFileName,
-                        GENERIC_EXECUTE | GENERIC_READ | GENERIC_WRITE,
-                        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                        NULL,
-                        CREATE_ALWAYS,
-                        FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
-                        NULL);
-
-    if (hSharedFile == NULL)
-	{
-		HandleError(
-				GetLastError(),
-				_T("Failed to create the file %s for shared memory."),
-				szTempFileName);
-
-        return NULL;
-    }
-    
-    // create the mapping
-    hSharedFileMapping = CreateFileMapping(
-										hSharedFile,
-                                        NULL,
-                                        PAGE_READWRITE,
-                                        NULL,
-                                        inSize,
-                                        NULL);
-
-    if (hSharedFileMapping == NULL)
-	{
-		HandleError(
-				GetLastError(),
-				_T("Failed to create the file mapping for shared memory."));
-
-        return NULL;
-    }
-    
-    return MapViewOfFile(
-					hSharedFileMapping,
-                    FILE_MAP_ALL_ACCESS,
-                    0,
-                    0,
-                    inSize);
+    return VirtualAllocEx(
+        mCrashedProcessInfo.hProcess,
+        NULL,
+        inSize,
+        MEM_COMMIT,
+        PAGE_EXECUTE_READWRITE);
 }
 
 
-
 bool
 CRecoverCrash::ReadDllImageName(
 	PBYTE		inImageBase,
@@ -2116,6 +1979,7 @@ Return:
 			}
 		}
 
+#if 0
 		//
 		// Symbol stack trace generation didn't work. We will now use my stack
         // trace generation code. If soemthing goes wrong in here too then we
@@ -2185,6 +2049,7 @@ Return:
 
 			#endif
 		}
+#endif
 
 		if (stackTraceGenerated)
 		{
@@ -2265,12 +2130,11 @@ Return:
 	// Assign the recover handler
 	mRecoveryHandler = pRecoveryHandler;
 
-	mRecoveryHandler->PrintTitle(
-			_T("\nIntellectualHeaven (R) CrashDoctor for 9x, ME, NT, 2K, XP, ")
-			_T("2K3.\n"));
+    mRecoveryHandler->PrintTitle(
+        _T("\nIntellectualHeaven (R) CrashDoctor for XP, 2K3, Vista, Windows 7 and 8.\n"));
 
 	mRecoveryHandler->PrintTitle(
-			_T("Copyright (C) Pankaj Garg. All rights reserved.\n\n"));
+			_T("Copyright (c) Pankaj Garg. All rights reserved.\n\n"));
 
 	// Obtain the SE_DEBUG privilege so that we can attach to win32 service
 	// as well as processes
@@ -2297,21 +2161,7 @@ Return:
 
 #if DETACH_DEBUGGER_ON_EXIT
 
-	HMODULE hKernel32 = GetModuleHandle(_T("Kernel32.dll"));
-
-	if (hKernel32)
-	{
-		PFN_DebugSetProcessKillOnExit pfnDebugSetProcessKillOnExit =
-					(PFN_DebugSetProcessKillOnExit)
-										GetProcAddress(
-												hKernel32,
-												"DebugSetProcessKillOnExit");
-
-		if (pfnDebugSetProcessKillOnExit)
-		{
-			pfnDebugSetProcessKillOnExit(FALSE);
-		}
-	}
+    DebugSetProcessKillOnExit(FALSE);
 
 #endif
 
@@ -2542,14 +2392,7 @@ Return:
 {
     if (ioSymProcInfo.SymbolInitialized)
 	{
-		if (gOSVersion == WIN32_9X)
-		{
-			pSymCleanup((HANDLE)(DWORD_PTR)ioSymProcInfo.ProcessId);
-		}
-		else
-		{
-			pSymCleanup(ioSymProcInfo.ProcessHandle);
-		}
+        SymCleanup(ioSymProcInfo.ProcessHandle);
 	}
 
     ioSymProcInfo.ProcessHandle = NULL;
@@ -2574,6 +2417,8 @@ Return:
 
 --*/
 {
+    return true;
+#if 0
 	bool funcStatus = true;
 
     if (ghDbgHelp)
@@ -2633,6 +2478,7 @@ Return:
 
 funcEnd:
 	return funcStatus;
+#endif
 }
 
 
@@ -2658,22 +2504,8 @@ Return:
 
 	if (cdInitSymbolFunctions())
 	{
-		if (gOSVersion == WIN32_9X)
-		{
-			pSymProcInfo->SymbolInitialized = 
-                                pSymInitialize(
-									(HANDLE)(DWORD_PTR)pSymProcInfo->ProcessId,
-                                    "",
-                                    TRUE);
-		}
-		else
-		{
-			pSymProcInfo->SymbolInitialized =
-                                pSymInitialize(
-                                    pSymProcInfo->ProcessHandle,
-                                    "",
-                                    TRUE);
-		}
+        pSymProcInfo->SymbolInitialized =
+            SymInitialize(pSymProcInfo->ProcessHandle, "", TRUE);
 	}
 
     return 0;
