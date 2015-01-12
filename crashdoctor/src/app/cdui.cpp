@@ -78,17 +78,185 @@ typedef struct tagDEBUGGER_INFO
 }DEBUGGER_INFO, *PDEBUGGER_INFO;
 
 
-//
-// Handler for data dialog for debugger information
-//
 INT_PTR
 CALLBACK
-DebuggerDataDlgProc(
-	HWND	hDlg,
-	UINT	msg,
-	WPARAM	wParam,
-	LPARAM	lParam);
+AboutDlgProc(
+    HWND hDlg,
+    UINT msg,
+    WPARAM wParam,
+    LPARAM lParam)
+/*++
 
+Routine Description:
+
+dialog box to show information about YahDecode
+
+Returns:
+
+TRUE - Message handled by the dialog proc
+FALSE - Message not handled
+
+--*/
+{
+    static HFONT hFontNormal = NULL;
+    static bool linkHigh = false;
+    int result = 0;
+
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+    {
+        HICON hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON_SM));
+        SendMessage(hDlg, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
+        SendMessage(hDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
+        CenterDialog(hDlg);
+
+        if (hFontNormal == NULL)
+        {
+            hFontNormal = CreateFont(
+                12, 0, 0, 0, FW_BOLD,
+                FALSE, FALSE, FALSE,
+                ANSI_CHARSET,
+                OUT_DEFAULT_PRECIS,
+                CLIP_DEFAULT_PRECIS,
+                DEFAULT_QUALITY,
+                DEFAULT_PITCH | FW_DONTCARE,
+                _T("Arial"));
+        }
+
+        SendDlgItemMessage(
+            hDlg,
+            IDC_COPYRIGHTWARNING,
+            WM_SETFONT,
+            (WPARAM)hFontNormal,
+            NULL);
+
+        SetDlgItemText(
+            hDlg,
+            IDC_COPYRIGHTWARNING,
+            L"Warning: This computer program is a free program. It is "
+            L"distributed under the terms of BSD License as published "
+            L"by IntellectualHeaven. For a copy of this license, "
+            L" write to pankaj@intellectualheaven.com");
+
+        linkHigh = false;
+
+        break;
+    }
+#if 0
+    case WM_CTLCOLORDLG:
+    {
+        return (BOOL)GetSysColorBrush(COLOR_WINDOW);
+    }
+#endif
+    case WM_CTLCOLORSTATIC:
+    {
+        HDC hdc = (HDC)wParam;
+
+        if (GetDlgItem(hDlg, IDC_STATIC_LINK) == (HWND)lParam)
+        {
+            if (linkHigh)
+            {
+                if (SetTextColor(hdc, RGB(200, 100, 0)) == CLR_INVALID)
+                {
+                    cdHandleError(hDlg, GetLastError(), _T("Failed to set control color"));
+                    break;
+                }
+            }
+            else
+            {
+                if (SetTextColor(hdc, RGB(0, 0, 255)) == CLR_INVALID)
+                {
+                    cdHandleError(hDlg, GetLastError(), _T("Failed to set control color"));
+                    break;
+                }
+            }
+
+            SetBkMode(hdc, TRANSPARENT);
+            return (BOOL)GetSysColorBrush(COLOR_BTNFACE);
+        }
+
+        if (GetDlgItem(hDlg, IDC_COPYRIGHTWARNING) == (HWND)lParam)
+        {
+            if (SetTextColor(hdc, RGB(64, 64, 64)) == CLR_INVALID)
+            {
+                cdHandleError(hDlg, GetLastError(), _T("Failed to set control color"));
+                break;
+            }
+
+            SetBkMode(hdc, TRANSPARENT);
+            return (BOOL)GetSysColorBrush(COLOR_BTNFACE);
+        }
+        
+        break;
+    }
+    case WM_MOUSEMOVE:
+    {
+        short xbase = 120;
+        short ybase = 66;
+        short x = (short)LOWORD(lParam);
+        short y = (short)HIWORD(lParam);
+        if (x >= xbase && x <= (xbase + 178) && y >= ybase && y <= (ybase + 12))
+        {
+            if (!linkHigh)
+            {
+                linkHigh = true;
+                InvalidateRect(GetDlgItem(hDlg, IDC_STATIC_LINK), NULL, FALSE);
+            }
+
+            SetCursor(LoadCursor(NULL, IDC_HAND));
+        }
+        else
+        {
+            if (linkHigh)
+            {
+                linkHigh = false;
+                InvalidateRect(GetDlgItem(hDlg, IDC_STATIC_LINK), NULL, FALSE);
+            }
+            SetCursor(LoadCursor(NULL, IDC_ARROW));
+        }
+
+        return 0;
+    }
+    case WM_LBUTTONDOWN:
+    {
+        if (linkHigh)
+        {
+            ShellExecute(
+                NULL,
+                NULL,
+                _T("http://www.intellectualheaven.com"),
+                NULL,
+                NULL,
+                SW_SHOW | SW_MAXIMIZE);
+
+            return 0;
+        }
+
+        break;
+    }
+    case WM_COMMAND:
+    {
+        switch (wParam)
+        {
+        case IDOK:
+        {
+            EndDialog(hDlg, IDOK);
+            return TRUE;
+        }
+        case IDCANCEL:
+        {
+            EndDialog(hDlg, IDCANCEL);
+            return TRUE;
+        }
+        }
+
+        break;
+    }
+    }
+
+    return FALSE;
+}
 
 
 void
@@ -766,7 +934,6 @@ Returns:
 	return FALSE;
 }
 
-
 
 INT_PTR
 CALLBACK
@@ -1020,15 +1187,6 @@ Arguments:
 {
 	int fontHeight	= 12;
 	int fontWidth	= 0;
-
-	//
-	// Special case, for windows 95
-	//
-	if (gOSExactVersion	== WIN32_95)
-	{
-		fontHeight	= 14;
-		fontWidth	= 7;
-	}
 
 	m_TraceListFont = CreateFont(
 							fontHeight, fontWidth,

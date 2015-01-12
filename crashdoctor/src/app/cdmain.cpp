@@ -36,11 +36,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Local Include Files!!!
 #include "cdmain.h"
 #include "cdutil.h"
-#include "cdinstall.h"
 #include "cdui.h"
 #include "resource.h"
 #include "cdcore.h"
-
 
 
 //
@@ -49,15 +47,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 HINSTANCE ghInstance;
 
 
-//
-// Global OS Version
-//
-OS_VERSION			gOSVersion;
-OS_EXACT_VERSION	gOSExactVersion;
-
-
-
-
 int 
 WINAPI
 WinMain(
@@ -74,7 +63,6 @@ Routine Description:
 Returns:
 
 	An exit code of application - we always return 0
-	
 
 --*/
 {
@@ -84,55 +72,6 @@ Returns:
     InitCommonControls();
 
 	ghInstance = hInstance;
-
-	//
-	// Set the global variable for version information
-	//
-	OSVERSIONINFO versionInfo;
-	versionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&versionInfo);
-
-	if (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-	{
-		gOSVersion = WIN32_9X;
-
-		if (versionInfo.dwMinorVersion == 0)
-		{
-			gOSExactVersion	= WIN32_95;
-		}
-		else if (versionInfo.dwMinorVersion == 10)
-		{
-			gOSExactVersion	= WIN32_98;
-		}
-		else if (versionInfo.dwMinorVersion == 90)
-		{
-			gOSExactVersion	= WIN32_ME;
-		}
-	}
-	else
-	{
-		gOSVersion		= WIN32_NT;
-
-		if (versionInfo.dwMajorVersion == 4)
-		{
-			gOSExactVersion	= WIN32_NT4;
-		}
-		else if (versionInfo.dwMajorVersion == 5)
-		{
-			if (versionInfo.dwMinorVersion == 0)
-			{
-				gOSExactVersion	= WIN32_2K;
-			}
-			else if (versionInfo.dwMinorVersion == 1)
-			{
-				gOSExactVersion	= WIN32_XP;
-			}
-			else if (versionInfo.dwMinorVersion == 2)
-			{
-				gOSExactVersion	= WIN32_2K3;
-			}
-		}
-	}
 
 	LPTSTR cmdLine = GetCommandLine();
 	int argC = 0;
@@ -145,9 +84,9 @@ Returns:
 
 		DialogBoxParam(
 				ghInstance,
-				MAKEINTRESOURCE(IDD_DIALOG_INSTALL),
+				MAKEINTRESOURCE(IDD_DIALOG_ABOUT),
 				GetDesktopWindow(),
-				(DLGPROC)InstallDlgProc,
+				(DLGPROC)AboutDlgProc,
 				(LPARAM)NULL);
 
 		err = GetLastError();
@@ -202,6 +141,17 @@ Returns:
 					hEvent = NULL;
 				}
 			}
+#if 0
+            else if (dlgResult = IDC_BTN_ABOUT)
+            {
+                DialogBoxParam(
+                    ghInstance,
+                    MAKEINTRESOURCE(IDD_DIALOG_ABOUT),
+                    GetDesktopWindow(),
+                    (DLGPROC)AboutDlgProc,
+                    (LPARAM)NULL);
+            }
+#endif
 		}
 	}
 

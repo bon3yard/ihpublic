@@ -33,6 +33,11 @@ testCrash(int a, int b, int c)
 
 	char *p = NULL;
 	*p = 'A';
+    xx = 0;
+
+    printf("Crash test done = %x\n", xx);
+
+    int cr = 1 / xx;
 
     return 10;
 }

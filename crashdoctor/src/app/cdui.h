@@ -33,6 +33,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #include "ihulib.h"
 
+INT_PTR
+CALLBACK
+DebuggerDataDlgProc(
+    HWND	hDlg,
+    UINT	msg,
+    WPARAM	wParam,
+    LPARAM	lParam);
 
 INT_PTR
 CALLBACK
@@ -51,6 +58,13 @@ RecoveryStatusDlgProc(
 	WPARAM	wParam,
 	LPARAM	lParam);
 
+INT_PTR
+CALLBACK
+AboutDlgProc(
+    HWND	hDlg,
+    UINT	msg,
+    WPARAM	wParam,
+    LPARAM	lParam);
 
 
 //

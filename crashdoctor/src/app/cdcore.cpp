@@ -62,32 +62,14 @@ Module Description:
 #include "cdcore.h"
 #include "cdmain.h"
 
-
-#if 0
-//
-// Functions only available in redistributable DLL
-//
-PFN_StackWalk64					pStackWalk64;
-PFN_SymCleanup					pSymCleanup;
-PFN_SymInitialize				pSymInitialize;
-PFN_SymFunctionTableAccess64	pSymFunctionTableAccess64;
-PFN_SymGetModuleBase64			pSymGetModuleBase64;
-
+extern "C" int _stdcall LDE(PVOID address, int mode);
 
 //
-// Handle to DBGHelp dll
-//
-HMODULE ghDbgHelp;
-#endif
-
-
-//
-// Symbol initialization thread
+// Symbol initialization thread.
 //
 DWORD
 WINAPI
-cdSymInitializeThread(
-    LPVOID inParam);
+cdSymInitializeThread(LPVOID inParam);
 
 
 
@@ -95,14 +77,12 @@ cdSymInitializeThread(
 // Global variables to store the loaded address of the main .exe image of the
 // faulting process. They are not used right now during crash recovery but
 // they can be if the crash is happening in a DLL then we may want to pass
-// control all the way back upto the original process exe
+// control all the way back upto the original process exe.
 //
 DWORD_PTR gStartAddr;
 DWORD_PTR gEndAddr;
 
 
-
-
 CRecoverCrash::CRecoverCrash()
 /*++
 
@@ -133,7 +113,6 @@ Routine Description:
 }
 
 
-
 CRecoverCrash::~CRecoverCrash()
 /*++
 
@@ -236,7 +215,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleCreateFileW(
 	CONTEXT	&inContext)
@@ -262,7 +240,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleCreateFileA(
 	CONTEXT	&inContext)
@@ -286,6 +263,7 @@ Return:
 {
 	HandleCreateFileCommon(inContext, false);
 }
+
 
 void
 CRecoverCrash::HandleCreateFileCommon(
@@ -321,6 +299,10 @@ Return:
 	tstring		destFilePath;
 	TCHAR		tempPath[MAX_PATH];
 
+    //
+    // TODO: Make helper functions called read first parameter, read second
+    // parameter etc.
+    //
 #if defined(_M_IX86)
 	if (!DebuggeeReadMemory(
 			(LPVOID)(inContext.Esp + 8),
@@ -433,7 +415,6 @@ funcEnd:
 }
 
 
-
 void
 CRecoverCrash::HandleCreateProcess(
     DEBUG_EVENT				&inDebugEvent,
@@ -517,7 +498,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleExitProcess(
     DEBUG_EVENT &inDebugEvent)
@@ -544,7 +524,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleCreateThread(
     DEBUG_EVENT &inDebugEvent)
@@ -574,7 +553,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleExitThread(
     DEBUG_EVENT &inDebugEvent)
@@ -616,7 +594,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleOutputDebugString(
     DEBUG_EVENT &inDebugEvent)
@@ -654,7 +631,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleLoadDll(
     DEBUG_EVENT &inDebugEvent)
@@ -680,7 +656,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::HandleCreateFileHooking(
 	LPBYTE inImageAddress)
@@ -707,8 +682,8 @@ Return:
 	//
 	// We are #ifdef'ing the code because the other approach used below to
 	// match base address of DLL with module handle is working. If somehow
-	// that approach does work then we should enable this #if'ed out approach
-	// to find when kernel32.dll load notificaiton is received
+	// that approach doesn't work then we should enable this #ifed out
+    // approach to find when kernel32.dll load notificaiton is received
 	//
 #if USE_READ_IMAGE_NAME_FUNCTION
 	char imageName[MAX_PATH];
@@ -726,7 +701,6 @@ Return:
 	}
 #endif
 
-
 	//
 	// A dll's handle is its base address as well. We know that kernel32.dll
 	// is loaded at same address in all the processes, hence we can compare
@@ -737,32 +711,13 @@ Return:
 	{
 		//
 		// For windows NT, we insert a breakpoint in CreateFileW to track when
-		// it is called. Windows 9x doesn't allow modifying kernel32.dll because
-		// it is shared among all processes, so we will take the IAT patching
-		// approach for 9x as described in next section
-		//
-		if (gOSVersion != WIN32_9X)
-		{
-			// Kernel32.dll is found, now insert the breakpoint in
-			// kernel32!CreateFileA/W
-			InsertBreakPoints(inImageAddress);
-		}
-	}
-	else
-	{
-		//
-		// For windows 9x series, hook all the dlls IAT entries which import
-		// kernel32.dll's CreateFileW/A functions
-		//
-		if (gOSVersion == WIN32_9X)
-		{
-			HookCreateFileIATEntries(inImageAddress);
-		}
+		// it is called.
+        //
+        InsertBreakPoints(inImageAddress);
 	}
 }
 
 
-
 bool
 CRecoverCrash::InsertBreakPoints(
 	PBYTE		inImageBase)
@@ -906,7 +861,6 @@ funcEnd:
 }
 
 
-
 void
 CRecoverCrash::InsertBreakPoint(
 	LPVOID		inAddress,
@@ -984,10 +938,6 @@ funcEnd:
 
 	return;
 
-#elif defined(_M_IA64)
-
-	#error ("IA64 not implemented yet.")
-
 #else
 
 	#error ("Uknown target machine type.")
@@ -996,7 +946,6 @@ funcEnd:
 }
 
 
-
 void
 CRecoverCrash::ReInsertBreakPoint(
 	LPVOID	inAddress)
@@ -1020,10 +969,6 @@ Return:
 	
 	BYTE bp = 0xcc;
 
-#elif defined(_M_IA64)
-
-	#error ("IA64 not implemented yet.")
-
 #else
 
 	#error ("Uknown target machine type.")
@@ -1044,7 +989,7 @@ funcEnd:
 }
 
 
-
+#if 0 // 9X code gone.
 bool
 CRecoverCrash::HookCreateFileIATEntries(
 	PBYTE		inImageBase)
@@ -1314,9 +1259,63 @@ funcEnd:
 
 	return false;
 }
+#endif
 
 
-
+bool
+CRecoverCrash::DebuggeeReadMemoryGreedy(
+    LPCVOID	inAddress,
+    LPVOID	ioBuffer,
+    SIZE_T	inSize,
+    SIZE_T	*oBytesRead)
+/*++
+
+Routine Description:
+
+This function is used to read the memory of the debuggee process. If
+memory is not read, it logs and error as well
+
+Arguments:
+
+Refer ReadProcessMemory
+
+Return:
+
+true - memory is read
+false - memory couldn't be read due to some error
+
+--*/
+{
+    SIZE_T tmpSize;
+    bool retVal;
+
+    retVal = false;
+    tmpSize = inSize;
+
+    while (tmpSize > 0)
+    {
+        if (ReadProcessMemory(
+            mCrashedProcessInfo.hProcess,
+            inAddress,
+            ioBuffer,
+            tmpSize--,
+            oBytesRead))
+        {
+            retVal = true;
+            break;
+        }
+    }
+
+    if (!retVal)
+    {
+        HandleError(
+            GetLastError(),
+            _T("Unable to read memory at 0x%X in faulty process."),
+            inAddress);
+    }
+
+    return retVal;
+}
 bool
 CRecoverCrash::DebuggeeReadMemory(
 	LPCVOID	inAddress,
@@ -1360,7 +1359,6 @@ Return:
 }
 
 
-
 bool
 CRecoverCrash::DebuggeeWriteMemory(
 	LPVOID	inAddress,
@@ -1404,7 +1402,6 @@ Return:
 }
 
 
-
 LPVOID
 CRecoverCrash::DebuggeeMemAlloc(
 	DWORD	inSize)
@@ -1520,7 +1517,6 @@ Return:
 }
 
 
-
 bool
 CRecoverCrash::HandleException(
     DEBUG_EVENT &inDebugEvent)
@@ -1561,7 +1557,6 @@ Return:
 }
 
 
-
 bool
 CRecoverCrash::HandleBreakPoint(
     DEBUG_EVENT &inDebugEvent)
@@ -1684,10 +1679,6 @@ Return:
 	context.EFlags |= 0x100;
 	context.Rip -= 1;
 
-#elif defined(_M_IA64)
-
-	#error ("IA64 not implemented yet.")
-
 #else
 
 	#error ("Uknown target machine type.")
@@ -1702,7 +1693,6 @@ funcEnd:
 }
 
 
-
 bool
 CRecoverCrash::HandleSingleStep(
     DEBUG_EVENT &inDebugEvent)
@@ -1751,7 +1741,6 @@ funcEnd:
 }
 
 
-
 bool
 CRecoverCrash::HandleFatalException(
     DEBUG_EVENT &inDebugEvent)
@@ -1813,7 +1802,202 @@ Return:
 }
 
 
-
+bool
+CRecoverCrash::RecoverSkipInstruction(CONTEXT *Context)
+{
+    char instr[32];
+    SIZE_T	bytesRead = 0;
+
+#if defined(_M_IX86)
+    if (DebuggeeReadMemoryGreedy(
+            (LPCVOID)Context->Eip,
+            instr,
+            sizeof(instr),
+            &bytesRead))
+    {
+        int len = LDE(instr, 0);
+        mRecoveryHandler->PrintMessage(
+            _T("Faulting Instruction Address: 0x%X, Length: %d.\n"),
+            Context->Eip, len);
+        Context->Eip += len;
+        return true;
+    }
+#else
+    if (DebuggeeReadMemoryGreedy(
+            (LPCVOID)Context->Rip,
+            instr,
+            sizeof(instr),
+            &bytesRead))
+    {
+        int len = LDE(instr, 64);
+        mRecoveryHandler->PrintMessage(
+            _T("Faulting Instruction Address: 0x%X, Length: %d.\n"),
+            Context->Rip, len);
+        Context->Rip += len;
+        return true;
+    }
+#endif
+
+    return false;
+}
+
+
+bool
+CRecoverCrash::RecoverSkipFunction(HANDLE ThreadHandle, CONTEXT *Context)
+{
+	STACKFRAME64 stackFrame;
+	bool crashRecovered = false;
+    DWORD machineType;
+
+    if (mSymbolInitialized)
+    {
+        #if defined(_M_IX86)
+            machineType						= IMAGE_FILE_MACHINE_I386;
+            stackFrame.AddrPC.Offset		= Context->Eip;
+            stackFrame.AddrPC.Mode			= AddrModeFlat;
+            stackFrame.AddrStack.Offset		= Context->Esp;
+            stackFrame.AddrStack.Mode		= AddrModeFlat;
+            stackFrame.AddrFrame.Offset		= Context->Ebp;
+            stackFrame.AddrFrame.Mode		= AddrModeFlat;
+        #elif defined(_M_AMD64)
+            machineType						= IMAGE_FILE_MACHINE_AMD64;
+            stackFrame.AddrPC.Offset		= Context->Rip;
+            stackFrame.AddrPC.Mode			= AddrModeFlat;
+            stackFrame.AddrStack.Offset		= Context->Rsp;
+            stackFrame.AddrStack.Mode		= AddrModeFlat;
+            stackFrame.AddrFrame.Offset		= Context->Rbp;
+            stackFrame.AddrFrame.Mode		= AddrModeFlat;
+        #endif
+
+        CONTEXT	contextTemp = *Context;
+
+        if (StackWalk64(
+                    machineType,
+                    mCrashedProcessInfo.hProcess,
+                    ThreadHandle,
+                    &stackFrame,
+                    &contextTemp,
+                    NULL,
+                    SymFunctionTableAccess64,
+                    SymGetModuleBase64,
+                    NULL))
+        {											
+            if (StackWalk64(
+                        machineType,
+                        mCrashedProcessInfo.hProcess,
+                        ThreadHandle,
+                        &stackFrame,
+                        &contextTemp,
+                        NULL,
+                        SymFunctionTableAccess64,
+                        SymGetModuleBase64,
+                        NULL))
+            {
+                crashRecovered = true;
+
+                #if defined(_M_IX86)
+
+                    mRecoveryHandler->PrintMessage(
+                        _T("Moving execution control from 0x%X->0x%X\n"),
+                        Context->Eip, stackFrame.AddrPC.Offset);
+
+                    Context->Esp = (DWORD)stackFrame.AddrStack.Offset;
+                    Context->Ebp = (DWORD)stackFrame.AddrFrame.Offset;
+                    Context->Eip = (DWORD)stackFrame.AddrPC.Offset;
+				    Context->Eax = 0xFFFFFFFF;
+
+                #elif defined(_M_AMD64)
+
+                    mRecoveryHandler->PrintMessage(
+                        _T("Moving execution control from 0x%X->0x%X\n"),
+                        Context->Rip, stackFrame.AddrPC.Offset);
+
+                    Context->Rsp = stackFrame.AddrStack.Offset;
+                    Context->Rbp = stackFrame.AddrFrame.Offset;
+                    Context->Rip = stackFrame.AddrPC.Offset;
+				    Context->Rax = 0xFFFFFFFFFFFFFFFF;
+
+                #else
+
+                    #error ("Uknown target machine type.")
+
+                #endif
+            }
+        }
+    }
+
+    return crashRecovered;
+}
+
+
+bool
+CRecoverCrash::RecoverSkipFunctionHomebrew(CONTEXT *Context)
+{
+    bool crashRecovered = false;
+
+#if defined(_M_IX86)
+    DWORD	EbpEip[2];
+    SIZE_T	bytesRead = 0;
+
+    //
+    // Esp value is set as to further protect the crashing
+    // thread. We try to make sure that when we bypass
+    // the faulting function, we restore the stack for the
+    // previous function. This restoration is not perfect
+    // because we don't know how the stack is manipulated
+    // by the function when it crashes. Also if __stdcall
+    // calling convention is used, then parameters are popped
+    // of by callee but because we don't know that, we can't
+    // remove paramters off the stack.
+    //
+    // Esp = saved Ebp + 8
+    // 8 bytes are due to Return value and saved Ebp
+    //
+    Context->Esp = Context->Ebp + 8;
+
+    if (DebuggeeReadMemory(
+                        (LPCVOID)Context->Ebp,
+                        EbpEip,
+                        sizeof(EbpEip),
+                        &bytesRead))
+    {
+        if (bytesRead == sizeof(EbpEip))
+        {
+            mRecoveryHandler->PrintMessage(
+                _T("Moving execution control from 0x%X->0x%X.\n"),
+                Context->Eip, EbpEip[1]);
+
+            Context->Ebp = EbpEip[0];
+            Context->Eip = EbpEip[1];
+            Context->Eax = 0xFFFFFFFF;
+
+            crashRecovered = true;
+        }
+        else
+        {
+            HandleError(
+                GetLastError(),
+                _T("Unable to read memory at 0x%X in faulty process."),
+                Context->Ebp);
+        }
+    }
+#elif defined(_M_AMD64)
+
+    // Nothing to do, generating stack on AMD64 is hard work and
+    // is left to dbghelp. Without dbghelp, its better to let the
+    // process die.
+    crashRecovered = false;
+
+#else
+
+    #error ("Uknown target machine type.")
+
+#endif
+
+    return crashRecovered;
+}
+
+
 bool
 CRecoverCrash::Recover(
 	DWORD	inThreadId)
@@ -1854,10 +2038,13 @@ Return:
 {
 	HANDLE hThread = NULL;
 	THREAD_LIST_ITER threadIter;
+    bool crashRecovered = false;
+	CONTEXT context;
+
 	
-	for(	threadIter = mCrashedProcessInfo.threadList.begin();
-			threadIter != mCrashedProcessInfo.threadList.end();
-			++threadIter)
+	for(threadIter = mCrashedProcessInfo.threadList.begin();
+		threadIter != mCrashedProcessInfo.threadList.end();
+		++threadIter)
 	{
 		CD_THREAD_INFO threadInfo = *threadIter;
 		if (threadInfo.threadId == inThreadId)
@@ -1867,233 +2054,38 @@ Return:
 		}
 	}
 
-    bool            crashRecovered = false;
-	STACKFRAME64	stackFrame;
-	CONTEXT			context;
-
 	context.ContextFlags = CONTEXT_CONTROL | CONTEXT_INTEGER;
-	memset(&stackFrame, 0, sizeof(stackFrame));
 	
-	if (hThread)
+	if (hThread != NULL)
 	{
-		bool stackTraceGenerated = false;
-
 		GetThreadContext(hThread, &context);
 
-		//
-		// We first try to use the dbghelp.dll's stack
-		// trace generation support. If something goes
-		// wrong with dbghelp functions, then we use
-		// *my* stack trace generation approach
-		//
-		if (mSymbolInitialized)
-		{
-			DWORD machineType;
+        crashRecovered = RecoverSkipInstruction(&context);
+        if (!crashRecovered)
+        {
+            crashRecovered = RecoverSkipFunction(hThread, &context);
+            if (!crashRecovered)
+            {
+                crashRecovered = RecoverSkipFunctionHomebrew(&context);
+            }
+        }
+    }
 
-			#if defined(_M_IX86)
-				machineType						= IMAGE_FILE_MACHINE_I386;
-				stackFrame.AddrPC.Offset		= context.Eip;
-				stackFrame.AddrPC.Mode			= AddrModeFlat;
-				stackFrame.AddrStack.Offset		= context.Esp;
-				stackFrame.AddrStack.Mode		= AddrModeFlat;
-				stackFrame.AddrFrame.Offset		= context.Ebp;
-				stackFrame.AddrFrame.Mode		= AddrModeFlat;
-			#elif defined(_M_AMD64)
-				machineType						= IMAGE_FILE_MACHINE_AMD64;
-				stackFrame.AddrPC.Offset		= context.Rip;
-				stackFrame.AddrPC.Mode			= AddrModeFlat;
-				stackFrame.AddrStack.Offset		= context.Rsp;
-				stackFrame.AddrStack.Mode		= AddrModeFlat;
-				stackFrame.AddrFrame.Offset		= context.Rbp;
-				stackFrame.AddrFrame.Mode		= AddrModeFlat;
-			#elif defined(_M_IA64)
-				machineType						= IMAGE_FILE_MACHINE_IA64;
-				stackFrame.AddrPC.Offset		= context.StIIP;
-				stackFrame.AddrPC.Mode			= AddrModeFlat;
-				stackFrame.AddrStack.Offset		= context.IntSp;
-				stackFrame.AddrStack.Mode		= AddrModeFlat;
-				stackFrame.AddrBStore.Offset	= context.RsBSP;
-				stackFrame.AddrBStore.Mode		= AddrModeFlat;
-			#else
-				#error ("Uknown target machine type.")
-			#endif
-
-			CONTEXT	contextTemp = context;
-
-			if (StackWalk64(
-						machineType,
-						mCrashedProcessInfo.hProcess,
-						hThread,
-						&stackFrame,
-						&contextTemp,
-						NULL,
-						SymFunctionTableAccess64,
-						SymGetModuleBase64,
-						NULL))
-			{											
-				if (StackWalk64(
-							machineType,
-							mCrashedProcessInfo.hProcess,
-							hThread,
-							&stackFrame,
-							&contextTemp,
-							NULL,
-							SymFunctionTableAccess64,
-							SymGetModuleBase64,
-							NULL))
-				{
-					stackTraceGenerated = true;
-
-					#if defined(_M_IX86)
-
-						mRecoveryHandler->PrintMessage(
-							_T("Moving execution control from 0x%X->0x%X\n"),
-							context.Eip, stackFrame.AddrPC.Offset);
-
-						context.Esp = (DWORD)stackFrame.AddrStack.Offset;
-                        context.Ebp = (DWORD)stackFrame.AddrFrame.Offset;
-                        context.Eip = (DWORD)stackFrame.AddrPC.Offset;
-
-					#elif defined(_M_AMD64)
-
-						mRecoveryHandler->PrintMessage(
-							_T("Moving execution control from 0x%X->0x%X\n"),
-							context.Rip, stackFrame.AddrPC.Offset);
-
-						context.Rsp = stackFrame.AddrStack.Offset;
-						context.Rbp = stackFrame.AddrFrame.Offset;
-						context.Rip = stackFrame.AddrPC.Offset;
-
-					#elif defined(_M_IA64)
-
-						context.IntSp = stackFrame.AddrStack.Offset;
-						context.RsBSP = stackFrame.AddrBStore.Offset;
-						context.StIIP = stackFrame.AddrPC.Offset;
-
-					#else
-
-						#error ("Uknown target machine type.")
-
-					#endif
-				}
-			}
-		}
-
-#if 0
-		//
-		// Symbol stack trace generation didn't work. We will now use my stack
-        // trace generation code. If soemthing goes wrong in here too then we
-        // will terminate the target process
-		//
-		if (stackTraceGenerated == false)
-		{
-			#if defined(_M_IX86)
-				DWORD	EbpEip[2];
-				SIZE_T	bytesRead = 0;
-
-				//
-				// Esp value is set as to further protect the crashing
-				// thread. We try to make sure that when we bypass
-				// the faulting function, we restore the stack for the
-				// previous function. This restoration is not perfect
-				// because we don't know how the stack is manipulated
-				// by the function when it crashes. Also if __stdcall
-				// calling convention is used, then parameters are popped
-				// of by callee but because we don't know that, we can't
-				// remove paramters off the stack.
-				//
-				// Esp = saved Ebp + 8
-				// 8 bytes are due to Return value and saved Ebp
-				//
-                context.Esp = context.Ebp + 8;
-
-                if (DebuggeeReadMemory(
-                                    (LPCVOID)context.Ebp,
-                                    EbpEip,
-                                    sizeof(EbpEip),
-                                    &bytesRead))
-				{
-					if (bytesRead == sizeof(EbpEip))
-					{
-						mRecoveryHandler->PrintMessage(
-							_T("Moving execution control from 0x%X->0x%X.\n"),
-							context.Eip, EbpEip[1]);
-
-						context.Ebp = EbpEip[0];
-						context.Eip = EbpEip[1];
-
-						stackTraceGenerated = true;
-					}
-					else
-					{
-						HandleError(
-							GetLastError(),
-							_T("Unable to read memory at 0x%X in faulty process."),
-							context.Ebp);
-					}
-				}
-            #elif defined(_M_AMD64)
-
-				// Nothing to do, generating stack on AMD64 is hard work and
-				// is left to dbghelp. Without dbghelp, its better to let the
-				// process die
-
-			#elif defined(_M_IA64)
-
-				// Nothing to do, i don't know how to generate stack on IA64
-				// without dbghelp. Let the process crash
-
-			#else
-
-				#error ("Uknown target machine type.")
-
-			#endif
-		}
-#endif
-
-		if (stackTraceGenerated)
-		{
-			//
-			// Set return value to 0xFFFFFFFF and change
-			// thread context
-			//
-			#if defined(_M_IX86)
-
-				context.Eax = 0xFFFFFFFF;
-
-			#elif defined(_M_AMD64)
-
-				context.Rax = 0xFFFFFFFFFFFFFFFF;
-
-			#elif defined(_M_IA64)
-
-				context.IntV0 = 0xFFFFFFFFFFFFFFFF;
-
-			#else
-
-				#error ("Uknown target machine type.")
-
-			#endif
-
-			SetThreadContext(hThread, &context);
-
-            crashRecovered = true;
-		}
-	}
+    if (crashRecovered)
+    {
+        SetThreadContext(hThread, &context);
+    }
 	else
 	{
 		mRecoveryHandler->PrintError(
-				_T("CrashDoctor internal fatal error, faulting thread\'s ")
-				_T("handle not found.\n"));
+				_T("CrashDoctor was unable to recover fault.\n"));
 	}
 
 	mCrashRecovered = crashRecovered;
-
     return crashRecovered;
 }
 
 
-
 void
 CRecoverCrash::AttachToProcess(
 	DWORD				processId,
@@ -2317,7 +2309,6 @@ funcExit:
 }
 
 
-
 void
 CRecoverCrash::InitializeSymbolHelper(
     CD_SYMBOL_PROCESS_INFO &ioSymProcInfo)
@@ -2369,7 +2360,6 @@ Return:
 }
 
 
-
 void
 CRecoverCrash::DeinitializeSymbolHelper(
     CD_SYMBOL_PROCESS_INFO &ioSymProcInfo)
@@ -2399,89 +2389,6 @@ Return:
 }
 
 
-bool
-cdInitSymbolFunctions()
-/*++
-
-Routine Description:
-	
-	This function initializes all the global symbol related function pointers.
-    The reason for using these function pointers is that sometime the required
-    dll dbghlp.dll may not be available and if we don't have that DLL, then
-    the code fall back to using internal stack generation code.
-
-Return:
-
-	true - Symbol support is available and initialized
-    false - No symbol support
-
---*/
-{
-    return true;
-#if 0
-	bool funcStatus = true;
-
-    if (ghDbgHelp)
-    {
-        // Symbol library and its functions are already initialized. simply
-        // return true from this function
-        funcStatus = true;
-        goto funcEnd;
-    }
-
-	ghDbgHelp = LoadLibrary(_T("dbghelp.dll"));
-
-	if (!ghDbgHelp)
-	{
-        funcStatus = false;
-        goto funcEnd;
-    }
-
-    pStackWalk64 = (PFN_StackWalk64)GetProcAddress(
-                                            ghDbgHelp,
-                                            "StackWalk64");
-
-    pSymInitialize = (PFN_SymInitialize)GetProcAddress(
-                                                ghDbgHelp,
-                                                "SymInitialize");
-
-    pSymCleanup = (PFN_SymCleanup)GetProcAddress(
-                                                ghDbgHelp,
-                                                "SymCleanup");
-
-    pSymGetModuleBase64 = (PFN_SymGetModuleBase64)
-                                        GetProcAddress(
-                                                ghDbgHelp,
-                                                "SymGetModuleBase64");
-
-    pSymFunctionTableAccess64 = 
-                    (PFN_SymFunctionTableAccess64)
-                                        GetProcAddress(
-                                            ghDbgHelp,
-                                            "SymFunctionTableAccess64");
-
-    if (!pStackWalk64 || 
-        !pSymInitialize || 
-        !pSymCleanup || 
-        !pSymGetModuleBase64 ||
-        !pSymFunctionTableAccess64)
-    {
-        FreeLibrary(ghDbgHelp);
-
-        ghDbgHelp   = NULL;
-        funcStatus  = false;
-
-        goto funcEnd;
-    }
-
-    funcStatus = true;
-
-funcEnd:
-	return funcStatus;
-#endif
-}
-
-
 DWORD
 WINAPI
 cdSymInitializeThread(
@@ -2502,11 +2409,8 @@ Return:
 {
     PCD_SYMBOL_PROCESS_INFO pSymProcInfo = (PCD_SYMBOL_PROCESS_INFO)inParam;
 
-	if (cdInitSymbolFunctions())
-	{
-        pSymProcInfo->SymbolInitialized =
-            SymInitialize(pSymProcInfo->ProcessHandle, "", TRUE);
-	}
+    pSymProcInfo->SymbolInitialized =
+        SymInitialize(pSymProcInfo->ProcessHandle, "", TRUE);
 
     return 0;
 }

@@ -49,10 +49,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <?define MainExe32 = "..\bld\bin\Win32\CrashDoctor.exe" ?>
     <?define TestExe = "..\bld\bin\x64\TstApp.exe" ?>
     <?define TestExe32 = "..\bld\bin\Win32\TstApp.exe" ?>
-    <?define VCRedistDllA = "..\src\msi\redist\x64\msvcp120.dll" ?>
-    <?define VCRedistDllB = "..\src\msi\redist\x64\msvcr120.dll" ?>
-    <?define VCRedistDllA32 = "..\src\msi\redist\x86\msvcp120.dll" ?>
-    <?define VCRedistDllB32 = "..\src\msi\redist\x86\msvcr120.dll" ?>
+    <?define VCRedistDllA = "..\extrn\vcredist\x64\msvcp120.dll" ?>
+    <?define VCRedistDllB = "..\extrn\vcredist\x64\msvcr120.dll" ?>
+    <?define VCRedistDllA32 = "..\extrn\vcredist\x86\msvcp120.dll" ?>
+    <?define VCRedistDllB32 = "..\extrn\vcredist\x86\msvcr120.dll" ?>
 <?else?>
     <?define ProductId = "227F6D16-3CE4-4592-A0DE-09835B0A5F0F" ?>
     <?define ProductUpgradeCode = "B970D48F-BDB1-4e40-88AB-26A0BDFA06D6" ?>
@@ -62,8 +62,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <?define BldPlatform = "Win32" ?>
     <?define MainExe = "..\bld\bin\Win32\CrashDoctor.exe" ?>
     <?define TestExe = "..\bld\bin\Win32\TstApp.exe" ?>
-    <?define VCRedistDllA = "..\src\msi\redist\x86\msvcp120.dll" ?>
-    <?define VCRedistDllB = "..\src\msi\redist\x86\msvcr120.dll" ?>
+    <?define VCRedistDllA = "..\extrn\vcredist\x86\msvcp120.dll" ?>
+    <?define VCRedistDllB = "..\extrn\vcredist\x86\msvcr120.dll" ?>
 <?endif?>
 
 <Product 

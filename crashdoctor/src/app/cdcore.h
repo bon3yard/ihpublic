@@ -165,6 +165,12 @@ private:
 		SIZE_T	inSize,
 		SIZE_T	*oBytesRead = NULL);
 
+    bool DebuggeeReadMemoryGreedy(
+        LPCVOID	inAddress,
+        LPVOID	ioBuffer,
+        SIZE_T	inSize,
+        SIZE_T	*oBytesRead = NULL);
+
 	bool DebuggeeWriteMemory(
 		LPVOID	inAddress,
 		LPVOID	inBuffer,
@@ -187,6 +193,16 @@ private:
 
 	bool HandleFatalException(
         DEBUG_EVENT &inDebugEvent);
+
+    bool RecoverSkipInstruction(
+            CONTEXT *Context);
+
+    bool RecoverSkipFunction(
+        HANDLE ThreadHandle,
+        CONTEXT *Context);
+
+    bool RecoverSkipFunctionHomebrew(
+        CONTEXT *Context);
 
 	bool Recover(
             DWORD	inThreadId);

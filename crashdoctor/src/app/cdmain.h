@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Local Include Files!!!
 #include "cdutil.h"
-#include "cdinstall.h"
 
 
 enum OS_VERSION
@@ -53,9 +52,6 @@ enum OS_EXACT_VERSION
 };
 
 extern HINSTANCE ghInstance;
-extern OS_VERSION gOSVersion;
-extern OS_EXACT_VERSION	gOSExactVersion;
-
 
 typedef struct tagPROC_DBG_DATA
 {
