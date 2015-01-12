@@ -40,9 +40,11 @@ RestoreRegistry(wstring OrigDebugString, wstring AeDebugPath)
     int nReturnValue = 0;
     HKEY hAeDebugKey = NULL;
 
-    nReturnValue = RegOpenKey(
+    nReturnValue = RegOpenKeyEx(
         HKEY_LOCAL_MACHINE,
-        REG_AEDEBUG_PATH,
+        AeDebugPath.c_str(),
+        0,
+        KEY_ALL_ACCESS,
         &hAeDebugKey);
 
     if (hAeDebugKey == NULL)
@@ -50,13 +52,22 @@ RestoreRegistry(wstring OrigDebugString, wstring AeDebugPath)
         goto funcExit;
     }
 
-    RegSetValueEx(
+    ::MessageBox(NULL, OrigDebugString.c_str(), AeDebugPath.c_str(), MB_OK | MB_ICONINFORMATION);
+
+    nReturnValue = RegSetValueEx(
         hAeDebugKey,
         L"Debugger",
         0,
         REG_SZ,
         (LPBYTE)OrigDebugString.c_str(),
         (DWORD)(OrigDebugString.length() * sizeof(TCHAR)));
+
+    if (nReturnValue != ERROR_SUCCESS)
+    {
+        wchar_t buff[100];
+        wsprintf(buff, L"%d", nReturnValue);
+        ::MessageBox(NULL, buff, AeDebugPath.c_str(), MB_OK | MB_ICONINFORMATION);
+    }
 
     RegSetValueEx(
         hAeDebugKey,
@@ -65,6 +76,8 @@ RestoreRegistry(wstring OrigDebugString, wstring AeDebugPath)
         REG_SZ,
         (LPBYTE)L"1",
         sizeof(L"1"));
+
+    ::MessageBox(NULL, OrigDebugString.c_str(), L"Done.", MB_OK | MB_ICONINFORMATION);
 
 funcExit:
 
@@ -94,11 +107,9 @@ RestoreRegistry(LPCWSTR OrigDebugStrings)
     ::MessageBox(NULL, L"Input Validated", L"Deferred Custom Action", MB_OK | MB_ICONINFORMATION);
 
     if (!strList[1].empty())
-    {
+    {   
         RestoreRegistry(strList[1], REG_AEDEBUG_PATH);
     }
-
-    ::MessageBox(NULL, L"Restored First Registry.", L"Deferred Custom Action", MB_OK | MB_ICONINFORMATION);
 
     if (!strList[3].empty())
     {
@@ -115,7 +126,7 @@ UINT __stdcall CrashDoctorRestoreRegistry(MSIHANDLE hInstall)
 	HRESULT hr = S_OK;
 	UINT er = ERROR_SUCCESS;
 
-	hr = WcaInitialize(hInstall, "CustomAction1");
+	hr = WcaInitialize(hInstall, "CrashDoctorRestoreRegistry");
 	ExitOnFailure(hr, "Failed to initialize");
 
 	WcaLog(LOGMSG_STANDARD, "Initialized.");
