@@ -889,11 +889,16 @@ Returns:
 
                     break;
                 }
+                //
+                // Don't allow closing from the title bar button.
+                //
+                /*
                 case IDCANCEL:
                 {
                     EndDialog(hDlg, IDCANCEL);
                     return TRUE;
                 }
+                */
             }
 
             break;

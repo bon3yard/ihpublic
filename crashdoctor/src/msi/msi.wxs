@@ -102,8 +102,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </Condition>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" ></Property>
-    <!--<UIRef Id="WixUI_FeatureTree"/>-->
-    <UIRef Id="WixUI_Minimal"/>
+    <UIRef Id="WixUI_FeatureTree"/>
+    <!--<UIRef Id="WixUI_Minimal"/>-->
     <WixVariable Id="WixUIDialogBmp" Value="..\src\msi\PgWixBanner.bmp" />
     <WixVariable Id="WixUIBannerBmp" Value="..\src\msi\PgWixBannerTop.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="..\src\msi\license.rtf" />
@@ -111,7 +111,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <!-- Disable Change and Repair button if installer is ran again.
          These are disabled because they interfere with our custom
          action handler. So it is better to ask user to uninstall/install. -->
-    <!--<Property Id='ARPNOMODIFY'>1</Property>-->
+    <Property Id='ARPNOMODIFY'>1</Property>
     <Property Id='ARPNOREPAIR'>1</Property>
 
     <Binary 
