@@ -40,6 +40,11 @@ RestoreRegistry(wstring OrigDebugString, wstring AeDebugPath)
     int nReturnValue = 0;
     HKEY hAeDebugKey = NULL;
 
+    WcaLog(LOGMSG_STANDARD,
+        "CrashDoctor: Restoring Registry=%S, with Value=%S.",
+        AeDebugPath.c_str(),
+        OrigDebugString.c_str());
+
     nReturnValue = RegOpenKeyEx(
         HKEY_LOCAL_MACHINE,
         AeDebugPath.c_str(),
@@ -49,10 +54,20 @@ RestoreRegistry(wstring OrigDebugString, wstring AeDebugPath)
 
     if (hAeDebugKey == NULL)
     {
+        WcaLog(LOGMSG_STANDARD,
+            "CrashDoctor: Failed to open registry key=%S, Error=%d.",
+            AeDebugPath.c_str(),
+            nReturnValue);
         goto funcExit;
     }
 
-    ::MessageBox(NULL, OrigDebugString.c_str(), AeDebugPath.c_str(), MB_OK | MB_ICONINFORMATION);
+    //
+    // Example on how to pop-up message boxes. Very useful for debugging.
+    //
+    // ::MessageBox(NULL,
+    //      OrigDebugString.c_str(),
+    //      AeDebugPath.c_str(),
+    //      MB_OK | MB_ICONINFORMATION);
 
     nReturnValue = RegSetValueEx(
         hAeDebugKey,
@@ -64,12 +79,15 @@ RestoreRegistry(wstring OrigDebugString, wstring AeDebugPath)
 
     if (nReturnValue != ERROR_SUCCESS)
     {
-        wchar_t buff[100];
-        wsprintf(buff, L"%d", nReturnValue);
-        ::MessageBox(NULL, buff, AeDebugPath.c_str(), MB_OK | MB_ICONINFORMATION);
+        WcaLog(
+            LOGMSG_STANDARD,
+            "CrashDoctor: Failed to set registry=%S\\Debugger, Error=%d.",
+            AeDebugPath.c_str(),
+            nReturnValue);
+        goto funcExit;
     }
 
-    RegSetValueEx(
+    nReturnValue = RegSetValueEx(
         hAeDebugKey,
         L"Auto",
         0,
@@ -77,11 +95,19 @@ RestoreRegistry(wstring OrigDebugString, wstring AeDebugPath)
         (LPBYTE)L"1",
         sizeof(L"1"));
 
-    ::MessageBox(NULL, OrigDebugString.c_str(), L"Done.", MB_OK | MB_ICONINFORMATION);
+    if (nReturnValue != ERROR_SUCCESS)
+    {
+        WcaLog(
+            LOGMSG_STANDARD,
+            "CrashDoctor: Failed to set registry=%S\\Auto, Error=%d.",
+            AeDebugPath.c_str(),
+            nReturnValue);
+        goto funcExit;
+    }
 
 funcExit:
 
-    if (hAeDebugKey)
+    if (hAeDebugKey != NULL)
     {
         RegCloseKey(hAeDebugKey);
     }
@@ -104,8 +130,6 @@ RestoreRegistry(LPCWSTR OrigDebugStrings)
         goto funcExit;
     }
 
-    ::MessageBox(NULL, L"Input Validated", L"Deferred Custom Action", MB_OK | MB_ICONINFORMATION);
-
     if (!strList[1].empty())
     {   
         RestoreRegistry(strList[1], REG_AEDEBUG_PATH);
@@ -127,25 +151,33 @@ UINT __stdcall CrashDoctorRestoreRegistry(MSIHANDLE hInstall)
 	UINT er = ERROR_SUCCESS;
 
 	hr = WcaInitialize(hInstall, "CrashDoctorRestoreRegistry");
-	ExitOnFailure(hr, "Failed to initialize");
+    if (FAILED(hr))
+    {
+        WcaLog(LOGMSG_STANDARD, "CrashDoctor: WcaInitialize Failed:%x", hr);
+        goto Exit;
+    }
 
-	WcaLog(LOGMSG_STANDARD, "Initialized.");
+	WcaLog(LOGMSG_STANDARD, "CrashDoctor: Initialized.");
 
     // TODO: Add your custom action code here.
 
     WCHAR szActionData[MAX_PATH * 2] = { 0 };
     DWORD size;
 
-    size = sizeof(szActionData) / sizeof(WCHAR);
+    size = (sizeof(szActionData) / sizeof(WCHAR)) - sizeof(WCHAR);
     MsiGetProperty(hInstall, L"CustomActionData", szActionData, &size);
-
-    ::MessageBox(NULL, szActionData, L"Deferred Custom Action", MB_OK | MB_ICONINFORMATION);
+    WcaLog(LOGMSG_STANDARD, "CrashDoctor: CustomActionData=%S.", szActionData);
 
     RestoreRegistry(szActionData);
 
-LExit:
-	er = SUCCEEDED(hr) ? ERROR_SUCCESS : ERROR_INSTALL_FAILURE;
-	return WcaFinalize(er);
+
+Exit:
+
+    //
+    // We always return success because our custom action runs after
+    // uninstall is done so failing is useless at this point.
+    //
+	return WcaFinalize(ERROR_SUCCESS);
 }
 
 

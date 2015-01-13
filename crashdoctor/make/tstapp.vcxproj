@@ -95,7 +95,7 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)app;$(SolutionDir)inc;$(SolutionDir)..\ihulib\inc;$(SolutionDir)..\ihulib\inc\win;$(SolutionDir)..\ihinjection;</AdditionalIncludeDirectories>
     </ClCompile>
@@ -139,7 +139,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;</PreprocessorDefinitions>
