@@ -74,7 +74,7 @@ will be ignored.
 Arguments:
 
 sFormat - Format string
-...		- Multiple arguments in printf style
+...     - Multiple arguments in printf style
 
 Return Value:
 
@@ -85,9 +85,9 @@ void
 __cdecl
 IhuDbgLog(LPCWSTR sFormat, ...)
 {
-    const size_t	K_SIZE = 512;
-    wchar_t			szMsg[K_SIZE];
-    va_list			argList;
+    const size_t    K_SIZE = 512;
+    wchar_t         szMsg[K_SIZE];
+    va_list         argList;
 
     va_start(argList, sFormat);
 

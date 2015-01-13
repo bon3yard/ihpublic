@@ -132,7 +132,7 @@ ihiInitInjectionData(
 bool
 WINAPI
 ihiInjectDll(
-    HANDLE          hProcess,   
+    HANDLE          hProcess,
     LPCWSTR inDllPath,
     LPCSTR      inFnIncludes,
     LPCSTR      inFnExcludes);

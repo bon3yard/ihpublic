@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /**
  * @file    ihulib.h
- * 
+ *
  * @brief   The helper library for various intellectualheaven.com projects.
  *
  **/
@@ -134,13 +134,13 @@ void __cdecl IhuDbgLog(LPCWSTR sFormat, ...);
 /**
  * @brief   Install a dynamically loadable device driver
  *
- * @param   DriverName - User defined name of the driver 
+ * @param   DriverName - User defined name of the driver
  * @param   ServiceExe - Full path of the driver binary
- *  
+ *
  * @return  TRUE/FALSE
  **/
 BOOL
-__cdecl 
+__cdecl
 IhuInstallDriver(
     LPCWSTR DriverName,
     LPCWSTR ServiceExe
@@ -150,8 +150,8 @@ IhuInstallDriver(
 /**
  * @brief   Remove/Uninstall a device driver
  *
- * @param   DriverName - User defined name of the driver 
- *  
+ * @param   DriverName - User defined name of the driver
+ *
  * @return  TRUE/FALSE
  **/
 BOOL
@@ -164,8 +164,8 @@ IhuRemoveDriver(
 /**
  * @brief   Starts the execution of driver
  *
- * @param   DriverName - User defined name of the driver 
- *  
+ * @param   DriverName - User defined name of the driver
+ *
  * @return  TRUE/FALSE
  **/
 BOOL
@@ -178,8 +178,8 @@ IhuStartDriver(
 /**
  * @brief   Stops the execution of driver
  *
- * @param   DriverName - User defined name of the driver 
- *  
+ * @param   DriverName - User defined name of the driver
+ *
  * @return  TRUE/FALSE
  **/
 BOOL
@@ -193,7 +193,7 @@ IhuStopDriver(
  * @addtogroup  GenericUtil General Purpose Utility Functions
  *
  * @brief       General purpose utility functions for Windows.
- * 
+ *
  * @{
  **/
 
@@ -216,8 +216,8 @@ IhuGetFileIcon(
  * @addtogroup  ProcessAndThreadMgmt Process and Thread Management
  *
  * @brief       Provides functions for process and thread
- *              management. 
- * 
+ *              management.
+ *
  * @warning     These routines are dependent upon psapi.lib which is
  *              only availalbe on Windows NT, 2000, XP and 2003, so
  *              these routines will not work on Windows 9x series
@@ -276,8 +276,8 @@ typedef IHU_MODULE_LIST::iterator           IHU_MODULE_LIST_ITER;
  *          process exist or not, by calling OpenProcess with
  *          mProcessId as parameter, before using it.
  *
- * @param   oProcessList - Stores the list of all running processes 
- *  
+ * @param   oProcessList - Stores the list of all running processes
+ *
  * @return  If the function succeed, the return value is = 0.
  *          If the function fails, the return value is non-zero.
  *
@@ -297,7 +297,7 @@ IhuGetProcessList(
  *
  * @param   inProcessId - Id to the process
  * @param   oModuleList - Stores the list of loaded modules
- *  
+ *
  * @return  If the function succeed, the return value is = 0.
  *          If the function fails, the return value is non-zero.
  *
@@ -316,11 +316,11 @@ IhuGetModuleList(
  *
  * @brief       Provides abstraction for easy use of Service Manger
  *              functions.
- * 
+ *
  * @warning     Service manager is only available for Windows NT
  *              series of OS, so these routines will not work
  *              on Windows 9x series and ME.
- * 
+ *
  * @{
  **/
 
@@ -350,7 +350,7 @@ public:
      *
      * @param   * - Please refer to documentation of OpenSCManager
      *          in MSDN
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/
@@ -369,7 +369,7 @@ public:
      *
      * @param   * - Please refer to documentation of CreateService
      *          in MSDN
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/
@@ -397,7 +397,7 @@ public:
      *
      * @param   * - Please refer to documentation of CreateService
      *          in MSDN
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/
@@ -413,7 +413,7 @@ public:
      *          database, if successful.
      *
      * @param   none
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/
@@ -428,7 +428,7 @@ public:
      *          if successful.
      *
      * @param   none
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/
@@ -443,7 +443,7 @@ public:
      *          call to OpenSCManager, if successful.
      *
      * @param   none
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/
@@ -460,7 +460,7 @@ public:
      *
      * @param   * - Please refer to documentation of CreateService
      *          in MSDN
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/
@@ -468,7 +468,7 @@ public:
     StartService(
         DWORD numServiceArgs = 0,
         LPCWSTR* serviceArgsVector = NULL);
-    
+
 
     /**
      * @brief   It is a wrapper around StopService
@@ -477,7 +477,7 @@ public:
      *
      * @param   * - Please refer to documentation of CreateService
      *          in MSDN
-     *  
+     *
      * @return  If the function succeed, the return value is true.
      *          If the function fails, the return value is false.
      **/

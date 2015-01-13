@@ -53,11 +53,11 @@ Module Description:
 /*++
 
 Routine Name:
-    
+
     ihiGetProcessIdByName
 
 Routine Description:
-    
+
     This function should called to find the Process Id
     of a running process by supplying the process
     name.
@@ -87,7 +87,7 @@ ihiGetProcessIdByName(
         errorCode = GetLastError();
         goto funcExit;
     }
-    
+
     bool processFound = false;
 
     for (   processListIter = processList.begin();
@@ -124,11 +124,11 @@ funcExit:
 /*++
 
 Routine Name:
-    
+
     ihiLaunchNewProcess
 
 Routine Description:
-    
+
     This function will create a new process and return
     process Id.
 
@@ -210,7 +210,7 @@ ihiInitInjectionData(
     LPCWSTR inDllPath,
     LPCSTR      inFnIncludes,
     LPCSTR      inFnExcludes)
-{   
+{
     bool funcResult = false;
 
     memset( injData,
@@ -321,7 +321,7 @@ Return:
 bool
 WINAPI
 ihiInjectDll(
-    HANDLE          hProcess,   
+    HANDLE          hProcess,
     LPCWSTR inDllPath,
     LPCSTR      inFnIncludes,
     LPCSTR      inFnExcludes)
@@ -380,7 +380,7 @@ ihiInjectDll(
     {
         goto funcExit;
     }
-    
+
     WriteProcessMemory(
                     hProcess,
                     pInjectionCode,
@@ -390,7 +390,7 @@ ihiInjectDll(
 
     DWORD threadId = 0;
 
-    HANDLE hThread = CreateRemoteThread(    
+    HANDLE hThread = CreateRemoteThread(
                                 hProcess,
                                 0,
                                 0,
@@ -420,7 +420,7 @@ ihiUninjectDll(
 /*++
 
 Routine Description:
-    
+
     This routine removes an already injected DLL from the process
 
 Arguments:
@@ -483,7 +483,7 @@ Arguments:
     {
         goto funcExit;
     }
-    
+
     WriteProcessMemory(
                     hProcess,
                     pInjectionCode,
@@ -493,7 +493,7 @@ Arguments:
 
     DWORD threadId = 0;
 
-    HANDLE hThread = CreateRemoteThread(    
+    HANDLE hThread = CreateRemoteThread(
                                 hProcess,
                                 0,
                                 0,

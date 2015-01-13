@@ -29,11 +29,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*++
 
 Module Name
-    
+
     installdriver.cpp
 
 Module Description
-            
+
     Win32 routines to install and uninstall a dynamically
     loadable device driver.
 
@@ -41,14 +41,14 @@ Module Description
     installed on the fly by using service manager apis.
 
 --*/
-  
+
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ihulib.h"
 
-BOOL 
+BOOL
 __cdecl
 IhuInstallDriver(
     IN LPCWSTR    DriverName,
@@ -86,7 +86,7 @@ IhuInstallDriver(
 FuncEnd:
     return bResult;
 }
- 
+
 
 BOOL
 __cdecl
@@ -106,7 +106,7 @@ IhuRemoveDriver(
     }
 
     bResult = serviceManager.OpenService(
-                                    DriverName, 
+                                    DriverName,
                                     SERVICE_ALL_ACCESS);
 
     if (bResult == FALSE)
@@ -148,7 +148,7 @@ IhuStartDriver(
     }
 
     bResult = serviceManager.OpenService(
-                                        DriverName, 
+                                        DriverName,
                                         SERVICE_ALL_ACCESS);
 
     if (bResult == FALSE)
@@ -191,7 +191,7 @@ IhuStopDriver(
     }
 
     bResult = serviceManager.OpenService(
-                                        DriverName, 
+                                        DriverName,
                                         SERVICE_ALL_ACCESS);
 
     if (bResult == FALSE)

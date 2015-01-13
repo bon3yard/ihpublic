@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* ++
 
 Module Name
-    
+
     servicemanager.cpp
 
 Module Description
@@ -284,7 +284,7 @@ IHU_SERVICE_MANAGER::StopService(
         inServiceStatus = &serviceStatus;
     }
 
-    BOOL bTempResult = ::ControlService(    
+    BOOL bTempResult = ::ControlService(
                             mService,
                             SERVICE_CONTROL_STOP,
                             inServiceStatus);

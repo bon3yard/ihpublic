@@ -99,19 +99,19 @@ IhuGetProcessList(
         PFN_GET_MODULE_BASE_NAME pfnGetModuleBaseNameW;
         PFN_GET_MODULE_FILE_NAME_EX pfnGetModuleFileNameExW;
 
-        pfnEnumProcesses = 
+        pfnEnumProcesses =
             (PFN_ENUM_PROCESSES)GetProcAddress(hPsapi,
                                                "EnumProcesses");
 
-        pfnEnumProcessModules = 
+        pfnEnumProcessModules =
             (PFN_ENUM_PROCESS_MODULES)GetProcAddress(hPsapi,
                                                      "EnumProcessModules");
 
-        pfnGetModuleBaseNameW = 
+        pfnGetModuleBaseNameW =
             (PFN_GET_MODULE_BASE_NAME)GetProcAddress(hPsapi,
                                                   "GetModuleBaseNameW");
 
-        pfnGetModuleFileNameExW = 
+        pfnGetModuleFileNameExW =
             (PFN_GET_MODULE_FILE_NAME_EX)GetProcAddress(hPsapi,
                                                         "GetModuleFileNameExW");
 
@@ -136,7 +136,7 @@ IhuGetProcessList(
             goto funcEnd;
         }
 
-        status = pfnEnumProcesses(  
+        status = pfnEnumProcesses(
                                 processIdList,
                                 M_MAX_PROCESSES * sizeof(DWORD),
                                 &listSizeUsed);
@@ -149,7 +149,7 @@ IhuGetProcessList(
                     procIndex < actualNumProcess;
                     ++procIndex)
             {
-                HANDLE hProcess = OpenProcess( 
+                HANDLE hProcess = OpenProcess(
                                     PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
                                     FALSE,
                                     processIdList[procIndex]);
@@ -158,7 +158,7 @@ IhuGetProcessList(
                 {
                     HMODULE hMod;
                     DWORD   bytesNeeded;
-                    
+
                     if (pfnEnumProcessModules(
                                             hProcess,
                                             &hMod,
@@ -232,7 +232,7 @@ IhuGetProcessList(
             (PFN_PROCESS32_FIRST)GetProcAddress(hKernel32,
                                                 "Process32FirstW");
 
-        pfnProcess32NextW = 
+        pfnProcess32NextW =
             (PFN_PROCESS32_NEXT)GetProcAddress(hKernel32,
                                                "Process32NextW");
 
