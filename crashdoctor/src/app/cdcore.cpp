@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*++
 
 Module Name:
-    
+
     cdcore.cpp
 
 Module Description:
@@ -87,10 +87,10 @@ CRecoverCrash::CRecoverCrash()
 /*++
 
 Routine Description:
-	
-	CRecoverCrash Constructor. It initializes the required variables and set
-	mCrashedProcessInfo.notInitialized to true. It will be set to false once
-	we get a Create process debug event for the crashing process
+
+    CRecoverCrash Constructor. It initializes the required variables and set
+    mCrashedProcessInfo.notInitialized to true. It will be set to false once
+    we get a Create process debug event for the crashing process
 
 --*/
 {
@@ -98,18 +98,18 @@ Routine Description:
     mKeepAlive                          = true;
     mCountCrash                         = 0;
     mSymbolInitialized                  = FALSE;
-	mCrashRecovered						= false;
+    mCrashRecovered                     = false;
 
     memset(mDbgString, 0, sizeof(mDbgString));
 
-	//
-	// Initialize the functions information that we should map
-	//
-	mFunctionNameToHandlerMap["CreateFileW"] = 
-										&CRecoverCrash::HandleCreateFileW;
+    //
+    // Initialize the functions information that we should map
+    //
+    mFunctionNameToHandlerMap["CreateFileW"] =
+                                        &CRecoverCrash::HandleCreateFileW;
 
-	mFunctionNameToHandlerMap["CreateFileA"] = 
-										&CRecoverCrash::HandleCreateFileA;
+    mFunctionNameToHandlerMap["CreateFileA"] =
+                                        &CRecoverCrash::HandleCreateFileA;
 }
 
 
@@ -117,8 +117,8 @@ CRecoverCrash::~CRecoverCrash()
 /*++
 
 Routine Description:
-	
-	CRecoverCrash Destructor
+
+    CRecoverCrash Destructor
 
 --*/
 {
@@ -128,103 +128,103 @@ Routine Description:
 void
 __cdecl
 CRecoverCrash::HandleError(
-	DWORD	inErrorCode,
-	LPCTSTR	inErrorMsg,
-	...)
+    DWORD   inErrorCode,
+    LPCTSTR inErrorMsg,
+    ...)
 /*++
 
 Routine Description:
-	
-	Process CrashDoctor specific or Windows error code and display that error
+
+    Process CrashDoctor specific or Windows error code and display that error
     to the user.
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	tstring		errorMessage;
-	TCHAR		szMsg[1024];
-	va_list		arg;
+    tstring     errorMessage;
+    TCHAR       szMsg[1024];
+    va_list     arg;
 
-	ASSERT(inErrorCode);
+    ASSERT(inErrorCode);
 
-	if (inErrorMsg)
-	{
-		va_start(arg, inErrorMsg);
+    if (inErrorMsg)
+    {
+        va_start(arg, inErrorMsg);
 
-		StringCchVPrintf(
-						szMsg,
-						sizeof(szMsg)/sizeof(TCHAR),
-						inErrorMsg,
-						arg);
-		va_end(arg);
+        StringCchVPrintf(
+                        szMsg,
+                        sizeof(szMsg)/sizeof(TCHAR),
+                        inErrorMsg,
+                        arg);
+        va_end(arg);
 
-		errorMessage = szMsg;
-	}
+        errorMessage = szMsg;
+    }
 
-	if (!errorMessage.empty())
-	{
-		errorMessage += _T("\n");
-	}
+    if (!errorMessage.empty())
+    {
+        errorMessage += _T("\n");
+    }
 
-	switch(inErrorCode)
-	{	
-		case ERR_INVALID_PROCESS_ID:
-		{
-			mRecoveryHandler->PrintError(
+    switch(inErrorCode)
+    {
+        case ERR_INVALID_PROCESS_ID:
+        {
+            mRecoveryHandler->PrintError(
                     _T("%sError: Invalid Process ID (PID) specified."),
                     errorMessage.c_str());
 
-			break;
-		}
-		default:
-		{
-			LPTSTR lpMsgBuf = NULL;
+            break;
+        }
+        default:
+        {
+            LPTSTR lpMsgBuf = NULL;
 
-			if (FormatMessage( 
-					FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-					FORMAT_MESSAGE_FROM_SYSTEM | 
-					FORMAT_MESSAGE_IGNORE_INSERTS,
-					NULL,
-					inErrorCode,
-					MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-					(LPTSTR)&lpMsgBuf,
-					0,
-					NULL))
-			{
-				mRecoveryHandler->PrintError(
-										_T("%s%s"),
-										errorMessage.c_str(),
-										lpMsgBuf);
+            if (FormatMessage(
+                    FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                    FORMAT_MESSAGE_FROM_SYSTEM |
+                    FORMAT_MESSAGE_IGNORE_INSERTS,
+                    NULL,
+                    inErrorCode,
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                    (LPTSTR)&lpMsgBuf,
+                    0,
+                    NULL))
+            {
+                mRecoveryHandler->PrintError(
+                                        _T("%s%s"),
+                                        errorMessage.c_str(),
+                                        lpMsgBuf);
 
-				LocalFree(lpMsgBuf);
-			}
-			else
-			{
-				mRecoveryHandler->PrintError(
+                LocalFree(lpMsgBuf);
+            }
+            else
+            {
+                mRecoveryHandler->PrintError(
                         _T("%sUnknown error occured. Error code = %x"),
                         errorMessage.c_str(),
                         inErrorCode);
-			}
+            }
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 }
 
 
 void
 CRecoverCrash::HandleCreateFileW(
-	CONTEXT	&inContext)
+    CONTEXT &inContext)
 /*++
 
 Routine Description:
 
-	This function is called when the crashing process calls CreateFileW. If
-	the faulting process is opening a file for write, then we would create
-	a backup of the file
+    This function is called when the crashing process calls CreateFileW. If
+    the faulting process is opening a file for write, then we would create
+    a backup of the file
 
 Arguments:
 
@@ -232,24 +232,24 @@ Arguments:
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	HandleCreateFileCommon(inContext, true);
+    HandleCreateFileCommon(inContext, true);
 }
 
 
 void
 CRecoverCrash::HandleCreateFileA(
-	CONTEXT	&inContext)
+    CONTEXT &inContext)
 /*++
 
 Routine Description:
 
-	This function is called when the crashing process calls CreateFileA. If
-	the faulting process is opening a file for write, then we would create
-	a backup of the file
+    This function is called when the crashing process calls CreateFileA. If
+    the faulting process is opening a file for write, then we would create
+    a backup of the file
 
 Arguments:
 
@@ -257,47 +257,47 @@ Arguments:
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	HandleCreateFileCommon(inContext, false);
+    HandleCreateFileCommon(inContext, false);
 }
 
 
 void
 CRecoverCrash::HandleCreateFileCommon(
-	CONTEXT	&inContext,
-	bool	inUnicodeFileName)
+    CONTEXT &inContext,
+    bool    inUnicodeFileName)
 /*++
 
 Routine Description:
 
-	This function first checks if the file is opened for write access, if true
-	then it reads the file name supplied in the call to CreateFile. It then
-	generates a destination file name and copies the file, that faulting
-	process is trying to open, to the destination file
+    This function first checks if the file is opened for write access, if true
+    then it reads the file name supplied in the call to CreateFile. It then
+    generates a destination file name and copies the file, that faulting
+    process is trying to open, to the destination file
 
 Arguments:
 
     inContext - CONTEXT of the thread calling CreateFileA/W
 
-	inUnicodeFileName - tells if we are called as a result of CreateFileW or A
+    inUnicodeFileName - tells if we are called as a result of CreateFileW or A
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	DWORD		requestedAccess;
-	wchar_t		unicodePath[MAX_PATH]		= {0};
-	char		ansiPath[MAX_PATH]			= {0};
-	PVOID		pFilePath					= NULL;
-	tstring		filePath;
-	tstring		fileName;
-	tstring		destFilePath;
-	TCHAR		tempPath[MAX_PATH];
+    DWORD       requestedAccess;
+    wchar_t     unicodePath[MAX_PATH]       = {0};
+    char        ansiPath[MAX_PATH]          = {0};
+    PVOID       pFilePath                   = NULL;
+    tstring     filePath;
+    tstring     fileName;
+    tstring     destFilePath;
+    TCHAR       tempPath[MAX_PATH];
 
     //
     // TODO: Make helper functions called read first parameter, read second
@@ -305,127 +305,127 @@ Return:
     //
 
 #if defined(_M_IX86)
-	if (!DebuggeeReadMemory(
-			(LPVOID)(inContext.Esp + 8),
-			&requestedAccess,
-			sizeof(requestedAccess)))
-	{
-		goto funcEnd;
-	}
+    if (!DebuggeeReadMemory(
+            (LPVOID)(inContext.Esp + 8),
+            &requestedAccess,
+            sizeof(requestedAccess)))
+    {
+        goto funcEnd;
+    }
 #elif defined(_M_AMD64)
-	requestedAccess = (DWORD)inContext.Rdx;
+    requestedAccess = (DWORD)inContext.Rdx;
 #endif
 
-	// If any write bit is on then we should backup the file
-	if ((GENERIC_WRITE & requestedAccess) == 0)
-	{
-		goto funcEnd;
-	}
+    // If any write bit is on then we should backup the file
+    if ((GENERIC_WRITE & requestedAccess) == 0)
+    {
+        goto funcEnd;
+    }
 
 #if defined(_M_IX86)
-	if (!DebuggeeReadMemory(
-			(LPVOID)(inContext.Esp + 4),
-			&pFilePath,
-			sizeof(pFilePath)))
-	{
-		goto funcEnd;
-	}
+    if (!DebuggeeReadMemory(
+            (LPVOID)(inContext.Esp + 4),
+            &pFilePath,
+            sizeof(pFilePath)))
+    {
+        goto funcEnd;
+    }
 #elif defined(_M_AMD64)
-	pFilePath = (LPVOID)(DWORD_PTR)inContext.Rcx;
+    pFilePath = (LPVOID)(DWORD_PTR)inContext.Rcx;
 #endif
 
-	if (!DebuggeeReadMemory(
-			pFilePath,
-			(inUnicodeFileName) ? unicodePath : (wchar_t *)ansiPath,
-			(inUnicodeFileName) ? sizeof(unicodePath) : sizeof(ansiPath)))
-	{
-		goto funcEnd;
-	}
+    if (!DebuggeeReadMemory(
+            pFilePath,
+            (inUnicodeFileName) ? unicodePath : (wchar_t *)ansiPath,
+            (inUnicodeFileName) ? sizeof(unicodePath) : sizeof(ansiPath)))
+    {
+        goto funcEnd;
+    }
 
-	if (!inUnicodeFileName)
-	{
-		// If the file name read from debuggee is not unicode then 
+    if (!inUnicodeFileName)
+    {
+        // If the file name read from debuggee is not unicode then
         // convert it to unicode.
-		MultiByteToWideChar(
-						CP_UTF8,
-						0,
-						ansiPath,
-						-1,
-						unicodePath,
-						MAX_PATH);
-	}
-	
-	filePath = unicodePath;
+        MultiByteToWideChar(
+                        CP_UTF8,
+                        0,
+                        ansiPath,
+                        -1,
+                        unicodePath,
+                        MAX_PATH);
+    }
 
-	size_t index = filePath.find_last_of(_T('\\'));
-	if (index != -1)
-	{
-		fileName = filePath.substr(index + 1, filePath.length() - index);
-	}
-	
-	if (SHGetFolderPath(
-				NULL,
-				CSIDL_APPDATA | CSIDL_FLAG_CREATE,
-				NULL,
-				SHGFP_TYPE_CURRENT,
-				tempPath) == S_OK)
-	{
-		destFilePath = tempPath;
-		destFilePath += _T("\\CrashDoctor\\");
-		CreateDirectory(destFilePath.c_str(), NULL);
-	}
+    filePath = unicodePath;
 
-	SYSTEMTIME time;
-	::GetSystemTime(&time);
+    size_t index = filePath.find_last_of(_T('\\'));
+    if (index != -1)
+    {
+        fileName = filePath.substr(index + 1, filePath.length() - index);
+    }
 
-	StringCchPrintf(
-				tempPath,
-				MAX_PATH,
-				_T("%04d%02d%02d%02d%02d%02d%03d"),
-				time.wYear,
-				time.wMonth,
-				time.wDay,
-				time.wHour,
-				time.wMinute,
-				time.wSecond,
-				time.wMilliseconds);
+    if (SHGetFolderPath(
+                NULL,
+                CSIDL_APPDATA | CSIDL_FLAG_CREATE,
+                NULL,
+                SHGFP_TYPE_CURRENT,
+                tempPath) == S_OK)
+    {
+        destFilePath = tempPath;
+        destFilePath += _T("\\CrashDoctor\\");
+        CreateDirectory(destFilePath.c_str(), NULL);
+    }
 
-	destFilePath += tempPath;
-	destFilePath += _T(".");
-	destFilePath += fileName;
+    SYSTEMTIME time;
+    ::GetSystemTime(&time);
 
-	mRecoveryHandler->PrintInfo(
-				_T("Faulty process is trying to open %s for write access\n"),
-				filePath.c_str());
+    StringCchPrintf(
+                tempPath,
+                MAX_PATH,
+                _T("%04d%02d%02d%02d%02d%02d%03d"),
+                time.wYear,
+                time.wMonth,
+                time.wDay,
+                time.wHour,
+                time.wMinute,
+                time.wSecond,
+                time.wMilliseconds);
 
-	mRecoveryHandler->PrintInfo(
-				_T("CrashDoctor will make a backup copy of this file at: %s\n"),
-				destFilePath.c_str());
+    destFilePath += tempPath;
+    destFilePath += _T(".");
+    destFilePath += fileName;
 
-	CopyFile(filePath.c_str(), destFilePath.c_str(), TRUE);
+    mRecoveryHandler->PrintInfo(
+                _T("Faulty process is trying to open %s for write access\n"),
+                filePath.c_str());
 
-	// We introduced sleep here because without it, if another CreateFile
-	// is called by debuggee immediately, then we were not able to generate
-	// a unique file name. Performance is not important here because we are
-	// only do this when a fauling process calls CreateFile with write access
-	// on a file
-	Sleep(100);
+    mRecoveryHandler->PrintInfo(
+                _T("CrashDoctor will make a backup copy of this file at: %s\n"),
+                destFilePath.c_str());
+
+    CopyFile(filePath.c_str(), destFilePath.c_str(), TRUE);
+
+    // We introduced sleep here because without it, if another CreateFile
+    // is called by debuggee immediately, then we were not able to generate
+    // a unique file name. Performance is not important here because we are
+    // only do this when a fauling process calls CreateFile with write access
+    // on a file
+    Sleep(100);
 
 funcEnd:
-	return;
+    return;
 }
 
 
 void
 CRecoverCrash::HandleCreateProcess(
-    DEBUG_EVENT				&inDebugEvent,
-	CD_SYMBOL_PROCESS_INFO	&symProcInfo)
+    DEBUG_EVENT             &inDebugEvent,
+    CD_SYMBOL_PROCESS_INFO  &symProcInfo)
 /*++
 
 Routine Description:
 
-	This is mostly the first event we get once we attach to a process. This
-	would simply store the process information supplied in the debug event.
+    This is mostly the first event we get once we attach to a process. This
+    would simply store the process information supplied in the debug event.
 
 Arguments:
 
@@ -433,7 +433,7 @@ Arguments:
 
 Return:
 
-	none
+    none
 
 --*/
 {
@@ -443,22 +443,22 @@ Return:
     {
         mCrashedProcessInfo.notInitialized = false;
 
-		//
-		// Launch the symbol initialization thread. Once this thread is
-		// launched we will wait for it to finish in 5 seconds. If it takes
-		// more than 5 seconds, then we will assume that symbol initialization
-		// failed and we will use our in-house stack generaiton approach
-		// rather than relying upon symbol support for that
-		//
-		symProcInfo.ProcessId = inDebugEvent.dwProcessId;
-		symProcInfo.ProcessHandle = inDebugEvent.u.CreateProcessInfo.hProcess;
-		symProcInfo.SymbolInitialized = false;
+        //
+        // Launch the symbol initialization thread. Once this thread is
+        // launched we will wait for it to finish in 5 seconds. If it takes
+        // more than 5 seconds, then we will assume that symbol initialization
+        // failed and we will use our in-house stack generaiton approach
+        // rather than relying upon symbol support for that
+        //
+        symProcInfo.ProcessId = inDebugEvent.dwProcessId;
+        symProcInfo.ProcessHandle = inDebugEvent.u.CreateProcessInfo.hProcess;
+        symProcInfo.SymbolInitialized = false;
 
-		InitializeSymbolHelper(symProcInfo);
+        InitializeSymbolHelper(symProcInfo);
 
-        mCrashedProcessInfo.hProcess = 
+        mCrashedProcessInfo.hProcess =
                     inDebugEvent.u.CreateProcessInfo.hProcess;
-        
+
         mCrashedProcessInfo.processId =
                     inDebugEvent.dwProcessId;
 
@@ -469,7 +469,7 @@ Return:
 
 #if defined (_M_AMD64)
         mCrashedProcessInfo.isProcess32bit = FALSE;
-        
+
         BOOL isWow64Process = FALSE;
         if (IsWow64Process(mCrashedProcessInfo.hProcess, &isWow64Process) && isWow64Process)
         {
@@ -491,23 +491,23 @@ Return:
         gStartAddr =
             (DWORD_PTR)
                 inDebugEvent.u.CreateProcessInfo.lpBaseOfImage;
-        
+
         gEndAddr =
             (DWORD_PTR)((char *)gStartAddr + 0x10000);
 
 
         CD_THREAD_INFO threadInfo;
 
-        threadInfo.hThread	= 
+        threadInfo.hThread  =
                         inDebugEvent.u.CreateProcessInfo.hThread;
-        
-        threadInfo.threadId	= inDebugEvent.dwThreadId;
+
+        threadInfo.threadId = inDebugEvent.dwThreadId;
 
         mCrashedProcessInfo.threadList.push_back(threadInfo);
 
-		// Treat this process as DLL as well for inserting breakpoints
-		// On NT et al we only insert breakpoint in CreateFileA/W but
-		// since 9x doesn't support copy on write, we hook IAT for that
+        // Treat this process as DLL as well for inserting breakpoints
+        // On NT et al we only insert breakpoint in CreateFileA/W but
+        // since 9x doesn't support copy on write, we hook IAT for that
 		HandleCreateFileHooking(
 					(LPBYTE)inDebugEvent.u.CreateProcessInfo.lpBaseOfImage);
     }
@@ -561,7 +561,7 @@ Return:
 --*/
 {
     CD_THREAD_INFO threadInfo;
-                    
+
     threadInfo.hThread  = inDebugEvent.u.CreateThread.hThread;
     threadInfo.threadId = inDebugEvent.dwThreadId;
 
@@ -603,7 +603,7 @@ Return:
         if (threadInfo.threadId == inDebugEvent.dwThreadId)
         {
             mCrashedProcessInfo.threadList.erase(threadIter);
-            
+
             break;
         }
     }
@@ -697,8 +697,8 @@ Return:
 {
 	//
 	// We are #ifdef'ing the code because the other approach used below to
-	// match base address of DLL with module handle is working. If somehow
-	// that approach doesn't work then we should enable this #ifed out
+    // match base address of DLL with module handle is working. If somehow
+    // that approach doesn't work then we should enable this #ifed out
     // approach to find when kernel32.dll load notificaiton is received
 	//
 #if USE_READ_IMAGE_NAME_FUNCTION
@@ -719,30 +719,30 @@ Return:
 
 	//
 	// A dll's handle is its base address as well. We know that kernel32.dll
-	// is loaded at same address in all the processes, hence we can compare
-	// the dll base address in debuggee process with module handle of
-	// kernel32.dll in debugger process
-	//
-	if (GetModuleHandle(_T("kernel32.dll")) == (HMODULE)inImageAddress)
-	{
-		//
-		// For windows NT, we insert a breakpoint in CreateFileW to track when
-		// it is called.
+    // is loaded at same address in all the processes, hence we can compare
+    // the dll base address in debuggee process with module handle of
+    // kernel32.dll in debugger process
+    //
+    if (GetModuleHandle(_T("kernel32.dll")) == (HMODULE)inImageAddress)
+    {
+        //
+        // For windows NT, we insert a breakpoint in CreateFileW to track when
+        // it is called.
         //
         InsertBreakPoints(inImageAddress);
-	}
+    }
 }
 
 
 bool
 CRecoverCrash::InsertBreakPoints(
-	PBYTE		inImageBase)
+    PBYTE       inImageBase)
 /*++
 
 Routine Description:
 
-	This function will traverse through the export table of the given DLL
-	and insert breakpoint in all functions that we need to monitor
+    This function will traverse through the export table of the given DLL
+    and insert breakpoint in all functions that we need to monitor
 
 Arguments:
 
@@ -750,69 +750,69 @@ Arguments:
 
 Return:
 
-	true - always (TODO - see if we ever need to return false)
+    true - always (TODO - see if we ever need to return false)
 
 --*/
 {
-	DWORD cbRead = 0;
-	IMAGE_DOS_HEADER dh;
+    DWORD cbRead = 0;
+    IMAGE_DOS_HEADER dh;
 
     if (!DebuggeeReadMemory(
-			(LPVOID)inImageBase,
-			&dh,
-			sizeof(IMAGE_DOS_HEADER)))
-	{
+            (LPVOID)inImageBase,
+            &dh,
+            sizeof(IMAGE_DOS_HEADER)))
+    {
         goto funcEnd;
     }
 
     if (dh.e_magic != IMAGE_DOS_SIGNATURE)
-	{
+    {
         goto funcEnd;
     }
 
     IMAGE_NT_HEADERS nh;
 
     if (!DebuggeeReadMemory(
-				(LPVOID)(inImageBase + dh.e_lfanew),
-				&nh,
-				sizeof(IMAGE_NT_HEADERS)))
-	{
+                (LPVOID)(inImageBase + dh.e_lfanew),
+                &nh,
+                sizeof(IMAGE_NT_HEADERS)))
+    {
         goto funcEnd;
     }
 
-	PIMAGE_DATA_DIRECTORY expDataDir = (PIMAGE_DATA_DIRECTORY)
-		&nh.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+    PIMAGE_DATA_DIRECTORY expDataDir = (PIMAGE_DATA_DIRECTORY)
+        &nh.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
 
     if (!expDataDir->VirtualAddress)
-	{
+    {
         goto funcEnd;
     }
 
-    PIMAGE_EXPORT_DIRECTORY expDir = 
-							(PIMAGE_EXPORT_DIRECTORY)malloc(expDataDir->Size);
+    PIMAGE_EXPORT_DIRECTORY expDir =
+                            (PIMAGE_EXPORT_DIRECTORY)malloc(expDataDir->Size);
 
-	if (!expDir)
-	{
-		mRecoveryHandler->PrintError(
-				_T("Unable to allocate 0x%X bytes in the debugger.\n"),
-				expDataDir->Size);
-		goto funcEnd;
-	}
+    if (!expDir)
+    {
+        mRecoveryHandler->PrintError(
+                _T("Unable to allocate 0x%X bytes in the debugger.\n"),
+                expDataDir->Size);
+        goto funcEnd;
+    }
 
     if (!DebuggeeReadMemory(
-				(LPVOID)(inImageBase + expDataDir->VirtualAddress),
-				expDir,
-				expDataDir->Size))
-	{
+                (LPVOID)(inImageBase + expDataDir->VirtualAddress),
+                expDir,
+                expDataDir->Size))
+    {
         goto funcEnd;
     }
 
-	//
-	// dbgrRelImageBase is the base (fake) of DLL image relative to expDir
-	// in debuggers memory. It helps calculating VA from RVA in debuggers
-	// memory. Let us understand this more:
-	//
-	// A sample layout of DLL image in debuggee's memory:
+    //
+    // dbgrRelImageBase is the base (fake) of DLL image relative to expDir
+    // in debuggers memory. It helps calculating VA from RVA in debuggers
+    // memory. Let us understand this more:
+    //
+    // A sample layout of DLL image in debuggee's memory:
 	// inImageBase |expDataDir->VirtualAddress|Export directory
 	//      ->start|->>>>>>>>>>>>>>>>>>>>>>>>>|>>>>>>>>>....
 	//
@@ -822,7 +822,7 @@ Return:
 	// image base address in debugger memory relative to expDir and do all the
 	// RVA to VA conversion based on this address.
 	//
-	PBYTE dbgrRelImageBase = 
+	PBYTE dbgrRelImageBase =
 						(PBYTE)((PBYTE)expDir - expDataDir->VirtualAddress);
 
 	PULONG fnAddrs		=
@@ -1049,16 +1049,16 @@ false - memory couldn't be read due to some error
 }
 bool
 CRecoverCrash::DebuggeeReadMemory(
-	LPCVOID	inAddress,
-	LPVOID	ioBuffer,
-	SIZE_T	inSize,
-	SIZE_T	*oBytesRead)
+    LPCVOID inAddress,
+    LPVOID  ioBuffer,
+    SIZE_T  inSize,
+    SIZE_T  *oBytesRead)
 /*++
 
 Routine Description:
 
-	This function is used to read the memory of the debuggee process. If
-	memory is not read, it logs and error as well
+    This function is used to read the memory of the debuggee process. If
+    memory is not read, it logs and error as well
 
 Arguments:
 
@@ -1066,8 +1066,8 @@ Arguments:
 
 Return:
 
-	true - memory is read
-	false - memory couldn't be read due to some error
+    true - memory is read
+    false - memory couldn't be read due to some error
 
 --*/
 {
@@ -1114,37 +1114,37 @@ Return:
 
 --*/
 {
-	if (!WriteProcessMemory(
-				mCrashedProcessInfo.hProcess,
-				inAddress,
-				inBuffer,
-				inSize,
-				oBytesWrote))
-	{
-		HandleError(
-				GetLastError(),
-				_T("Unable to write memory at 0x%X in faulty process."),
-				inAddress);
+    if (!WriteProcessMemory(
+                mCrashedProcessInfo.hProcess,
+                inAddress,
+                inBuffer,
+                inSize,
+                oBytesWrote))
+    {
+        HandleError(
+                GetLastError(),
+                _T("Unable to write memory at 0x%X in faulty process."),
+                inAddress);
 
-			return false;
-	}
+            return false;
+    }
 
-	return true;
+    return true;
 }
 
 
 LPVOID
 CRecoverCrash::DebuggeeMemAlloc(
-	DWORD	inSize)
+    DWORD   inSize)
 /*++
 
 Routine Description:
 
-	This function is used to allocate memory in the debuggee's address space.
+    This function is used to allocate memory in the debuggee's address space.
 	For NT et al, we can allocate memory in other process using VirtualAllocEx
 	but that function doesn't exist for windows 9x. So for 9x we create a
-	memory mapped file. A memory mapped file automatically gets mapped in all
-	the running processes on windows 9x et al
+    memory mapped file. A memory mapped file automatically gets mapped in all
+    the running processes on windows 9x et al
 
 Arguments:
 
@@ -1152,7 +1152,7 @@ Arguments:
 
 Return:
 
-	LPVOID - address of newly allocated memory or NULL if it failed
+    LPVOID - address of newly allocated memory or NULL if it failed
 
 --*/
 {
@@ -1167,84 +1167,84 @@ Return:
 
 bool
 CRecoverCrash::ReadDllImageName(
-	PBYTE		inImageBase,
-	LPSTR		oImageName,
-	DWORD		inImageNameLength)
+    PBYTE       inImageBase,
+    LPSTR       oImageName,
+    DWORD       inImageNameLength)
 /*++
 
 Routine Description:
 
-	Reads the name of the DLL image from the DLL exports for the crashed
-	process
+    Reads the name of the DLL image from the DLL exports for the crashed
+    process
 
 Arguments:
 
     inImageBase - Base address of the loaded DLL
 
-	oImageName - Variable to receive the name of image
+    oImageName - Variable to receive the name of image
 
-	inImageNameLength - Maximum number of characters that oImageName can store
+    inImageNameLength - Maximum number of characters that oImageName can store
 
 Return:
 
-	true - if the image name is read
-	false - otherwise
+    true - if the image name is read
+    false - otherwise
 
 --*/
 {
-	DWORD cbRead = 0;
-	IMAGE_DOS_HEADER dh;
+    DWORD cbRead = 0;
+    IMAGE_DOS_HEADER dh;
 
     if (!DebuggeeReadMemory(
-			(LPVOID)inImageBase,
-			&dh,
-			sizeof(IMAGE_DOS_HEADER)))
-	{
+            (LPVOID)inImageBase,
+            &dh,
+            sizeof(IMAGE_DOS_HEADER)))
+    {
         return false;
     }
 
     if (dh.e_magic != IMAGE_DOS_SIGNATURE)
-	{
+    {
         return false;
     }
 
     IMAGE_NT_HEADERS nh;
 
     if (!DebuggeeReadMemory(
-				(LPVOID)(inImageBase + dh.e_lfanew),
-				&nh,
-				sizeof(IMAGE_NT_HEADERS)))
-	{
+                (LPVOID)(inImageBase + dh.e_lfanew),
+                &nh,
+                sizeof(IMAGE_NT_HEADERS)))
+    {
         return false;
     }
 
-	PIMAGE_DATA_DIRECTORY expDataDir = (PIMAGE_DATA_DIRECTORY)
-		&nh.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+    PIMAGE_DATA_DIRECTORY expDataDir = (PIMAGE_DATA_DIRECTORY)
+        &nh.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
 
     if (!expDataDir->VirtualAddress)
-	{
+    {
         return false;
     }
 
     IMAGE_EXPORT_DIRECTORY expdir;
 
     if (!DebuggeeReadMemory(
-				(LPVOID)(inImageBase + expDataDir->VirtualAddress),
-				&expdir,
-				sizeof(IMAGE_EXPORT_DIRECTORY)))
-	{
+                (LPVOID)(inImageBase + expDataDir->VirtualAddress),
+                &expdir,
+                sizeof(IMAGE_EXPORT_DIRECTORY)))
+    {
             return false;
     }
 
     if (!DebuggeeReadMemory(
-				(LPVOID)(inImageBase + expdir.Name),
-				oImageName,
-				inImageNameLength))
-	{
-		return false;
+                (LPVOID)(inImageBase + expdir.Name),
+                oImageName,
+                inImageNameLength))
+    {
+        return false;
     }
 
-	return true;
+    return true;
 }
 
 
@@ -1255,8 +1255,8 @@ CRecoverCrash::HandleException(
 
 Routine Description:
 
-	This function handles exception in a process. It basically see what kind
-	of exception has occured and accordingly decide what action to take
+    This function handles exception in a process. It basically see what kind
+    of exception has occured and accordingly decide what action to take
 
 Arguments:
 
@@ -1264,27 +1264,27 @@ Arguments:
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	switch (inDebugEvent.u.Exception.ExceptionRecord.ExceptionCode)
-	{
-		case EXCEPTION_BREAKPOINT:
-		{
-			return HandleBreakPoint(inDebugEvent);
-		}
-		case EXCEPTION_SINGLE_STEP:
-		{
-			return HandleSingleStep(inDebugEvent);
-		}
-		default:
-		{
-			return HandleFatalException(inDebugEvent);
-		}
-	}
+    switch (inDebugEvent.u.Exception.ExceptionRecord.ExceptionCode)
+    {
+        case EXCEPTION_BREAKPOINT:
+        {
+            return HandleBreakPoint(inDebugEvent);
+        }
+        case EXCEPTION_SINGLE_STEP:
+        {
+            return HandleSingleStep(inDebugEvent);
+        }
+        default:
+        {
+            return HandleFatalException(inDebugEvent);
+        }
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -1295,19 +1295,19 @@ CRecoverCrash::HandleBreakPoint(
 
 Routine Description:
 
-	This function handles the breakpoint exception in the faulting process.
+    This function handles the breakpoint exception in the faulting process.
 
-	We will insert breakpoints in some important functions like CreateFileW
-	and CreateFileA such that if faulting process calls these functions, we
-	create a backup copy of the file it is trying to open.
+    We will insert breakpoints in some important functions like CreateFileW
+    and CreateFileA such that if faulting process calls these functions, we
+    create a backup copy of the file it is trying to open.
 
-	If the exception occured due to our inserted breakpoint, we	will suspend
-	all the running threads of faulting process. Then we would read arguments
-	of the function , remove the breakpoint and replace it with the original
-	instruction there, execute the thread for single step (by setting
-	appropriate debug registers). After	executing the instruciton, we will
-	get an EXCEPTION_SINGLE_STEP and the HandleSingleStep function will be
-	called. See HandleSingleStep comments for further processing details.
+    If the exception occured due to our inserted breakpoint, we will suspend
+    all the running threads of faulting process. Then we would read arguments
+    of the function , remove the breakpoint and replace it with the original
+    instruction there, execute the thread for single step (by setting
+    appropriate debug registers). After executing the instruciton, we will
+    get an EXCEPTION_SINGLE_STEP and the HandleSingleStep function will be
+    called. See HandleSingleStep comments for further processing details.
 
 Arguments:
 
@@ -1315,116 +1315,116 @@ Arguments:
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	BP_INFO				bpInfo;
-	HANDLE				hThread = NULL;
-	THREAD_LIST_ITER	threadIter;
-	CONTEXT				context;
+    BP_INFO             bpInfo;
+    HANDLE              hThread = NULL;
+    THREAD_LIST_ITER    threadIter;
+    CONTEXT             context;
 
-	LPVOID exceptionAddress = 
-			inDebugEvent.u.Exception.ExceptionRecord.ExceptionAddress;
+    LPVOID exceptionAddress =
+            inDebugEvent.u.Exception.ExceptionRecord.ExceptionAddress;
 
-	ADDR_TO_BP_MAP::iterator addrToBpMapIter = 
-								mAddrToBpInfoMap.find(exceptionAddress);
+    ADDR_TO_BP_MAP::iterator addrToBpMapIter =
+                                mAddrToBpInfoMap.find(exceptionAddress);
 
     mRecoveryHandler->PrintWarning(
         _T("Process generated a breakpoint exception at address: 0x%X\n"),
         inDebugEvent.u.Exception.ExceptionRecord.ExceptionAddress);
 
-	//
-	// If an entry for this breakpoint is not found or if the original
-	// instruction is a breakpoint as well
-	//
-	if (addrToBpMapIter == mAddrToBpInfoMap.end() ||
-		0xCC			== addrToBpMapIter->second.OriginalByte)
-	{
-		goto funcEnd;
-	}
+    //
+    // If an entry for this breakpoint is not found or if the original
+    // instruction is a breakpoint as well
+    //
+    if (addrToBpMapIter == mAddrToBpInfoMap.end() ||
+        0xCC            == addrToBpMapIter->second.OriginalByte)
+    {
+        goto funcEnd;
+    }
 
-	bpInfo = addrToBpMapIter->second;
-	
-	for(	threadIter = mCrashedProcessInfo.threadList.begin();
-			threadIter != mCrashedProcessInfo.threadList.end();
-			++threadIter)
-	{
-		CD_THREAD_INFO threadInfo = *threadIter;
-		if (threadInfo.threadId == inDebugEvent.dwThreadId)
-		{
-			hThread = threadInfo.hThread;
-			break;
-		}
-	}
+    bpInfo = addrToBpMapIter->second;
 
-	if (hThread == NULL)
-	{
-		goto funcEnd;
-	}
-	
-	context.ContextFlags = CONTEXT_CONTROL | CONTEXT_INTEGER;
-	GetThreadContext(hThread, &context);
+    for(    threadIter = mCrashedProcessInfo.threadList.begin();
+            threadIter != mCrashedProcessInfo.threadList.end();
+            ++threadIter)
+    {
+        CD_THREAD_INFO threadInfo = *threadIter;
+        if (threadInfo.threadId == inDebugEvent.dwThreadId)
+        {
+            hThread = threadInfo.hThread;
+            break;
+        }
+    }
 
-	DebuggeeWriteMemory(
-				exceptionAddress,
-				&bpInfo.OriginalByte,
-				sizeof(bpInfo.OriginalByte));
+    if (hThread == NULL)
+    {
+        goto funcEnd;
+    }
 
-	// Call the handler function if any for this breakpoint
-	{
-		FUNCTION_NAME_TO_HANDLER_MAP::iterator fnNameToHndlrMapIter;
+    context.ContextFlags = CONTEXT_CONTROL | CONTEXT_INTEGER;
+    GetThreadContext(hThread, &context);
 
-		fnNameToHndlrMapIter = 
-						mFunctionNameToHandlerMap.find(bpInfo.FunctionName);
+    DebuggeeWriteMemory(
+                exceptionAddress,
+                &bpInfo.OriginalByte,
+                sizeof(bpInfo.OriginalByte));
 
-		if (fnNameToHndlrMapIter != mFunctionNameToHandlerMap.end())
-		{
-			PFN_FunctionHandler functionHandler = fnNameToHndlrMapIter->second;
-			(this->*functionHandler)(context);
-		}
-	}
+    // Call the handler function if any for this breakpoint
+    {
+        FUNCTION_NAME_TO_HANDLER_MAP::iterator fnNameToHndlrMapIter;
 
-	//
-	// Put the exception address on the thread stack so that when the single
-	// step exception is hit, we can retrieve this address to reinsert the
-	// breakpoint
-	//
-	ADDR_STACK &threadAddressStack = 
-							mThreadToAddrStackMap[inDebugEvent.dwThreadId];
+        fnNameToHndlrMapIter =
+                        mFunctionNameToHandlerMap.find(bpInfo.FunctionName);
 
-	threadAddressStack.push(exceptionAddress);
+        if (fnNameToHndlrMapIter != mFunctionNameToHandlerMap.end())
+        {
+            PFN_FunctionHandler functionHandler = fnNameToHndlrMapIter->second;
+            (this->*functionHandler)(context);
+        }
+    }
 
-	//
-	// We replaced our breakpoint with original instructions. Now set
-	// appropriate registers to make sure that we execute only one instruction
-	// and break again with SINGLE_STEP_EXCEPTION. In single step handler, we
-	// will restore our breakpoint. Also move program counter back by the size
-	// of breakpoint instruction (which is 1 for x86/x86-64 and (??) for IA64),
-	// so that original instruction can be executed as if there was no
-	// breakpoint
-	//
+    //
+    // Put the exception address on the thread stack so that when the single
+    // step exception is hit, we can retrieve this address to reinsert the
+    // breakpoint
+    //
+    ADDR_STACK &threadAddressStack =
+                            mThreadToAddrStackMap[inDebugEvent.dwThreadId];
+
+    threadAddressStack.push(exceptionAddress);
+
+    //
+    // We replaced our breakpoint with original instructions. Now set
+    // appropriate registers to make sure that we execute only one instruction
+    // and break again with SINGLE_STEP_EXCEPTION. In single step handler, we
+    // will restore our breakpoint. Also move program counter back by the size
+    // of breakpoint instruction (which is 1 for x86/x86-64 and (??) for IA64),
+    // so that original instruction can be executed as if there was no
+    // breakpoint
+    //
 #if defined(_M_IX86)
 
-	context.EFlags |= 0x100;
-	context.Eip -= 1;
+    context.EFlags |= 0x100;
+    context.Eip -= 1;
 
 #elif defined(_M_AMD64)
 
-	context.EFlags |= 0x100;
-	context.Rip -= 1;
+    context.EFlags |= 0x100;
+    context.Rip -= 1;
 
 #else
 
-	#error ("Uknown target machine type.")
+    #error ("Uknown target machine type.")
 
 #endif
 
-	SetThreadContext(hThread, &context);
+    SetThreadContext(hThread, &context);
 
 funcEnd:
 
-	return true;
+    return true;
 }
 
 
@@ -1435,9 +1435,9 @@ CRecoverCrash::HandleSingleStep(
 
 Routine Description:
 
-	If this single step event occured because of out breakpoint handling then
-	we will reinsert the removed breakpoint, resume all threads and continue
-	exceution of the process
+    If this single step event occured because of out breakpoint handling then
+    we will reinsert the removed breakpoint, resume all threads and continue
+    exceution of the process
 
 Arguments:
 
@@ -1445,34 +1445,34 @@ Arguments:
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	THREAD_TO_ADDR_STACK_MAP::iterator threadAddrStackIter = 
-						mThreadToAddrStackMap.find(inDebugEvent.dwThreadId);
+    THREAD_TO_ADDR_STACK_MAP::iterator threadAddrStackIter =
+                        mThreadToAddrStackMap.find(inDebugEvent.dwThreadId);
 
-	if (threadAddrStackIter == mThreadToAddrStackMap.end())
-	{
-		goto funcEnd;
-	}
+    if (threadAddrStackIter == mThreadToAddrStackMap.end())
+    {
+        goto funcEnd;
+    }
 
-	ADDR_STACK &addrStack = threadAddrStackIter->second;
+    ADDR_STACK &addrStack = threadAddrStackIter->second;
 
-	if (addrStack.empty())
-	{
-		goto funcEnd;
-	}
+    if (addrStack.empty())
+    {
+        goto funcEnd;
+    }
 
-	PVOID addr = addrStack.top();
+    PVOID addr = addrStack.top();
 
-	ReInsertBreakPoint(addr);
+    ReInsertBreakPoint(addr);
 
-	addrStack.pop();
+    addrStack.pop();
 
 funcEnd:
 
-	return true;
+    return true;
 }
 
 
@@ -1483,8 +1483,8 @@ CRecoverCrash::HandleFatalException(
 
 Routine Description:
 
-	This function handles exception in a process. It its a first chance
-	excpetion then we don't handle it. If its a second chance exception
+    This function handles exception in a process. It its a first chance
+    excpetion then we don't handle it. If its a second chance exception
 	then we try to revert it because a second chance exception is fatal
 	and terminates the process if not handled.
 
@@ -1531,7 +1531,7 @@ Return:
         // dump etc.
         //
         ++mCountCrash;
-        
+
         return Recover(inDebugEvent.dwThreadId);
     }
 }
@@ -1616,7 +1616,7 @@ CRecoverCrash::RecoverSkipFunction(HANDLE ThreadHandle, CONTEXT *Context)
                     SymFunctionTableAccess64,
                     SymGetModuleBase64,
                     NULL))
-        {											
+        {
             if (StackWalk64(
                         machineType,
                         mCrashedProcessInfo.hProcess,
@@ -1735,36 +1735,36 @@ CRecoverCrash::RecoverSkipFunctionHomebrew(CONTEXT *Context)
 
 bool
 CRecoverCrash::Recover(
-	DWORD	inThreadId)
+    DWORD   inThreadId)
 /*++
 
 Routine Description:
-	
-	This function tries to generate a stack trace of the crashed program such
+
+    This function tries to generate a stack trace of the crashed program such
     that it can bypass the crash and jumps out of the called function to the
     calling function.
 
-	It does so by unwinding the stack one call at a time and comparing the
-    return address with the	crashed process's loaded address. If an address
+    It does so by unwinding the stack one call at a time and comparing the
+    return address with the crashed process's loaded address. If an address
 	falls in the process address, it sets that EIP and corresponding EBP and
     change the crashed thread's context.
 
-	During this unwinding, there may be case when it can't find a valid address
+    During this unwinding, there may be case when it can't find a valid address
     to return too, due to stack corruption or exception occured in functions
-	like main. In such cases, it set the ContinueStatus	to 
+	like main. In such cases, it set the ContinueStatus	to
     DBG_EXCEPTION_NOT_HANDLED, which terminates	the process.
-    
+
 Arguments:
 
     inThreadId - ID of the thread which generated exception
-    
-    inRevertNCalls - How many calls should we revert in the call chain? 
+
+    inRevertNCalls - How many calls should we revert in the call chain?
         Basically when a thread crashes, we start unwinding the call chain and
         this variable tells us how many upper level calling functions to bypass
         E.g. If inRevertNCalls = 2 and Call stack is foo->foo1->foo2->foo3 then
         we will bypass the execution of foo2 and foo3 and return to the next
         instruction where foo1 calls foo2 (Do i make sense here?)
-        
+
 Return:
 
 	none
@@ -1776,7 +1776,7 @@ Return:
     bool crashRecovered = false;
 	CONTEXT context;
 
-	
+
 	for(threadIter = mCrashedProcessInfo.threadList.begin();
 		threadIter != mCrashedProcessInfo.threadList.end();
 		++threadIter)
@@ -1790,7 +1790,7 @@ Return:
 	}
 
 	context.ContextFlags = CONTEXT_CONTROL | CONTEXT_INTEGER;
-	
+
 	if (hThread != NULL)
 	{
 		GetThreadContext(hThread, &context);
@@ -1829,7 +1829,7 @@ CRecoverCrash::AttachToProcess(
 /*++
 
 Routine Description:
-	
+
 	Our mini-debugger implementation. It does following
 	things:
 
@@ -1840,7 +1840,7 @@ Routine Description:
 
 	- If a second chance exception occurs, then
 		- Backup all opened file (This may not be reqd)
-		- Put break point in CreateFile to backup any files 
+		- Put break point in CreateFile to backup any files
 		  that the program open subsequently
 		- Bypass the exception
 
@@ -1909,138 +1909,138 @@ Return:
     // terminate the faulting thread if it is not recovering. Terminating
     // crashing thread approach sounds too extreme but it is not, because if we
     // don't do anything, it will anyways end up crashing
-	//
-	mCountCrash = 0;
+    //
+    mCountCrash = 0;
 
-	//
-	// processAttached is used to see if we successfully attached
-	// to the target process or not
-	//
-	bool processAttached = false;
+    //
+    // processAttached is used to see if we successfully attached
+    // to the target process or not
+    //
+    bool processAttached = false;
 
-	while(mKeepAlive)
-	{
-		// Loader lock, if the target process is holding the loader lock then
+    while(mKeepAlive)
+    {
+        // Loader lock, if the target process is holding the loader lock then
         // WaitForDebugEvent will deadlock. In this case we basically will
         // generate a synthetic debug event which will continue the exeuction
         // of target process and generate Create process event
-		DWORD waitTime = 0;
+        DWORD waitTime = 0;
 
-		if (!processAttached)
-		{
-			waitTime = 20000;	// 20 seconds
-		}
-		else
-		{
-			waitTime = 2000;	// 2 second
-		}
+        if (!processAttached)
+        {
+            waitTime = 20000;   // 20 seconds
+        }
+        else
+        {
+            waitTime = 2000;    // 2 second
+        }
 
-		if (!WaitForDebugEvent(&debugEvent, waitTime))
-		{
-			if (!processAttached)
-			{
-    			// Synthesize a breakpoint event if we are not yet attached to
+        if (!WaitForDebugEvent(&debugEvent, waitTime))
+        {
+            if (!processAttached)
+            {
+                // Synthesize a breakpoint event if we are not yet attached to
                 // the process
                 debugEvent.dwProcessId      = processId;
 
-				debugEvent.dwDebugEventCode = EXCEPTION_DEBUG_EVENT;
-                
-				debugEvent.u.Exception.ExceptionRecord.ExceptionCode =
+                debugEvent.dwDebugEventCode = EXCEPTION_DEBUG_EVENT;
+
+                debugEvent.u.Exception.ExceptionRecord.ExceptionCode =
                                                         EXCEPTION_BREAKPOINT;
-			}
-			else
-			{
+            }
+            else
+            {
                 // Process is already attached to the debugger, it seems it is
                 // not generating any debug events. If mCrashRecovered is true
-				// that means we successfully recovered a crash because no other
-				// exception got generated in last 1 second
-				if (mCrashRecovered)
-				{
-					mCrashRecovered = false;
-					mRecoveryHandler->PrintMessage(
-						_T("CrashDoctor successfully recovered your process ")
-						_T("from crash.\n"));
-				}
+                // that means we successfully recovered a crash because no other
+                // exception got generated in last 1 second
+                if (mCrashRecovered)
+                {
+                    mCrashRecovered = false;
+                    mRecoveryHandler->PrintMessage(
+                        _T("CrashDoctor successfully recovered your process ")
+                        _T("from crash.\n"));
+                }
 
-				// Loop back and wait for debug events
-				continue;
-			}
-		}
+                // Loop back and wait for debug events
+                continue;
+            }
+        }
 
-		dwContinueStatus = DBG_CONTINUE;
+        dwContinueStatus = DBG_CONTINUE;
 
-		if (processId == debugEvent.dwProcessId)
-		{
-			switch (debugEvent.dwDebugEventCode)
-			{
-				case EXCEPTION_DEBUG_EVENT:
-				{
-					if (debugEvent.u.Exception.ExceptionRecord.ExceptionCode ==
-														EXCEPTION_BREAKPOINT)
-					{
-						if (hEvent)
-						{
-							SetEvent(hEvent);							
-							hEvent          = NULL;
-							processAttached = true;
-						}
-					}
+        if (processId == debugEvent.dwProcessId)
+        {
+            switch (debugEvent.dwDebugEventCode)
+            {
+                case EXCEPTION_DEBUG_EVENT:
+                {
+                    if (debugEvent.u.Exception.ExceptionRecord.ExceptionCode ==
+                                                        EXCEPTION_BREAKPOINT)
+                    {
+                        if (hEvent)
+                        {
+                            SetEvent(hEvent);
+                            hEvent          = NULL;
+                            processAttached = true;
+                        }
+                    }
 
-					if (!HandleException(debugEvent))
-					{
+                    if (!HandleException(debugEvent))
+                    {
                         dwContinueStatus = DBG_EXCEPTION_NOT_HANDLED;
                     }
 
-					break;
-				}
-				case CREATE_THREAD_DEBUG_EVENT:
-				{
+                    break;
+                }
+                case CREATE_THREAD_DEBUG_EVENT:
+                {
                     HandleCreateThread(debugEvent);
-					break;
-				}
-				case CREATE_PROCESS_DEBUG_EVENT:
-				{
+                    break;
+                }
+                case CREATE_PROCESS_DEBUG_EVENT:
+                {
                     HandleCreateProcess(debugEvent, symProcInfo);
-					break;
-				}
-				case EXIT_THREAD_DEBUG_EVENT:
-				{
+                    break;
+                }
+                case EXIT_THREAD_DEBUG_EVENT:
+                {
                     HandleExitThread(debugEvent);
-					break;
-				}
-				case EXIT_PROCESS_DEBUG_EVENT:
-				{
-					HandleExitProcess(debugEvent);
-					break;
-				}
-				case LOAD_DLL_DEBUG_EVENT:
-				{
-					HandleLoadDll(debugEvent);
-					break;
-				}
-				case UNLOAD_DLL_DEBUG_EVENT:
-				{
+                    break;
+                }
+                case EXIT_PROCESS_DEBUG_EVENT:
+                {
+                    HandleExitProcess(debugEvent);
+                    break;
+                }
+                case LOAD_DLL_DEBUG_EVENT:
+                {
+                    HandleLoadDll(debugEvent);
+                    break;
+                }
+                case UNLOAD_DLL_DEBUG_EVENT:
+                {
                     // Remove breakpoint insertion info if kernel32 is unloaded
-					break;
-				}
-				case OUTPUT_DEBUG_STRING_EVENT:
-				{
-					HandleOutputDebugString(debugEvent);
-					break;
-				}
-			}
-		}
+                    break;
+                }
+                case OUTPUT_DEBUG_STRING_EVENT:
+                {
+                    HandleOutputDebugString(debugEvent);
+                    break;
+                }
+            }
+        }
 
-		ContinueDebugEvent(	
+        ContinueDebugEvent(
                         debugEvent.dwProcessId,
-					    debugEvent.dwThreadId,
-					    dwContinueStatus);
-	}
+                        debugEvent.dwThreadId,
+                        dwContinueStatus);
+    }
 
     DeinitializeSymbolHelper(symProcInfo);
 
 funcExit:
-	return;
+    return;
 }
 
 
@@ -2051,12 +2051,12 @@ CRecoverCrash::InitializeSymbolHelper(
 
 Routine Description:
 
-	This function tries to initialize the symbol support provided by
-	dbghelp.dll for the faulting process. This support provides	efficient
-	stack generation and other useful features. The problem with the
-	intiialization is though that, if the process is holding loader lock
-	this deadlocks. To avoid the deadlock, i would run the symbol
-	initialization code in a thread and if the thread doesn't finish in
+    This function tries to initialize the symbol support provided by
+    dbghelp.dll for the faulting process. This support provides efficient
+    stack generation and other useful features. The problem with the
+    intiialization is though that, if the process is holding loader lock
+    this deadlocks. To avoid the deadlock, i would run the symbol
+    initialization code in a thread and if the thread doesn't finish in
 	specified time, i will terminate it and set variable to indicate
 	no symbol support.
 
@@ -2131,8 +2131,8 @@ cdSymInitializeThread(
 /*++
 
 Routine Description:
-	
-	This function initializes the symbol support for our process. These 
+
+	This function initializes the symbol support for our process. These
     functions are exported in dbghelp.dll.
 
 Return:

@@ -6,15 +6,15 @@ int
 __stdcall
 testCrash1(int a, int b, int c)
 {
-	printf("New test started\n");
+    printf("New test started\n");
 
-	int xx;
-	xx = 0;
-	xx++;
-	char *p = NULL;
-	*p = '5';
+    int xx;
+    xx = 0;
+    xx++;
+    char *p = NULL;
+    *p = '5';
 
-	printf("New test done\n");
+    printf("New test done\n");
 
     return 5;
 }
@@ -23,16 +23,16 @@ int
 __stdcall
 testCrash(int a, int b, int c)
 {
-	printf("Crash test started\n");
+    printf("Crash test started\n");
 
-	int xx;
-	xx = 0;
-	xx = testCrash1(4,5,6);
+    int xx;
+    xx = 0;
+    xx = testCrash1(4,5,6);
 
-	printf("Crash test done = %x\n", xx);
+    printf("Crash test done = %x\n", xx);
 
-	char *p = NULL;
-	*p = 'A';
+    char *p = NULL;
+    *p = 'A';
     xx = 0;
 
     printf("Crash test done = %x\n", xx);
@@ -42,26 +42,26 @@ testCrash(int a, int b, int c)
     return 10;
 }
 
-int 
+int
 __cdecl
 main()
 {
-	printf("main application routine entering..\n");
+    printf("main application routine entering..\n");
 
 
-	bool b = false;
-	while(b)
-	{
-		int i = 0;
-	}
+    bool b = false;
+    while(b)
+    {
+        int i = 0;
+    }
 
-	int *p = NULL;
+    int *p = NULL;
 
     int xx = 0;
 
-	xx = testCrash(5,10,15);
+    xx = testCrash(5,10,15);
 
-	printf("main application routine exiting..= %x\n", xx);
+    printf("main application routine exiting..= %x\n", xx);
 
     HANDLE hFile = CreateFileW(
                         L"c:\\test.txt",
@@ -73,7 +73,7 @@ main()
                         NULL);
 
     if (hFile)
-    {   
+    {
         WriteFile(hFile, "Test", 5, NULL, NULL);
         CloseHandle(hFile);
     }
@@ -105,11 +105,11 @@ main()
     printf("All CreateFile Done\n");
     printf("PASSED!\n");
 
-	fflush(stdin);
+    fflush(stdin);
     printf("Enter a key to exit.\n");
-	scanf("%d", &xx);
-	getchar();
+    scanf("%d", &xx);
+    getchar();
 
-	return 0;
+    return 0;
 }
 

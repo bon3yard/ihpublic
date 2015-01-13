@@ -47,100 +47,100 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 HINSTANCE ghInstance;
 
 
-int 
+int
 WINAPI
 WinMain(
-	HINSTANCE	hInstance,
-    HINSTANCE	hPrevInstance,
-    PSTR		szCmdLine,
-    int			iCmdShow)
+    HINSTANCE   hInstance,
+    HINSTANCE   hPrevInstance,
+    PSTR        szCmdLine,
+    int         iCmdShow)
 /*++
 
 Routine Description:
-	
-	Entry point for the application
+
+    Entry point for the application
 
 Returns:
 
-	An exit code of application - we always return 0
+    An exit code of application - we always return 0
 
 --*/
 {
-	int funcResult = 0;
+    int funcResult = 0;
 
-	// Common controls must be initialized
+    // Common controls must be initialized
     InitCommonControls();
 
-	ghInstance = hInstance;
+    ghInstance = hInstance;
 
-	LPTSTR cmdLine = GetCommandLine();
-	int argC = 0;
-	LPTSTR *argV = CommandLineToArgv(cmdLine, &argC);
+    LPTSTR cmdLine = GetCommandLine();
+    int argC = 0;
+    LPTSTR *argV = CommandLineToArgv(cmdLine, &argC);
 
-	if (argC <= 1)
-	{
-		HWND hwnd = GetDesktopWindow();
-		int err = GetLastError();
+    if (argC <= 1)
+    {
+        HWND hwnd = GetDesktopWindow();
+        int err = GetLastError();
 
-		DialogBoxParam(
-				ghInstance,
-				MAKEINTRESOURCE(IDD_DIALOG_ABOUT),
-				GetDesktopWindow(),
-				(DLGPROC)AboutDlgProc,
-				(LPARAM)NULL);
+        DialogBoxParam(
+                ghInstance,
+                MAKEINTRESOURCE(IDD_DIALOG_ABOUT),
+                GetDesktopWindow(),
+                (DLGPROC)AboutDlgProc,
+                (LPARAM)NULL);
 
-		err = GetLastError();
-		err = err + 1;
-	}
-	else
-	{
-		DWORD pid		= 0;
-		HANDLE hEvent	= NULL;
+        err = GetLastError();
+        err = err + 1;
+    }
+    else
+    {
+        DWORD pid       = 0;
+        HANDLE hEvent   = NULL;
 
-		if (cdProcessArguments(argC, argV, pid, hEvent))
-		{
-			PROC_DBG_DATA procDbgData;
+        if (cdProcessArguments(argC, argV, pid, hEvent))
+        {
+            PROC_DBG_DATA procDbgData;
 
-			procDbgData.processId	= pid;
-			procDbgData.eventHandle	= hEvent;
+            procDbgData.processId   = pid;
+            procDbgData.eventHandle = hEvent;
 
-			INT_PTR dlgResult = DialogBoxParam(
-								ghInstance,
-								MAKEINTRESOURCE(IDD_DIALOG_HANDLE_CRASH),
-								GetDesktopWindow(),
-								(DLGPROC)HandleCrashDlgProc,
-								(LPARAM)&procDbgData);
+            INT_PTR dlgResult = DialogBoxParam(
+                                ghInstance,
+                                MAKEINTRESOURCE(IDD_DIALOG_HANDLE_CRASH),
+                                GetDesktopWindow(),
+                                (DLGPROC)HandleCrashDlgProc,
+                                (LPARAM)&procDbgData);
 
-			if (dlgResult == IDC_BTN_RECOVER)
-			{
-				CRecoveryHandler recoveryHandler(
-										procDbgData.processId,
-										procDbgData.eventHandle);
+            if (dlgResult == IDC_BTN_RECOVER)
+            {
+                CRecoveryHandler recoveryHandler(
+                                        procDbgData.processId,
+                                        procDbgData.eventHandle);
 
-				DialogBoxParam(
+                DialogBoxParam(
                             ghInstance,
-							MAKEINTRESOURCE(IDD_DIALOG_RECOVER_STATUS),
-							GetDesktopWindow(),
-							(DLGPROC)RecoveryStatusDlgProc,
-							(LPARAM)&recoveryHandler);
-				
-			} 
-			else if(dlgResult == IDC_BTN_TERMINATE)
-			{
-				HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+                            MAKEINTRESOURCE(IDD_DIALOG_RECOVER_STATUS),
+                            GetDesktopWindow(),
+                            (DLGPROC)RecoveryStatusDlgProc,
+                            (LPARAM)&recoveryHandler);
 
-				if (hProcess)
-				{
-					TerminateProcess(hProcess, -1);
-					CloseHandle(hProcess);
-				}
+            }
+            else if(dlgResult == IDC_BTN_TERMINATE)
+            {
+                HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 
-				if (hEvent)
-				{
-					SetEvent(hEvent);
-					hEvent = NULL;
-				}
-			}
+                if (hProcess)
+                {
+                    TerminateProcess(hProcess, -1);
+                    CloseHandle(hProcess);
+                }
+
+                if (hEvent)
+                {
+                    SetEvent(hEvent);
+                    hEvent = NULL;
+                }
+            }
 #if 0
             else if (dlgResult = IDC_BTN_ABOUT)
             {
@@ -152,89 +152,89 @@ Returns:
                     (LPARAM)NULL);
             }
 #endif
-		}
-	}
+        }
+    }
 
-	goto funcExit;
+    goto funcExit;
 
 funcExit:
-	return funcResult;
+    return funcResult;
 }
 
 
 
 bool
 cdProcessArguments(
-	int			argC,
-	TCHAR		*argV[],
-	DWORD		&oPID,
-	HANDLE		&ohEvent)
+    int         argC,
+    TCHAR       *argV[],
+    DWORD       &oPID,
+    HANDLE      &ohEvent)
 /*++
 
 Routine Description:
-	
-	Process command line arguments for CrashDoctor
+
+    Process command line arguments for CrashDoctor
 
 Return:
 
-	true means valid arguments are supplied, false means otherwise
+    true means valid arguments are supplied, false means otherwise
 
 --*/
 {
-	bool		funcReturn = true;
-	tstring		userParam;
+    bool        funcReturn = true;
+    tstring     userParam;
 
-	oPID	= 0;
-	ohEvent = NULL;
+    oPID    = 0;
+    ohEvent = NULL;
 
-	// We start with index 1 because 0 is the process name
-	// itself
-	for (int indexArgs = 1; indexArgs < argC; ++indexArgs)
-	{
-		if (_tcsicmp(argV[indexArgs], _T("-p")) == 0 ||
-			_tcsicmp(argV[indexArgs], _T("/p")) == 0)
-		{
-			if (indexArgs == (argC - 1))
-			{
-				funcReturn = false;
-				cdShowMessage(NULL, _T("Process Id (PID) is *NOT* specified."));
-				goto funcExit;
-			}
+    // We start with index 1 because 0 is the process name
+    // itself
+    for (int indexArgs = 1; indexArgs < argC; ++indexArgs)
+    {
+        if (_tcsicmp(argV[indexArgs], _T("-p")) == 0 ||
+            _tcsicmp(argV[indexArgs], _T("/p")) == 0)
+        {
+            if (indexArgs == (argC - 1))
+            {
+                funcReturn = false;
+                cdShowMessage(NULL, _T("Process Id (PID) is *NOT* specified."));
+                goto funcExit;
+            }
 
-			oPID = _ttoi(argV[++indexArgs]);
-		}
-		else if (	_tcsicmp(argV[indexArgs], _T("-e")) == 0 ||
-					_tcsicmp(argV[indexArgs], _T("/e")) == 0)
-		{
-			if (indexArgs == (argC - 1))
-			{
-				funcReturn = false;
-				cdShowMessage(NULL, _T("Event Id is *NOT* specified."));
-				goto funcExit;
-			}
+            oPID = _ttoi(argV[++indexArgs]);
+        }
+        else if (   _tcsicmp(argV[indexArgs], _T("-e")) == 0 ||
+                    _tcsicmp(argV[indexArgs], _T("/e")) == 0)
+        {
+            if (indexArgs == (argC - 1))
+            {
+                funcReturn = false;
+                cdShowMessage(NULL, _T("Event Id is *NOT* specified."));
+                goto funcExit;
+            }
 
-			#if defined(_WIN64)
-				ohEvent = (HANDLE)_ttoi64(argV[++indexArgs]);
-			#else
-				ohEvent = (HANDLE)_ttoi(argV[++indexArgs]);
-			#endif
-		}		
-		else
-		{
-			funcReturn = false;
-			cdShowMessage(NULL, _T("Unknown option specified."));
-			goto funcExit;
-		}
-	}
+            #if defined(_WIN64)
+                ohEvent = (HANDLE)_ttoi64(argV[++indexArgs]);
+            #else
+                ohEvent = (HANDLE)_ttoi(argV[++indexArgs]);
+            #endif
+        }
+        else
+        {
+            funcReturn = false;
+            cdShowMessage(NULL, _T("Unknown option specified."));
+            goto funcExit;
+        }
+    }
 
-	if (oPID == 0)
-	{
-		funcReturn = false;
-		cdShowMessage(NULL, _T("Process ID is not specified."));
-		goto funcExit;
-	}
+    if (oPID == 0)
+    {
+        funcReturn = false;
+        cdShowMessage(NULL, _T("Process ID is not specified."));
+        goto funcExit;
+    }
 
 funcExit:
 
-	return funcReturn;
+    return funcReturn;
 }

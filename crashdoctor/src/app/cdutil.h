@@ -37,16 +37,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // Error code to indicate that CrashDoctor is invoked on invalid process
 //
-#define ERR_INVALID_PROCESS_ID	0xFFFFFF
+#define ERR_INVALID_PROCESS_ID  0xFFFFFF
 
 
 //
 // ANSI Unicode independent string
 //
 #ifdef _UNICODE
-typedef std::wstring	tstring;
+typedef std::wstring    tstring;
 #else
-typedef std::string		tstring;
+typedef std::string     tstring;
 #endif
 
 
@@ -65,17 +65,17 @@ typedef TCHAR (__cdecl *TO_UPPER)(TCHAR);
 void
 __cdecl
 cdShowMessage(
-	HWND	inHwnd,
-	LPCTSTR	inErrorMsg = NULL,
-	...);
+    HWND    inHwnd,
+    LPCTSTR inErrorMsg = NULL,
+    ...);
 
 void
 __cdecl
 cdHandleError(
-	HWND	inHwnd,
-	DWORD	inErrorCode = 0,
-	LPCTSTR	inErrorMsg = NULL,
-	...);
+    HWND    inHwnd,
+    DWORD   inErrorCode = 0,
+    LPCTSTR inErrorMsg = NULL,
+    ...);
 
 
 // Function to convert a char to uppercase
@@ -91,13 +91,13 @@ cdObtainSeDebugPrivilege(void);
 
 void
 CenterDialog(
-	HWND hwndDlg);
+    HWND hwndDlg);
 
 HRESULT
 CreateLink(
-	LPCTSTR lpszPathObj,
-	LPCTSTR lpszPathLink,
-	LPCTSTR lpszDesc);
+    LPCTSTR lpszPathObj,
+    LPCTSTR lpszPathLink,
+    LPCTSTR lpszDesc);
 
 
 

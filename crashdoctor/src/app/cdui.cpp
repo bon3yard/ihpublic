@@ -63,8 +63,8 @@ Module Description:
 //
 // Persistent registry keys for storing CrashDoctor configuration information
 //
-#define REG_APP_ROOT			_T("Software\\IntellectualHeaven CrashDoctor")
-#define REG_APP_DEBUGGERS		_T("\\Debuggers")
+#define REG_APP_ROOT            _T("Software\\IntellectualHeaven CrashDoctor")
+#define REG_APP_DEBUGGERS       _T("\\Debuggers")
 
 
 //
@@ -72,8 +72,8 @@ Module Description:
 //
 typedef struct tagDEBUGGER_INFO
 {
-	tstring	debuggerPath;
-	tstring cmdLine;
+    tstring debuggerPath;
+    tstring cmdLine;
 
 }DEBUGGER_INFO, *PDEBUGGER_INFO;
 
@@ -187,7 +187,7 @@ FALSE - Message not handled
             SetBkMode(hdc, TRANSPARENT);
             return (BOOL)GetSysColorBrush(COLOR_BTNFACE);
         }
-        
+
         break;
     }
     case WM_MOUSEMOVE:
@@ -261,198 +261,198 @@ FALSE - Message not handled
 
 void
 AddDebuggerToRegistry(
-	HWND	inHwnd,	
-	tstring &inDebuggerPath)
+    HWND    inHwnd,
+    tstring &inDebuggerPath)
 /*++
 
 Routine Description:
-	
-	Adds a new debugger to the registry
+
+    Adds a new debugger to the registry
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	DWORD numDebuggers;
+    DWORD numDebuggers;
 
-	tstring tempString;
-	DWORD tempSize = 0;
+    tstring tempString;
+    DWORD tempSize = 0;
 
-	int nReturnValue		= 0;
-	HKEY hAppDebuggerKey	= NULL;
-	
+    int nReturnValue        = 0;
+    HKEY hAppDebuggerKey    = NULL;
 
-	nReturnValue = RegOpenKey(
-							HKEY_LOCAL_MACHINE,
-							REG_APP_ROOT REG_APP_DEBUGGERS,
-							&hAppDebuggerKey);
 
-	if (!hAppDebuggerKey)
-	{
-		cdHandleError(
-			inHwnd,
-			GetLastError(),
-			_T("Add Debugger Failed. Unable to open required registry key."));
+    nReturnValue = RegOpenKey(
+                            HKEY_LOCAL_MACHINE,
+                            REG_APP_ROOT REG_APP_DEBUGGERS,
+                            &hAppDebuggerKey);
 
-		goto funcExit;
-		
-	}
+    if (!hAppDebuggerKey)
+    {
+        cdHandleError(
+            inHwnd,
+            GetLastError(),
+            _T("Add Debugger Failed. Unable to open required registry key."));
 
-	numDebuggers = 0;
-	tempSize = sizeof(numDebuggers);
+        goto funcExit;
 
-	RegQueryValueEx(
-			hAppDebuggerKey,
-			_T("Count"),
-			NULL,
-			NULL,
-			(LPBYTE)&numDebuggers,
-			&tempSize);
+    }
 
-	if (nReturnValue != ERROR_SUCCESS)
-	{
-		cdHandleError(
-					inHwnd,
-					GetLastError(),
-					_T("Add Debugger Failed. Unable to open required registry key."));
+    numDebuggers = 0;
+    tempSize = sizeof(numDebuggers);
 
-		goto funcExit;
-	}
+    RegQueryValueEx(
+            hAppDebuggerKey,
+            _T("Count"),
+            NULL,
+            NULL,
+            (LPBYTE)&numDebuggers,
+            &tempSize);
 
-	TCHAR valueName[32];
-	_stprintf(valueName, _T("Debugger%02d"), numDebuggers);
+    if (nReturnValue != ERROR_SUCCESS)
+    {
+        cdHandleError(
+                    inHwnd,
+                    GetLastError(),
+                    _T("Add Debugger Failed. Unable to open required registry key."));
 
-	RegSetValueEx(
-			hAppDebuggerKey,
-			valueName,
-			0,
-			REG_SZ,
-			(LPBYTE)inDebuggerPath.c_str(),
-			(DWORD)(inDebuggerPath.length() * sizeof(TCHAR)));
+        goto funcExit;
+    }
 
-	numDebuggers++;
+    TCHAR valueName[32];
+    _stprintf(valueName, _T("Debugger%02d"), numDebuggers);
 
-	RegSetValueEx(
-			hAppDebuggerKey,
-			_T("Count"),
-			0,
-			REG_DWORD,
-			(LPBYTE)&numDebuggers,
-			sizeof(numDebuggers));
+    RegSetValueEx(
+            hAppDebuggerKey,
+            valueName,
+            0,
+            REG_SZ,
+            (LPBYTE)inDebuggerPath.c_str(),
+            (DWORD)(inDebuggerPath.length() * sizeof(TCHAR)));
+
+    numDebuggers++;
+
+    RegSetValueEx(
+            hAppDebuggerKey,
+            _T("Count"),
+            0,
+            REG_DWORD,
+            (LPBYTE)&numDebuggers,
+            sizeof(numDebuggers));
 
 funcExit:
 
-	if (hAppDebuggerKey)
-	{
-		RegCloseKey(hAppDebuggerKey);
-	}
+    if (hAppDebuggerKey)
+    {
+        RegCloseKey(hAppDebuggerKey);
+    }
 
-	return;
+    return;
 }
 
 
 
 void
 AddDebuggersToListCtrl(
-	HWND hListCtrl)
+    HWND hListCtrl)
 /*++
 
 Routine Description:
-	
-	Populate the list control with the list of the debuggers in the registry
+
+    Populate the list control with the list of the debuggers in the registry
 
 Return:
 
-	none
+    none
 
 --*/
 {
-	ListView_DeleteAllItems(hListCtrl);
+    ListView_DeleteAllItems(hListCtrl);
 
-	tstring debuggerPath;
+    tstring debuggerPath;
 
-	DWORD numDebuggers;
+    DWORD numDebuggers;
 
-	tstring tempString;
-	TCHAR tempPath[MAX_PATH];
-	DWORD tempSize = 0;
+    tstring tempString;
+    TCHAR tempPath[MAX_PATH];
+    DWORD tempSize = 0;
 
-	int nReturnValue		= 0;
-	HKEY hAppDebuggerKey	= NULL;
-	
+    int nReturnValue        = 0;
+    HKEY hAppDebuggerKey    = NULL;
 
-	nReturnValue = RegOpenKey(
-							HKEY_LOCAL_MACHINE,
-							REG_APP_ROOT REG_APP_DEBUGGERS,
-							&hAppDebuggerKey);
 
-	if (!hAppDebuggerKey)
-	{
-		cdHandleError(
-			hListCtrl,
-			GetLastError(),
-			_T("CrashDoctor initialization failed. ")
-			_T("Some features might be disabled."));
+    nReturnValue = RegOpenKey(
+                            HKEY_LOCAL_MACHINE,
+                            REG_APP_ROOT REG_APP_DEBUGGERS,
+                            &hAppDebuggerKey);
 
-		goto funcExit;
-		
-	}
+    if (!hAppDebuggerKey)
+    {
+        cdHandleError(
+            hListCtrl,
+            GetLastError(),
+            _T("CrashDoctor initialization failed. ")
+            _T("Some features might be disabled."));
 
-	numDebuggers = 0;
-	tempSize = sizeof(numDebuggers);
+        goto funcExit;
 
-	RegQueryValueEx(
-			hAppDebuggerKey,
-			_T("Count"),
-			NULL,
-			NULL,
-			(LPBYTE)&numDebuggers,
-			&tempSize);
+    }
 
-	for (DWORD i = 0; i < numDebuggers; ++i)
-	{
-		TCHAR valueName[32];
-		_stprintf(valueName, _T("Debugger%02d"), i);
+    numDebuggers = 0;
+    tempSize = sizeof(numDebuggers);
 
-		tempSize = sizeof(tempPath) * sizeof(TCHAR);
-		nReturnValue = RegQueryValueEx(
-								hAppDebuggerKey,
-								valueName,
-								NULL,
-								NULL,
-								(LPBYTE)tempPath,
-								&tempSize);
+    RegQueryValueEx(
+            hAppDebuggerKey,
+            _T("Count"),
+            NULL,
+            NULL,
+            (LPBYTE)&numDebuggers,
+            &tempSize);
 
-		if (nReturnValue == ERROR_SUCCESS)
-		{
-			debuggerPath = tempPath;
+    for (DWORD i = 0; i < numDebuggers; ++i)
+    {
+        TCHAR valueName[32];
+        _stprintf(valueName, _T("Debugger%02d"), i);
 
-			LVITEM  lvItem;
-			ZeroMemory(&lvItem, sizeof(LVITEM));
+        tempSize = sizeof(tempPath) * sizeof(TCHAR);
+        nReturnValue = RegQueryValueEx(
+                                hAppDebuggerKey,
+                                valueName,
+                                NULL,
+                                NULL,
+                                (LPBYTE)tempPath,
+                                &tempSize);
 
-			lvItem.mask		= LVIF_TEXT | LVIF_PARAM;
-			lvItem.iItem	= 0;
-			lvItem.lParam	= i;
-			lvItem.iSubItem = 0;
-			lvItem.pszText	= (LPTSTR)debuggerPath.c_str();
+        if (nReturnValue == ERROR_SUCCESS)
+        {
+            debuggerPath = tempPath;
 
-			int itemIndex =
-			ListView_InsertItem(
-							hListCtrl,
-							&lvItem);
-		}
-	}
+            LVITEM  lvItem;
+            ZeroMemory(&lvItem, sizeof(LVITEM));
+
+            lvItem.mask     = LVIF_TEXT | LVIF_PARAM;
+            lvItem.iItem    = 0;
+            lvItem.lParam   = i;
+            lvItem.iSubItem = 0;
+            lvItem.pszText  = (LPTSTR)debuggerPath.c_str();
+
+            int itemIndex =
+            ListView_InsertItem(
+                            hListCtrl,
+                            &lvItem);
+        }
+    }
 
 funcExit:
 
-	if (hAppDebuggerKey)
-	{
-		RegCloseKey(hAppDebuggerKey);
-	}
+    if (hAppDebuggerKey)
+    {
+        RegCloseKey(hAppDebuggerKey);
+    }
 
-	return;
+    return;
 }
 
 
@@ -460,571 +460,571 @@ funcExit:
 INT_PTR
 CALLBACK
 HandleCrashDlgProc(
-	HWND	hDlg,
-	UINT	msg,
-	WPARAM	wParam,
-	LPARAM	lParam)
+    HWND    hDlg,
+    UINT    msg,
+    WPARAM  wParam,
+    LPARAM  lParam)
 /*++
 
 Routine Description:
-	
-	Dialog box used to ask user what action he wants to take when an application
-	crashes.
+
+    Dialog box used to ask user what action he wants to take when an application
+    crashes.
 
 Arguments:
 
-	Refer to DialogProc in MSDN
+    Refer to DialogProc in MSDN
 
 Returns:
 
-	TRUE - Message Handled
-	FALSE - Message not handled
+    TRUE - Message Handled
+    FALSE - Message not handled
 
 --*/
 {
-	static PROC_DBG_DATA sProcDbgData;
+    static PROC_DBG_DATA sProcDbgData;
 
-	switch(msg)
-	{
-		case WM_INITDIALOG:
-		{
-			//
-			// Insert *specific* dialog initialization code here.
-			// lParam can contain information required for initialization.
-			//
+    switch(msg)
+    {
+        case WM_INITDIALOG:
+        {
+            //
+            // Insert *specific* dialog initialization code here.
+            // lParam can contain information required for initialization.
+            //
 
-			//
-			// Set dialog and application Icon
-			//
-			HICON hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON_SM));
-		    SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
-			hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON));
-		    SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
+            //
+            // Set dialog and application Icon
+            //
+            HICON hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON_SM));
+            SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
+            hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON));
+            SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
 
-			SetWindowText(hDlg, _T("IntellectualHeaven(R) CrashDoctor"));
+            SetWindowText(hDlg, _T("IntellectualHeaven(R) CrashDoctor"));
 
-			//
-			// Set list control properties
-			//
-			HWND hListCtrl;
-			hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
-			ListView_SetExtendedListViewStyle(
-										hListCtrl,
-										LVS_EX_FULLROWSELECT);
+            //
+            // Set list control properties
+            //
+            HWND hListCtrl;
+            hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
+            ListView_SetExtendedListViewStyle(
+                                        hListCtrl,
+                                        LVS_EX_FULLROWSELECT);
 
-			ListView_SetTextColor(	hListCtrl,
-									RGB(0, 0, 255));
+            ListView_SetTextColor(  hListCtrl,
+                                    RGB(0, 0, 255));
 
-			LVCOLUMN lvColumn;
-			lvColumn.mask = LVCF_TEXT | LVCF_WIDTH;
-			
-			lvColumn.cx			= 260;
-			lvColumn.pszText	= _T(" Debuggers Available");
+            LVCOLUMN lvColumn;
+            lvColumn.mask = LVCF_TEXT | LVCF_WIDTH;
 
-			ListView_InsertColumn(  hListCtrl,
-									0,
-									&lvColumn);
+            lvColumn.cx         = 260;
+            lvColumn.pszText    = _T(" Debuggers Available");
 
-			CenterDialog(hDlg);
+            ListView_InsertColumn(  hListCtrl,
+                                    0,
+                                    &lvColumn);
 
-			PPROC_DBG_DATA procDbgData	= (PPROC_DBG_DATA)lParam;
+            CenterDialog(hDlg);
 
-			//
-			// Store the PROC_DBG_DATA, it will be needed later
-			//
-			sProcDbgData = *procDbgData;
+            PPROC_DBG_DATA procDbgData  = (PPROC_DBG_DATA)lParam;
 
-			
-			// Find the process given in PROC_DBG_DATA
-			DWORD processId = sProcDbgData.processId;
+            //
+            // Store the PROC_DBG_DATA, it will be needed later
+            //
+            sProcDbgData = *procDbgData;
 
-			IHU_PROCESS_INFO			processInfo;
-			IHU_PROCESS_LIST		processList;
-			IHU_PROCESS_LIST_ITER	processListIter;
-			bool						processFound = false;
 
-			IhuGetProcessList(processList);
+            // Find the process given in PROC_DBG_DATA
+            DWORD processId = sProcDbgData.processId;
 
-			for (	processListIter = processList.begin();
-					processListIter != processList.end();
-					++processListIter)
-			{
-				processInfo = *processListIter;
-				if (processId == processInfo.mProcessId)
-				{
-					processFound = true;
-					break;
-				}
-			}
+            IHU_PROCESS_INFO            processInfo;
+            IHU_PROCESS_LIST        processList;
+            IHU_PROCESS_LIST_ITER   processListIter;
+            bool                        processFound = false;
 
-			//
-			// Set process name and image
-			//
-			if (processFound)
-			{
-				SetWindowText(
-						GetDlgItem(hDlg, IDC_EDIT_PROCESS_NAME),
-						processInfo.mBinaryName.c_str());
+            IhuGetProcessList(processList);
 
-				hIcon = NULL;
-				
-				IhuGetFileIcon(
-							processInfo.mBinaryName,
-							hIcon);
+            for (   processListIter = processList.begin();
+                    processListIter != processList.end();
+                    ++processListIter)
+            {
+                processInfo = *processListIter;
+                if (processId == processInfo.mProcessId)
+                {
+                    processFound = true;
+                    break;
+                }
+            }
 
-				if (hIcon)
-				{
-					SendMessage(
-						GetDlgItem(hDlg, IDC_ICON_PROCESS),
-						STM_SETICON,
-						(WPARAM)hIcon,
-						0);
-				}
-			}
-			else
-			{
-				SetWindowText(
-						GetDlgItem(hDlg, IDC_EDIT_PROCESS_NAME),
-						_T("<Unknown Process>"));
-				//
-				// To-Do!!!
-				// This should *NEVER* happen. How to handle this?
-				//
-			}
-			
+            //
+            // Set process name and image
+            //
+            if (processFound)
+            {
+                SetWindowText(
+                        GetDlgItem(hDlg, IDC_EDIT_PROCESS_NAME),
+                        processInfo.mBinaryName.c_str());
 
-			//
-			// Add debugger list to the list ctrl
-			//
-			AddDebuggersToListCtrl(
-							hListCtrl);
+                hIcon = NULL;
 
-			return TRUE;
-		}
-		case WM_COMMAND:
-		{
-			switch(wParam)
-			{
-				case IDC_BTN_RECOVER:
-				{
-					EndDialog(hDlg, IDC_BTN_RECOVER);
-					return TRUE;
-				}
-				case IDC_BTN_TERMINATE:
-				{
-					EndDialog(hDlg, IDC_BTN_TERMINATE);
-					return TRUE;
-				}
-				case IDC_BTN_DEBUG:
-				{
-					HWND hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
-					int nSelectedItem = ListView_GetSelectionMark(hListCtrl);
+                IhuGetFileIcon(
+                            processInfo.mBinaryName,
+                            hIcon);
 
-					if (nSelectedItem >= 0)
-					{
-						TCHAR debugCmdFormat[MAX_PATH] = {0};
+                if (hIcon)
+                {
+                    SendMessage(
+                        GetDlgItem(hDlg, IDC_ICON_PROCESS),
+                        STM_SETICON,
+                        (WPARAM)hIcon,
+                        0);
+                }
+            }
+            else
+            {
+                SetWindowText(
+                        GetDlgItem(hDlg, IDC_EDIT_PROCESS_NAME),
+                        _T("<Unknown Process>"));
+                //
+                // To-Do!!!
+                // This should *NEVER* happen. How to handle this?
+                //
+            }
 
-						LVITEM lvItem		= {0};
-						lvItem.mask			= LVIF_TEXT;
-						lvItem.iItem		= nSelectedItem;
-						lvItem.iSubItem		= 0;
-						lvItem.pszText		= debugCmdFormat;
-						lvItem.cchTextMax	= MAX_PATH;
-						
-						if (ListView_GetItem(hListCtrl, &lvItem))
-						{
-							if (_tcslen(debugCmdFormat) > 0)
-							{
-								TCHAR launchDebuggerCmd[MAX_PATH * 2] = {0};
-								_stprintf(	launchDebuggerCmd, 
-											debugCmdFormat,
-											sProcDbgData.processId,
-											sProcDbgData.eventHandle);
 
-								STARTUPINFO			startupInfo;
-								PROCESS_INFORMATION procInfo;
+            //
+            // Add debugger list to the list ctrl
+            //
+            AddDebuggersToListCtrl(
+                            hListCtrl);
 
-								ZeroMemory(&startupInfo, sizeof(startupInfo));
-								startupInfo.cb = sizeof(startupInfo);
-
-								ZeroMemory(&procInfo, sizeof(procInfo));
-
-								BOOL bResult = CreateProcess(
-													NULL,
-													launchDebuggerCmd,
-													NULL,
-													NULL,
-													TRUE,
-													0,
-													NULL,
-													NULL,
-													&startupInfo,
-													&procInfo);
-								
-
-								if (!bResult)
-								{
-									cdHandleError(
-											hDlg,
-											GetLastError(),
-											_T("Unable to launch debugger."));
-								}
-								else
-								{
-									ShowWindow(hDlg, SW_HIDE);
-									if (sProcDbgData.eventHandle)
-									{
-										//
-										// wait till either the actual debugger dies or it sets the event
-										// This wait is necessary because if we exit before the debugger
-										// got attached to the target. The target dies because it thinks
-										// we are the debugger.
-										//
-										HANDLE waitHandle[2];
-										waitHandle[0] = sProcDbgData.eventHandle;
-										waitHandle[1] = procInfo.hProcess;
-										WaitForMultipleObjects(2, (const HANDLE *)&waitHandle, FALSE, INFINITE);
-									}
-									else
-									{
-										//
-										// wait till either the actual debugger dies or 10 seconds are over
-										// This wait is necessary because if we exit before the debugger
-										// got attached to the target. The target dies because it thinks
-										// we are the debugger.
-										//
-										WaitForSingleObject(procInfo.hProcess, 10000);
-									}
-
-									EndDialog(hDlg, IDC_BTN_DEBUG);
-									return FALSE;
-								}
-							}
-						}
-					}
-
-					break;
-				}
-				case IDC_BTN_ADD_DEBUGGER:
-				{
-					TCHAR tempFileName[MAX_PATH];
-					tempFileName[0] = 0;
-
-					OPENFILENAME ofn = {0};
-
-					ofn.lStructSize		= OPENFILENAME_SIZE_VERSION_400;
-					ofn.hwndOwner		= hDlg;
-					ofn.hInstance		= ghInstance;
-					ofn.lpstrFilter		= _T("Executable (*.exe)\0*.exe\0\0");
-					ofn.lpstrFile		= tempFileName;
-					ofn.nMaxFile		= MAX_PATH;
-					ofn.lpstrTitle		= _T("Select a debugger");
-					ofn.Flags			= OFN_HIDEREADONLY | OFN_LONGNAMES | OFN_PATHMUSTEXIST;
-
-					if (GetOpenFileName(&ofn))
-					{
-						DEBUGGER_INFO debuggerInfo;
-						debuggerInfo.debuggerPath	= ofn.lpstrFile;
-						debuggerInfo.cmdLine		= _T("-p %ld -e %ld");
-
-						DialogBoxParam(
-									ghInstance,
-									MAKEINTRESOURCE(IDD_DIALOG_ADD_DEBUGGER),
-									hDlg,
-									(DLGPROC)DebuggerDataDlgProc,
-									(LPARAM)&debuggerInfo);
-
-						tstring debuggerCmd = _T("\"") + debuggerInfo.debuggerPath + _T("\" ") + debuggerInfo.cmdLine;
-						AddDebuggerToRegistry(hDlg, debuggerCmd);
-						AddDebuggersToListCtrl(GetDlgItem(hDlg, IDC_LIST_DEBUGGER));
-					}
-
-					break;
-				}
-				case IDC_BTN_MODIFY_DEBUGGER:
-				{
-					HWND hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
-					int nSelectedItem = ListView_GetSelectionMark(hListCtrl);
-
-					if (nSelectedItem >= 0)
-					{
-						TCHAR debugCmdLine[MAX_PATH] = {0};
-
-						LVITEM lvItem		= {0};
-						lvItem.mask			= LVIF_TEXT | LVIF_PARAM;
-						lvItem.iItem		= nSelectedItem;
-						lvItem.iSubItem		= 0;
-						lvItem.pszText		= debugCmdLine;
-						lvItem.cchTextMax	= MAX_PATH;
-						
-						if (ListView_GetItem(hListCtrl, &lvItem))
-						{
-							LPARAM regIndex = lvItem.lParam;
-
-							if (_tcslen(debugCmdLine) > 0)
-							{
-								DEBUGGER_INFO debuggerInfo;					
-								debuggerInfo.cmdLine = debugCmdLine;
-
-								DialogBoxParam(
-											ghInstance,
-											MAKEINTRESOURCE(IDD_DIALOG_MODIFY_DEBUGGER),
-											hDlg,
-											(DLGPROC)DebuggerDataDlgProc,
-											(LPARAM)&debuggerInfo);
-
-								if (_tcscmp(debugCmdLine, debuggerInfo.cmdLine.c_str()) != 0)
-								{
-									//
-									// Modify the particular registry entry
-									//
-									TCHAR valueName[32];
-									_stprintf(valueName, _T("Debugger%02d"), regIndex);
-
-									int nReturnValue		= 0;
-									HKEY hAppDebuggerKey	= NULL;
-									
-
-									nReturnValue = RegOpenKey(
-															HKEY_LOCAL_MACHINE,
-															REG_APP_ROOT REG_APP_DEBUGGERS,
-															&hAppDebuggerKey);
-
-									if (hAppDebuggerKey)
-									{
-										if (RegSetValueEx(
-													hAppDebuggerKey,
-													valueName,
-													0,
-													REG_SZ,
-													(LPBYTE)debuggerInfo.cmdLine.c_str(),
-													(DWORD)(debuggerInfo.cmdLine.length() * sizeof(TCHAR))) != ERROR_SUCCESS)
-										{
-											cdHandleError(
-													hDlg,
-													GetLastError(),
-													_T("Modify Debugger Failed. Unable to update the registry key."));
-										}
-
-										RegCloseKey(hAppDebuggerKey);
-
-										AddDebuggersToListCtrl(GetDlgItem(hDlg, IDC_LIST_DEBUGGER));
-									}
-									else
-									{
-										cdHandleError(
-													hDlg,
-													GetLastError(),
-													_T("Modify Debugger Failed. Unable to open required registry key."));
-
-									}
-								}
-							}
-						}
-					}
-					
-					break;
-				}
-				case IDC_BTN_DELETE_DEBUGGER:
-				{
-					HWND hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
-					int nSelectedItem = ListView_GetSelectionMark(hListCtrl);
-
-					if (nSelectedItem >= 0)
-					{
-						TCHAR debugCmdLine[MAX_PATH] = {0};
-
-						LVITEM lvItem		= {0};
-						lvItem.mask			= LVIF_TEXT | LVIF_PARAM;
-						lvItem.iItem		= nSelectedItem;
-						lvItem.iSubItem		= 0;
-						lvItem.pszText		= debugCmdLine;
-						lvItem.cchTextMax	= MAX_PATH;
-						
-						if (ListView_GetItem(hListCtrl, &lvItem))
-						{
-							LPARAM regIndex = lvItem.lParam;
-									
-							//
-							// Modify the particular registry entry
-							//
-							TCHAR valueName[32];
-							_stprintf(valueName, _T("Debugger%02d"), regIndex);
-
-							int nReturnValue		= 0;
-							HKEY hAppDebuggerKey	= NULL;
-							
-
-							nReturnValue = RegOpenKey(
-													HKEY_LOCAL_MACHINE,
-													REG_APP_ROOT REG_APP_DEBUGGERS,
-													&hAppDebuggerKey);
-
-							if (hAppDebuggerKey)
-							{
-								if (RegDeleteValue(
-											hAppDebuggerKey,
-											valueName) != ERROR_SUCCESS)
-								{
-									cdHandleError(
-											hDlg,
-											GetLastError(),
-											_T("Delete Debugger Failed. Unable to delete the registry key."));
-								}
-
-								RegCloseKey(hAppDebuggerKey);
-
-								AddDebuggersToListCtrl(GetDlgItem(hDlg, IDC_LIST_DEBUGGER));
-							}
-							else
-							{
-								cdHandleError(
-											hDlg,
-											GetLastError(),
-											_T("Delete Debugger Failed. Unable to open required registry key."));
-
-							}
-						}
-					}
-					
-					break;
-				}
-				case IDCANCEL:
-				{
-					EndDialog(hDlg, IDCANCEL);
+            return TRUE;
+        }
+        case WM_COMMAND:
+        {
+            switch(wParam)
+            {
+                case IDC_BTN_RECOVER:
+                {
+                    EndDialog(hDlg, IDC_BTN_RECOVER);
                     return TRUE;
-				}
-			}
+                }
+                case IDC_BTN_TERMINATE:
+                {
+                    EndDialog(hDlg, IDC_BTN_TERMINATE);
+                    return TRUE;
+                }
+                case IDC_BTN_DEBUG:
+                {
+                    HWND hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
+                    int nSelectedItem = ListView_GetSelectionMark(hListCtrl);
 
-			break;
-		}
-		case WM_CTLCOLORSTATIC:
-		{
-			HDC hdc = (HDC)wParam;
-			HWND hwndCtl = (HWND)lParam;
+                    if (nSelectedItem >= 0)
+                    {
+                        TCHAR debugCmdFormat[MAX_PATH] = {0};
 
-			if (hwndCtl == GetDlgItem(hDlg, IDC_EDIT_PROCESS_NAME))
-			{	
-				if (SetTextColor(hdc, RGB(255, 0, 0)) == CLR_INVALID)
-				{
-					cdHandleError(hDlg, GetLastError(), _T("Failed to set control color"));
-					break;
-				}
-				SetBkMode(hdc, TRANSPARENT);
-				SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
-				SelectObject(hdc, GetSysColorBrush(COLOR_WINDOW));
-				return TRUE;
-			}
+                        LVITEM lvItem       = {0};
+                        lvItem.mask         = LVIF_TEXT;
+                        lvItem.iItem        = nSelectedItem;
+                        lvItem.iSubItem     = 0;
+                        lvItem.pszText      = debugCmdFormat;
+                        lvItem.cchTextMax   = MAX_PATH;
 
-			break;
-		}
-		case WM_DESTROY:
-		{
-			return TRUE;
-		}
-		case WM_CLOSE:
-		{
-			break;
-		}
-	}
+                        if (ListView_GetItem(hListCtrl, &lvItem))
+                        {
+                            if (_tcslen(debugCmdFormat) > 0)
+                            {
+                                TCHAR launchDebuggerCmd[MAX_PATH * 2] = {0};
+                                _stprintf(  launchDebuggerCmd,
+                                            debugCmdFormat,
+                                            sProcDbgData.processId,
+                                            sProcDbgData.eventHandle);
 
-	//
-	// Not handled by us
-	//
-	return FALSE;
+                                STARTUPINFO         startupInfo;
+                                PROCESS_INFORMATION procInfo;
+
+                                ZeroMemory(&startupInfo, sizeof(startupInfo));
+                                startupInfo.cb = sizeof(startupInfo);
+
+                                ZeroMemory(&procInfo, sizeof(procInfo));
+
+                                BOOL bResult = CreateProcess(
+                                                    NULL,
+                                                    launchDebuggerCmd,
+                                                    NULL,
+                                                    NULL,
+                                                    TRUE,
+                                                    0,
+                                                    NULL,
+                                                    NULL,
+                                                    &startupInfo,
+                                                    &procInfo);
+
+
+                                if (!bResult)
+                                {
+                                    cdHandleError(
+                                            hDlg,
+                                            GetLastError(),
+                                            _T("Unable to launch debugger."));
+                                }
+                                else
+                                {
+                                    ShowWindow(hDlg, SW_HIDE);
+                                    if (sProcDbgData.eventHandle)
+                                    {
+                                        //
+                                        // wait till either the actual debugger dies or it sets the event
+                                        // This wait is necessary because if we exit before the debugger
+                                        // got attached to the target. The target dies because it thinks
+                                        // we are the debugger.
+                                        //
+                                        HANDLE waitHandle[2];
+                                        waitHandle[0] = sProcDbgData.eventHandle;
+                                        waitHandle[1] = procInfo.hProcess;
+                                        WaitForMultipleObjects(2, (const HANDLE *)&waitHandle, FALSE, INFINITE);
+                                    }
+                                    else
+                                    {
+                                        //
+                                        // wait till either the actual debugger dies or 10 seconds are over
+                                        // This wait is necessary because if we exit before the debugger
+                                        // got attached to the target. The target dies because it thinks
+                                        // we are the debugger.
+                                        //
+                                        WaitForSingleObject(procInfo.hProcess, 10000);
+                                    }
+
+                                    EndDialog(hDlg, IDC_BTN_DEBUG);
+                                    return FALSE;
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+                }
+                case IDC_BTN_ADD_DEBUGGER:
+                {
+                    TCHAR tempFileName[MAX_PATH];
+                    tempFileName[0] = 0;
+
+                    OPENFILENAME ofn = {0};
+
+                    ofn.lStructSize     = OPENFILENAME_SIZE_VERSION_400;
+                    ofn.hwndOwner       = hDlg;
+                    ofn.hInstance       = ghInstance;
+                    ofn.lpstrFilter     = _T("Executable (*.exe)\0*.exe\0\0");
+                    ofn.lpstrFile       = tempFileName;
+                    ofn.nMaxFile        = MAX_PATH;
+                    ofn.lpstrTitle      = _T("Select a debugger");
+                    ofn.Flags           = OFN_HIDEREADONLY | OFN_LONGNAMES | OFN_PATHMUSTEXIST;
+
+                    if (GetOpenFileName(&ofn))
+                    {
+                        DEBUGGER_INFO debuggerInfo;
+                        debuggerInfo.debuggerPath   = ofn.lpstrFile;
+                        debuggerInfo.cmdLine        = _T("-p %ld -e %ld");
+
+                        DialogBoxParam(
+                                    ghInstance,
+                                    MAKEINTRESOURCE(IDD_DIALOG_ADD_DEBUGGER),
+                                    hDlg,
+                                    (DLGPROC)DebuggerDataDlgProc,
+                                    (LPARAM)&debuggerInfo);
+
+                        tstring debuggerCmd = _T("\"") + debuggerInfo.debuggerPath + _T("\" ") + debuggerInfo.cmdLine;
+                        AddDebuggerToRegistry(hDlg, debuggerCmd);
+                        AddDebuggersToListCtrl(GetDlgItem(hDlg, IDC_LIST_DEBUGGER));
+                    }
+
+                    break;
+                }
+                case IDC_BTN_MODIFY_DEBUGGER:
+                {
+                    HWND hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
+                    int nSelectedItem = ListView_GetSelectionMark(hListCtrl);
+
+                    if (nSelectedItem >= 0)
+                    {
+                        TCHAR debugCmdLine[MAX_PATH] = {0};
+
+                        LVITEM lvItem       = {0};
+                        lvItem.mask         = LVIF_TEXT | LVIF_PARAM;
+                        lvItem.iItem        = nSelectedItem;
+                        lvItem.iSubItem     = 0;
+                        lvItem.pszText      = debugCmdLine;
+                        lvItem.cchTextMax   = MAX_PATH;
+
+                        if (ListView_GetItem(hListCtrl, &lvItem))
+                        {
+                            LPARAM regIndex = lvItem.lParam;
+
+                            if (_tcslen(debugCmdLine) > 0)
+                            {
+                                DEBUGGER_INFO debuggerInfo;
+                                debuggerInfo.cmdLine = debugCmdLine;
+
+                                DialogBoxParam(
+                                            ghInstance,
+                                            MAKEINTRESOURCE(IDD_DIALOG_MODIFY_DEBUGGER),
+                                            hDlg,
+                                            (DLGPROC)DebuggerDataDlgProc,
+                                            (LPARAM)&debuggerInfo);
+
+                                if (_tcscmp(debugCmdLine, debuggerInfo.cmdLine.c_str()) != 0)
+                                {
+                                    //
+                                    // Modify the particular registry entry
+                                    //
+                                    TCHAR valueName[32];
+                                    _stprintf(valueName, _T("Debugger%02d"), regIndex);
+
+                                    int nReturnValue        = 0;
+                                    HKEY hAppDebuggerKey    = NULL;
+
+
+                                    nReturnValue = RegOpenKey(
+                                                            HKEY_LOCAL_MACHINE,
+                                                            REG_APP_ROOT REG_APP_DEBUGGERS,
+                                                            &hAppDebuggerKey);
+
+                                    if (hAppDebuggerKey)
+                                    {
+                                        if (RegSetValueEx(
+                                                    hAppDebuggerKey,
+                                                    valueName,
+                                                    0,
+                                                    REG_SZ,
+                                                    (LPBYTE)debuggerInfo.cmdLine.c_str(),
+                                                    (DWORD)(debuggerInfo.cmdLine.length() * sizeof(TCHAR))) != ERROR_SUCCESS)
+                                        {
+                                            cdHandleError(
+                                                    hDlg,
+                                                    GetLastError(),
+                                                    _T("Modify Debugger Failed. Unable to update the registry key."));
+                                        }
+
+                                        RegCloseKey(hAppDebuggerKey);
+
+                                        AddDebuggersToListCtrl(GetDlgItem(hDlg, IDC_LIST_DEBUGGER));
+                                    }
+                                    else
+                                    {
+                                        cdHandleError(
+                                                    hDlg,
+                                                    GetLastError(),
+                                                    _T("Modify Debugger Failed. Unable to open required registry key."));
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+                }
+                case IDC_BTN_DELETE_DEBUGGER:
+                {
+                    HWND hListCtrl = GetDlgItem(hDlg, IDC_LIST_DEBUGGER);
+                    int nSelectedItem = ListView_GetSelectionMark(hListCtrl);
+
+                    if (nSelectedItem >= 0)
+                    {
+                        TCHAR debugCmdLine[MAX_PATH] = {0};
+
+                        LVITEM lvItem       = {0};
+                        lvItem.mask         = LVIF_TEXT | LVIF_PARAM;
+                        lvItem.iItem        = nSelectedItem;
+                        lvItem.iSubItem     = 0;
+                        lvItem.pszText      = debugCmdLine;
+                        lvItem.cchTextMax   = MAX_PATH;
+
+                        if (ListView_GetItem(hListCtrl, &lvItem))
+                        {
+                            LPARAM regIndex = lvItem.lParam;
+
+                            //
+                            // Modify the particular registry entry
+                            //
+                            TCHAR valueName[32];
+                            _stprintf(valueName, _T("Debugger%02d"), regIndex);
+
+                            int nReturnValue        = 0;
+                            HKEY hAppDebuggerKey    = NULL;
+
+
+                            nReturnValue = RegOpenKey(
+                                                    HKEY_LOCAL_MACHINE,
+                                                    REG_APP_ROOT REG_APP_DEBUGGERS,
+                                                    &hAppDebuggerKey);
+
+                            if (hAppDebuggerKey)
+                            {
+                                if (RegDeleteValue(
+                                            hAppDebuggerKey,
+                                            valueName) != ERROR_SUCCESS)
+                                {
+                                    cdHandleError(
+                                            hDlg,
+                                            GetLastError(),
+                                            _T("Delete Debugger Failed. Unable to delete the registry key."));
+                                }
+
+                                RegCloseKey(hAppDebuggerKey);
+
+                                AddDebuggersToListCtrl(GetDlgItem(hDlg, IDC_LIST_DEBUGGER));
+                            }
+                            else
+                            {
+                                cdHandleError(
+                                            hDlg,
+                                            GetLastError(),
+                                            _T("Delete Debugger Failed. Unable to open required registry key."));
+
+                            }
+                        }
+                    }
+
+                    break;
+                }
+                case IDCANCEL:
+                {
+                    EndDialog(hDlg, IDCANCEL);
+                    return TRUE;
+                }
+            }
+
+            break;
+        }
+        case WM_CTLCOLORSTATIC:
+        {
+            HDC hdc = (HDC)wParam;
+            HWND hwndCtl = (HWND)lParam;
+
+            if (hwndCtl == GetDlgItem(hDlg, IDC_EDIT_PROCESS_NAME))
+            {
+                if (SetTextColor(hdc, RGB(255, 0, 0)) == CLR_INVALID)
+                {
+                    cdHandleError(hDlg, GetLastError(), _T("Failed to set control color"));
+                    break;
+                }
+                SetBkMode(hdc, TRANSPARENT);
+                SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
+                SelectObject(hdc, GetSysColorBrush(COLOR_WINDOW));
+                return TRUE;
+            }
+
+            break;
+        }
+        case WM_DESTROY:
+        {
+            return TRUE;
+        }
+        case WM_CLOSE:
+        {
+            break;
+        }
+    }
+
+    //
+    // Not handled by us
+    //
+    return FALSE;
 }
 
 
 INT_PTR
 CALLBACK
 DebuggerDataDlgProc(
-	HWND	hDlg,
-	UINT	msg,
-	WPARAM	wParam,
-	LPARAM	lParam)
+    HWND    hDlg,
+    UINT    msg,
+    WPARAM  wParam,
+    LPARAM  lParam)
 /*++
 
 Routine Description:
-	
-	Common dialog box to get some input from the user
+
+    Common dialog box to get some input from the user
 
 Arguments:
 
-	Refer to DialogProc in MSDN
+    Refer to DialogProc in MSDN
 
 Returns:
 
-	TRUE - Message Handled
-	FALSE - Message not handled
+    TRUE - Message Handled
+    FALSE - Message not handled
 
 --*/
 {
-	static PDEBUGGER_INFO debuggerInfo;
+    static PDEBUGGER_INFO debuggerInfo;
 
-	switch(msg)
-	{
-		case WM_INITDIALOG:
-		{
-			//
-			// Insert *specific* dialog initialization code here.
-			// lParam can contain information required for initialization.
-			//
+    switch(msg)
+    {
+        case WM_INITDIALOG:
+        {
+            //
+            // Insert *specific* dialog initialization code here.
+            // lParam can contain information required for initialization.
+            //
 
-			//
-			// Set dialog and application Icon
-			//
-			HICON hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON_SM));
-		    SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
-			hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON));
-		    SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
+            //
+            // Set dialog and application Icon
+            //
+            HICON hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON_SM));
+            SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
+            hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON));
+            SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
 
-			CenterDialog(hDlg);
+            CenterDialog(hDlg);
 
-			debuggerInfo = (PDEBUGGER_INFO)lParam;
+            debuggerInfo = (PDEBUGGER_INFO)lParam;
 
-			SetWindowText(
-					GetDlgItem(hDlg, IDC_TEXT_DEBUGGER),
-					debuggerInfo->debuggerPath.c_str());
+            SetWindowText(
+                    GetDlgItem(hDlg, IDC_TEXT_DEBUGGER),
+                    debuggerInfo->debuggerPath.c_str());
 
-			SetWindowText(
-					GetDlgItem(hDlg, IDC_EDIT_CMDLINE),
-					debuggerInfo->cmdLine.c_str());
+            SetWindowText(
+                    GetDlgItem(hDlg, IDC_EDIT_CMDLINE),
+                    debuggerInfo->cmdLine.c_str());
 
-			return TRUE;
-		}
-		case WM_COMMAND:
-		{
-			switch(wParam)
-			{
-				case IDOK:
-				{
-					//
-					// Set result here and terminate the dialog
-					//
+            return TRUE;
+        }
+        case WM_COMMAND:
+        {
+            switch(wParam)
+            {
+                case IDOK:
+                {
+                    //
+                    // Set result here and terminate the dialog
+                    //
 
-					TCHAR dataBuffer[64] = {0};
+                    TCHAR dataBuffer[64] = {0};
 
-					GetWindowText(
-							GetDlgItem(hDlg, IDC_EDIT_CMDLINE),
-							dataBuffer,
-							sizeof(dataBuffer) / sizeof(TCHAR));
+                    GetWindowText(
+                            GetDlgItem(hDlg, IDC_EDIT_CMDLINE),
+                            dataBuffer,
+                            sizeof(dataBuffer) / sizeof(TCHAR));
 
-					debuggerInfo->cmdLine = dataBuffer;
+                    debuggerInfo->cmdLine = dataBuffer;
 
-					EndDialog(hDlg, IDOK);
+                    EndDialog(hDlg, IDOK);
                     return TRUE;
-				}
-			}
+                }
+            }
 
-			break;
-		}
-		case WM_DESTROY:
-		{
-			return TRUE;
-		}
-	}
+            break;
+        }
+        case WM_DESTROY:
+        {
+            return TRUE;
+        }
+    }
 
-	return FALSE;
+    return FALSE;
 }
 
 
@@ -1032,100 +1032,100 @@ Returns:
 INT_PTR
 CALLBACK
 RecoveryStatusDlgProc(
-	HWND	hDlg,
-	UINT	msg,
-	WPARAM	wParam,
-	LPARAM	lParam)
+    HWND    hDlg,
+    UINT    msg,
+    WPARAM  wParam,
+    LPARAM  lParam)
 /*++
 
 Routine Description:
-	
-	This dialog box opens up if the user selects Recover on HandleCrash
-	dialog. This dialog box basically transfer control to CRecoveryHandler
-	in most cases. It also allows the user to terminate the crashing process
-	in case it is not recovering.
+
+    This dialog box opens up if the user selects Recover on HandleCrash
+    dialog. This dialog box basically transfer control to CRecoveryHandler
+    in most cases. It also allows the user to terminate the crashing process
+    in case it is not recovering.
 
 Arguments:
 
-	Refer to DialogProc in MSDN
+    Refer to DialogProc in MSDN
 
 Returns:
 
-	TRUE - Message Handled
-	FALSE - Message not handled
+    TRUE - Message Handled
+    FALSE - Message not handled
 
 --*/
 {
-	CRecoveryHandler *pRecoveryHandler = NULL;
+    CRecoveryHandler *pRecoveryHandler = NULL;
 
-	if (msg == WM_INITDIALOG)
-	{
-		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
-		pRecoveryHandler = (CRecoveryHandler *)lParam;
-	}
-	else
-	{
-		pRecoveryHandler = (CRecoveryHandler *)
-								GetWindowLongPtr(hDlg, GWLP_USERDATA);
-	}
+    if (msg == WM_INITDIALOG)
+    {
+        SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
+        pRecoveryHandler = (CRecoveryHandler *)lParam;
+    }
+    else
+    {
+        pRecoveryHandler = (CRecoveryHandler *)
+                                GetWindowLongPtr(hDlg, GWLP_USERDATA);
+    }
 
-	switch(msg)
-	{
-		case WM_INITDIALOG:
-		{
-			HICON hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON_SM));
-		    SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
-			hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON));
-		    SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
+    switch(msg)
+    {
+        case WM_INITDIALOG:
+        {
+            HICON hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON_SM));
+            SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
+            hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_APP_ICON));
+            SendMessage (hDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
 
-			SetWindowText(hDlg, _T("IntellectualHeaven(R) CrashDoctor"));
+            SetWindowText(hDlg, _T("IntellectualHeaven(R) CrashDoctor"));
 
-			CenterDialog(hDlg);
-			pRecoveryHandler->InitInstance(hDlg, GetDlgItem(hDlg, IDC_LIST_STATUS));
-			return TRUE;
-		}
-		case WM_COMMAND:
-		{
-			switch(wParam)
-			{
-				case IDC_BTN_TERMINATE:
-				{
-					pRecoveryHandler->ExitInstance();
-					return TRUE;
-				}
-				case IDC_BTN_CLOSE:
-				{
-					EndDialog(hDlg, IDC_BTN_CLOSE);
-					return TRUE;
-				}
-			}
-
-			break;
-		}
-		case WM_NOTIFY:
-		{
-			LPNMHDR pNM = (LPNMHDR)lParam;
-
-			if(pNM->hwndFrom == GetDlgItem(hDlg, IDC_LIST_STATUS))
-			{
-				switch(pNM->code)
-				{
-					case NM_CUSTOMDRAW:
-					{
-						LPNMLVCUSTOMDRAW pCD = (LPNMLVCUSTOMDRAW)lParam;
-						SetWindowLong(
-									hDlg,
-									DWLP_MSGRESULT,
-									(LONG)pRecoveryHandler->HandleCustomDraw(pCD));
-						return TRUE;
-					}
-				}
-			}
-			break;
+            CenterDialog(hDlg);
+            pRecoveryHandler->InitInstance(hDlg, GetDlgItem(hDlg, IDC_LIST_STATUS));
+            return TRUE;
         }
-	}
+        case WM_COMMAND:
+        {
+            switch(wParam)
+            {
+                case IDC_BTN_TERMINATE:
+                {
+                    pRecoveryHandler->ExitInstance();
+                    return TRUE;
+                }
+                case IDC_BTN_CLOSE:
+                {
+                    EndDialog(hDlg, IDC_BTN_CLOSE);
+                    return TRUE;
+                }
+            }
 
-	return FALSE;
+            break;
+        }
+        case WM_NOTIFY:
+        {
+            LPNMHDR pNM = (LPNMHDR)lParam;
+
+            if(pNM->hwndFrom == GetDlgItem(hDlg, IDC_LIST_STATUS))
+            {
+                switch(pNM->code)
+                {
+                    case NM_CUSTOMDRAW:
+                    {
+                        LPNMLVCUSTOMDRAW pCD = (LPNMLVCUSTOMDRAW)lParam;
+                        SetWindowLong(
+                                    hDlg,
+                                    DWLP_MSGRESULT,
+                                    (LONG)pRecoveryHandler->HandleCustomDraw(pCD));
+                        return TRUE;
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+    return FALSE;
 }
 
 
@@ -1133,85 +1133,85 @@ Returns:
 DWORD
 WINAPI
 RecoveryThread(
-	LPVOID inParam)
+    LPVOID inParam)
 /*++
 
 Routine Description:
 
-	This thread simply handles the debug events and take appropriate
-	action accordingly to recover the process from crashing. It simply
-	calls StartRecovery of the CRecoveryHandler which basically transfer
-	control to CRecoverCrash for the recovery. CRecoverCrash does all
-	the heavyweight lifting of crash recovery process.
+    This thread simply handles the debug events and take appropriate
+    action accordingly to recover the process from crashing. It simply
+    calls StartRecovery of the CRecoveryHandler which basically transfer
+    control to CRecoverCrash for the recovery. CRecoverCrash does all
+    the heavyweight lifting of crash recovery process.
 
 Arguments:
 
-	Refer to ThreadProc in MSDN
+    Refer to ThreadProc in MSDN
 
 Return Value:
 
-	DWORD - we always return 0
+    DWORD - we always return 0
 
 --*/
 {
-	DWORD funcResult = 0;
+    DWORD funcResult = 0;
 
-	CRecoveryHandler *pRecoveryHandler = (CRecoveryHandler *)inParam;
+    CRecoveryHandler *pRecoveryHandler = (CRecoveryHandler *)inParam;
 
-	pRecoveryHandler->StartRecovery();
-	pRecoveryHandler->SignalRecoveryThreadExit();
+    pRecoveryHandler->StartRecovery();
+    pRecoveryHandler->SignalRecoveryThreadExit();
 
-	return funcResult;
+    return funcResult;
 }
 
 
 
 CRecoveryHandler::CRecoveryHandler(
-	DWORD	inProcessId,
-	HANDLE	inEventHandle)
+    DWORD   inProcessId,
+    HANDLE  inEventHandle)
 /*++
 
 Routine Description:
 
-	Constructor for our CRecoveryHandler class
+    Constructor for our CRecoveryHandler class
 
 Arguments:
 
-	inProcessId - Process Id of the faulty process
+    inProcessId - Process Id of the faulty process
 
-	inEventHandle - Handle of the event which windows create when a process
-		crash. Debugger can signal this event once they are attached to the
-		process.
+    inEventHandle - Handle of the event which windows create when a process
+        crash. Debugger can signal this event once they are attached to the
+        process.
 
 --*/
 {
-	int fontHeight	= 12;
-	int fontWidth	= 0;
+    int fontHeight  = 12;
+    int fontWidth   = 0;
 
-	m_TraceListFont = CreateFont(
-							fontHeight, fontWidth,
-							0, 0, FW_NORMAL,
-							FALSE,FALSE,FALSE,
-							ANSI_CHARSET,
-							OUT_DEFAULT_PRECIS,
-							CLIP_DEFAULT_PRECIS,
-							DEFAULT_QUALITY,
-							DEFAULT_PITCH | FF_SWISS,
-							_T("Lucida Console"));
+    m_TraceListFont = CreateFont(
+                            fontHeight, fontWidth,
+                            0, 0, FW_NORMAL,
+                            FALSE,FALSE,FALSE,
+                            ANSI_CHARSET,
+                            OUT_DEFAULT_PRECIS,
+                            CLIP_DEFAULT_PRECIS,
+                            DEFAULT_QUALITY,
+                            DEFAULT_PITCH | FF_SWISS,
+                            _T("Lucida Console"));
 
-	m_TraceListFontBold = CreateFont(
-							fontHeight, fontWidth,
-							0, 0, FW_BOLD,
-							FALSE,FALSE,FALSE,
-							ANSI_CHARSET,
-							OUT_DEFAULT_PRECIS,
-							CLIP_DEFAULT_PRECIS,
-							DEFAULT_QUALITY,
-							DEFAULT_PITCH | FF_SWISS,
-							_T("Lucida Console"));
+    m_TraceListFontBold = CreateFont(
+                            fontHeight, fontWidth,
+                            0, 0, FW_BOLD,
+                            FALSE,FALSE,FALSE,
+                            ANSI_CHARSET,
+                            OUT_DEFAULT_PRECIS,
+                            CLIP_DEFAULT_PRECIS,
+                            DEFAULT_QUALITY,
+                            DEFAULT_PITCH | FF_SWISS,
+                            _T("Lucida Console"));
 
-	m_ProcessId = inProcessId;
-	m_hEvent	= inEventHandle;
+    m_ProcessId = inProcessId;
+    m_hEvent    = inEventHandle;
 }
 
 
@@ -1221,39 +1221,39 @@ CRecoveryHandler::~CRecoveryHandler()
 
 Routine Description:
 
-	Destructor for our CRecoveryHandler class
+    Destructor for our CRecoveryHandler class
 
 Arguments:
 
-	none
+    none
 
 --*/
 {
-	if (m_TraceListFont)
-	{
-		DeleteObject(m_TraceListFont);
-		m_TraceListFont = NULL;
-	}
+    if (m_TraceListFont)
+    {
+        DeleteObject(m_TraceListFont);
+        m_TraceListFont = NULL;
+    }
 
-	if (m_TraceListFontBold)
-	{
-		DeleteObject(m_TraceListFontBold);
-		m_TraceListFontBold = NULL;
-	}
+    if (m_TraceListFontBold)
+    {
+        DeleteObject(m_TraceListFontBold);
+        m_TraceListFontBold = NULL;
+    }
 }
 
 
 
 void
 CRecoveryHandler::InitInstance(
-	HWND	inDialogHwnd,
-	HWND	inListCtrlHwnd)
+    HWND    inDialogHwnd,
+    HWND    inListCtrlHwnd)
 /*++
 
 Routine Description:
 
-	This functions does the UI related intialization first and then launches
-	the recovery thread. This function is called from Recovery dialog's
+    This functions does the UI related intialization first and then launches
+    the recovery thread. This function is called from Recovery dialog's
 	WM_INITDIALOG.
 
 Arguments:
@@ -1294,7 +1294,7 @@ Returns:
 	//
 	// Launch recovery thread
 	//
-	mThreadHandle = CreateThread(	
+	mThreadHandle = CreateThread(
 							NULL,
 							0,
 							RecoveryThread,
@@ -1574,7 +1574,7 @@ Returns:
 		{
 			newMsg = trcMsg.substr(i_begin, trcMsg.length() - i_begin);
 		}
-		
+
 
 		newMsg = lastMsg + newMsg;
 		lastMsg = L"";

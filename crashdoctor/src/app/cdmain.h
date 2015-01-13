@@ -35,36 +35,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 enum OS_VERSION
 {
-	WIN32_9X,
-	WIN32_NT
+    WIN32_9X,
+    WIN32_NT
 };
 
 enum OS_EXACT_VERSION
 {
-	WIN32_95,
-	WIN32_98,
-	WIN32_ME,
-	WIN32_NT4,
-	WIN32_2K,
-	WIN32_XP,
-	WIN32_2K3,
-	WIN32_LH
+    WIN32_95,
+    WIN32_98,
+    WIN32_ME,
+    WIN32_NT4,
+    WIN32_2K,
+    WIN32_XP,
+    WIN32_2K3,
+    WIN32_LH
 };
 
 extern HINSTANCE ghInstance;
 
 typedef struct tagPROC_DBG_DATA
 {
-	DWORD	processId;
-	HANDLE	eventHandle;
+    DWORD   processId;
+    HANDLE  eventHandle;
 
 }PROC_DBG_DATA, *PPROC_DBG_DATA;
 
 bool
 cdProcessArguments(
-	int		argC,
-	TCHAR	*argV[],
-	DWORD	&oPID,
-	HANDLE	&ohEvent);
+    int     argC,
+    TCHAR   *argV[],
+    DWORD   &oPID,
+    HANDLE  &ohEvent);
 
 #endif

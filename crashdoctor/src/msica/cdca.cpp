@@ -12,10 +12,10 @@
 
 using namespace std;
 
-#define REG_AEDEBUG_PATH		L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug"
-#define REG_AEDEBUG_PATH_6432	L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug"
+#define REG_AEDEBUG_PATH        L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug"
+#define REG_AEDEBUG_PATH_6432   L"SOFTWARE\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug"
 
-vector<wstring> 
+vector<wstring>
 StringSplit(LPCWSTR str)
 {
     vector<wstring> result;
@@ -117,7 +117,7 @@ VOID
 RestoreRegistry(LPCWSTR OrigDebugStrings)
 {
     vector<wstring> strList;
-    
+
     strList = StringSplit(OrigDebugStrings);
 
     if (strList.size() < 4)
@@ -131,7 +131,7 @@ RestoreRegistry(LPCWSTR OrigDebugStrings)
     }
 
     if (!strList[1].empty())
-    {   
+    {
         RestoreRegistry(strList[1], REG_AEDEBUG_PATH);
     }
 
@@ -147,17 +147,17 @@ funcExit:
 
 UINT __stdcall CrashDoctorRestoreRegistry(MSIHANDLE hInstall)
 {
-	HRESULT hr = S_OK;
-	UINT er = ERROR_SUCCESS;
+    HRESULT hr = S_OK;
+    UINT er = ERROR_SUCCESS;
 
-	hr = WcaInitialize(hInstall, "CrashDoctorRestoreRegistry");
+    hr = WcaInitialize(hInstall, "CrashDoctorRestoreRegistry");
     if (FAILED(hr))
     {
         WcaLog(LOGMSG_STANDARD, "CrashDoctor: WcaInitialize Failed:%x", hr);
         goto Exit;
     }
 
-	WcaLog(LOGMSG_STANDARD, "CrashDoctor: Initialized.");
+    WcaLog(LOGMSG_STANDARD, "CrashDoctor: Initialized.");
 
     // TODO: Add your custom action code here.
 
@@ -177,26 +177,26 @@ Exit:
     // We always return success because our custom action runs after
     // uninstall is done so failing is useless at this point.
     //
-	return WcaFinalize(ERROR_SUCCESS);
+    return WcaFinalize(ERROR_SUCCESS);
 }
 
 
 extern "C" BOOL WINAPI DllMain(
-	__in HINSTANCE hInst,
-	__in ULONG ulReason,
-	__in LPVOID
-	)
+    __in HINSTANCE hInst,
+    __in ULONG ulReason,
+    __in LPVOID
+    )
 {
-	switch(ulReason)
-	{
-	case DLL_PROCESS_ATTACH:
-		WcaGlobalInitialize(hInst);
-		break;
+    switch(ulReason)
+    {
+    case DLL_PROCESS_ATTACH:
+        WcaGlobalInitialize(hInst);
+        break;
 
-	case DLL_PROCESS_DETACH:
-		WcaGlobalFinalize();
-		break;
-	}
+    case DLL_PROCESS_DETACH:
+        WcaGlobalFinalize();
+        break;
+    }
 
-	return TRUE;
+    return TRUE;
 }

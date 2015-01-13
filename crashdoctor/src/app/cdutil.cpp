@@ -48,60 +48,60 @@ TCHAR
 __cdecl
 cdToUpper(TCHAR c)
 {
-	return (TCHAR)_totupper(c);
+    return (TCHAR)_totupper(c);
 }
 
 
 
 void
 CenterDialog(
-	HWND hwndDlg)
+    HWND hwndDlg)
 /*++
 
 Routine Description:
-	
-	Moves the dialog box to the center of its parent. If parent is NULL then
+
+    Moves the dialog box to the center of its parent. If parent is NULL then
     dialog box is moved to the center of the desktop
 
 Returns:
 
-	None
+    None
 
 --*/
 {
-	HWND hwndOwner;
+    HWND hwndOwner;
 
-	if ((hwndOwner = GetParent(hwndDlg)) == NULL) 
-	{
-		hwndOwner = GetDesktopWindow(); 
-	}
+    if ((hwndOwner = GetParent(hwndDlg)) == NULL)
+    {
+        hwndOwner = GetDesktopWindow();
+    }
 
-	RECT rcOwner;
-	RECT rcDlg;
-	RECT rc;
+    RECT rcOwner;
+    RECT rcDlg;
+    RECT rc;
 
-	GetWindowRect(hwndOwner, &rcOwner); 
-	GetWindowRect(hwndDlg, &rcDlg); 
-	CopyRect(&rc, &rcOwner); 
+    GetWindowRect(hwndOwner, &rcOwner);
+    GetWindowRect(hwndDlg, &rcDlg);
+    CopyRect(&rc, &rcOwner);
 
-	//
-	// Offset the owner and dialog box rectangles so that 
-	// right and bottom values represent the width and 
-	// height, and then offset the owner again to discard 
-	// space taken up by the dialog box. 
-	//
-	OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top); 
-	OffsetRect(&rc, -rc.left, -rc.top); 
-	OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom); 
+    //
+    // Offset the owner and dialog box rectangles so that
+    // right and bottom values represent the width and
+    // height, and then offset the owner again to discard
+    // space taken up by the dialog box.
+    //
+    OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top);
+    OffsetRect(&rc, -rc.left, -rc.top);
+    OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom);
 
-	// The new position is the sum of half the remaining 
-	// space and the owner's original position.
+    // The new position is the sum of half the remaining
+    // space and the owner's original position.
 	SetWindowPos(
-			hwndDlg, 
-			HWND_TOP, 
-			rcOwner.left + (rc.right / 2), 
-			rcOwner.top + (rc.bottom / 2), 
-			0, 0,          // ignores size arguments 
+			hwndDlg,
+			HWND_TOP,
+			rcOwner.left + (rc.right / 2),
+			rcOwner.top + (rc.bottom / 2),
+			0, 0,          // ignores size arguments
 			SWP_NOSIZE);
 
 	return;
@@ -118,7 +118,7 @@ cdShowMessage(
 /*++
 
 Routine Description:
-	
+
 	Display the error message
 
 Return:
@@ -150,7 +150,7 @@ cdHandleError(
 /*++
 
 Routine Description:
-	
+
 	Process CrashDoctor specific or Windows error code and display that error
     to the user.
 
@@ -201,9 +201,9 @@ Return:
 		{
 			LPTSTR lpMsgBuf = NULL;
 
-			if (FormatMessage( 
-					FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-					FORMAT_MESSAGE_FROM_SYSTEM | 
+			if (FormatMessage(
+					FORMAT_MESSAGE_ALLOCATE_BUFFER |
+					FORMAT_MESSAGE_FROM_SYSTEM |
 					FORMAT_MESSAGE_IGNORE_INSERTS,
 					NULL,
 					inErrorCode,
@@ -241,12 +241,12 @@ cdObtainSeDebugPrivilege(void)
 /*++
 
 Routine Description:
-	
+
 	Obtain the debugging privilege for our processes. Without this privilege
 	we are not able to debug any services
-    
+
 Arguments:
-    
+
     none
 
 Return:
@@ -310,15 +310,15 @@ CreateLink(
 /*++
 
 Routine Description:
-	
+
 	Creates a link for the given path at a given location
-    
+
 Arguments:
-    
+
     lpszPathObj - Path of the target for the link
-    
+
     lpszPathLink - Path of the link (.lnk)
-    
+
     lpszDesc - Description for the link
 
 Return:
@@ -332,7 +332,7 @@ Return:
 
 	CoInitialize(NULL);
 
-	// Get a pointer to the IShellLink interface. 
+	// Get a pointer to the IShellLink interface.
 	hres = CoCreateInstance(
 						CLSID_ShellLink,
 						NULL,
@@ -340,42 +340,42 @@ Return:
 						IID_IShellLink,
 						(LPVOID*)&psl);
 
-	if (SUCCEEDED(hres)) 
+	if (SUCCEEDED(hres))
 	{
-		IPersistFile* ppf; 
+		IPersistFile* ppf;
 
-		// Set the path to the shortcut target and add the description. 
-		psl->SetPath(lpszPathObj); 
-		psl->SetDescription(lpszDesc); 
+		// Set the path to the shortcut target and add the description.
+		psl->SetPath(lpszPathObj);
+		psl->SetDescription(lpszDesc);
 
-		// Query IShellLink for the IPersistFile interface for saving the 
-		// shortcut in persistent storage. 
-		hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf); 
+		// Query IShellLink for the IPersistFile interface for saving the
+		// shortcut in persistent storage.
+		hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
 
-		if (SUCCEEDED(hres)) 
+		if (SUCCEEDED(hres))
 		{
 #ifdef _UNICODE
-			hres = ppf->Save(lpszPathLink, TRUE); 
+			hres = ppf->Save(lpszPathLink, TRUE);
 #else
 			WCHAR wsz[MAX_PATH];
 
-			// Ensure that the string is Unicode. 
-			MultiByteToWideChar(CP_ACP, 0, lpszPathLink, -1, wsz, MAX_PATH); 
-			
+			// Ensure that the string is Unicode.
+			MultiByteToWideChar(CP_ACP, 0, lpszPathLink, -1, wsz, MAX_PATH);
+
 			// To-Do!!! Check return value from MultiByteWideChar to ensure success.
 
-			// Save the link by calling IPersistFile::Save. 
-			hres = ppf->Save(wsz, TRUE); 
+			// Save the link by calling IPersistFile::Save.
+			hres = ppf->Save(wsz, TRUE);
 #endif
-			ppf->Release(); 
-		} 
+			ppf->Release();
+		}
 
-		psl->Release(); 
-	} 
+		psl->Release();
+	}
 
 	CoUninitialize();
 
-	return hres; 
+	return hres;
 }
 
 

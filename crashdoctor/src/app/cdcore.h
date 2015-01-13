@@ -58,20 +58,20 @@ typedef struct _CD_SYMBOL_PROCESS_INFO
 class CRecoverCrash
 {
 public:
-    
+
     CRecoverCrash();
     ~CRecoverCrash();
 
     void AttachToProcess(
-            DWORD				processId,
-            HANDLE				hEvent,
-			CRecoveryHandler	*pRecoveryHandler);
+            DWORD               processId,
+            HANDLE              hEvent,
+            CRecoveryHandler    *pRecoveryHandler);
 
 private:
 
     void HandleCreateProcess(
-        DEBUG_EVENT				&inDebugEvent,
-		CD_SYMBOL_PROCESS_INFO	&symProcInfo);
+        DEBUG_EVENT             &inDebugEvent,
+        CD_SYMBOL_PROCESS_INFO  &symProcInfo);
 
     void HandleCreateThread(
         DEBUG_EVENT &inDebugEvent);
@@ -85,61 +85,61 @@ private:
     void HandleOutputDebugString(
         DEBUG_EVENT &inDebugEvent);
 
-	void HandleLoadDll(
+    void HandleLoadDll(
         DEBUG_EVENT &inDebugEvent);
 
-	void HandleCreateFileHooking(
-		LPBYTE inImageAddress);
+    void HandleCreateFileHooking(
+        LPBYTE inImageAddress);
 
-	bool InsertBreakPoints(
-		PBYTE		inImageBase);
+    bool InsertBreakPoints(
+        PBYTE       inImageBase);
 
-	void InsertBreakPoint(
-		LPVOID		inAddress,
-		std::string	inFunctionName);
+    void InsertBreakPoint(
+        LPVOID      inAddress,
+        std::string inFunctionName);
 
-	void ReInsertBreakPoint(
-		LPVOID	inAddress);
+    void ReInsertBreakPoint(
+        LPVOID  inAddress);
 
-	bool HookCreateFileIATEntries(
-		PBYTE		inImageBase);
+    bool HookCreateFileIATEntries(
+        PBYTE       inImageBase);
 
-	LPVOID DebuggeeMemAlloc(
-		DWORD	inSize);
+    LPVOID DebuggeeMemAlloc(
+        DWORD   inSize);
 
-	bool DebuggeeReadMemory(
-		LPCVOID	inAddress,
-		LPVOID	ioBuffer,
-		SIZE_T	inSize,
-		SIZE_T	*oBytesRead = NULL);
+    bool DebuggeeReadMemory(
+        LPCVOID inAddress,
+        LPVOID  ioBuffer,
+        SIZE_T  inSize,
+        SIZE_T  *oBytesRead = NULL);
 
     bool DebuggeeReadMemoryGreedy(
-        LPCVOID	inAddress,
-        LPVOID	ioBuffer,
-        SIZE_T	inSize,
-        SIZE_T	*oBytesRead = NULL);
+        LPCVOID inAddress,
+        LPVOID  ioBuffer,
+        SIZE_T  inSize,
+        SIZE_T  *oBytesRead = NULL);
 
-	bool DebuggeeWriteMemory(
-		LPVOID	inAddress,
-		LPVOID	inBuffer,
-		SIZE_T	inSize,
-		SIZE_T	*oBytesWrote = NULL);
+    bool DebuggeeWriteMemory(
+        LPVOID  inAddress,
+        LPVOID  inBuffer,
+        SIZE_T  inSize,
+        SIZE_T  *oBytesWrote = NULL);
 
-	bool ReadDllImageName(
-		PBYTE		inImageBase,
-		LPSTR		oImageName,
-		DWORD		inImageNameLength);
+    bool ReadDllImageName(
+        PBYTE       inImageBase,
+        LPSTR       oImageName,
+        DWORD       inImageNameLength);
 
-	bool HandleException(
+    bool HandleException(
         DEBUG_EVENT &inDebugEvent);
 
     bool HandleBreakPoint(
         DEBUG_EVENT &inDebugEvent);
 
-	bool HandleSingleStep(
-		DEBUG_EVENT &inDebugEvent);
+    bool HandleSingleStep(
+        DEBUG_EVENT &inDebugEvent);
 
-	bool HandleFatalException(
+    bool HandleFatalException(
         DEBUG_EVENT &inDebugEvent);
 
     bool RecoverSkipInstruction(
@@ -152,8 +152,8 @@ private:
     bool RecoverSkipFunctionHomebrew(
         CONTEXT *Context);
 
-	bool Recover(
-            DWORD	inThreadId);
+    bool Recover(
+            DWORD   inThreadId);
 
     void InitializeSymbolHelper(
         CD_SYMBOL_PROCESS_INFO &ioSymProcInfo);
@@ -161,22 +161,22 @@ private:
     void DeinitializeSymbolHelper(
         CD_SYMBOL_PROCESS_INFO &ioSymProcInfo);
 
-	void HandleCreateFileW(
-		CONTEXT	&inContext);
+    void HandleCreateFileW(
+        CONTEXT &inContext);
 
-	void HandleCreateFileA(
-		CONTEXT	&inContext);
+    void HandleCreateFileA(
+        CONTEXT &inContext);
 
-	void HandleCreateFileCommon(
-		CONTEXT	&inContext,
-		bool	inUnicodeFileName);
+    void HandleCreateFileCommon(
+        CONTEXT &inContext,
+        bool    inUnicodeFileName);
 
-	void __cdecl HandleError(
-		DWORD	inErrorCode,
-		LPCTSTR	inErrorMsg,
-		...);
+    void __cdecl HandleError(
+        DWORD   inErrorCode,
+        LPCTSTR inErrorMsg,
+        ...);
 
-    
+
     // process and thread informaiton for the crashing process. This info is
     // used to identify the crashing process during debugging events. Right
     // now we don't hadnle the child processes
@@ -184,12 +184,12 @@ private:
     {
     	HANDLE		hThread;
     	DWORD		threadId;
-    
+
     }CD_THREAD_INFO;
-    
+
     typedef std::vector<CD_THREAD_INFO>		THREAD_LIST;
     typedef THREAD_LIST::iterator			THREAD_LIST_ITER;
-    
+
     typedef struct _CD_PROCESS_INFO
     {
     	bool			notInitialized;
@@ -197,7 +197,7 @@ private:
     	DWORD			processId;
     	THREAD_LIST		threadList;
         BOOL            isProcess32bit;
-    
+
     }CD_PROCESS_INFO;
 
 	// Data structures to store information about the breakpoints that we
@@ -218,7 +218,7 @@ private:
 	class CRecoverCrash;
 	typedef void (CRecoverCrash::*PFN_FunctionHandler)(CONTEXT &inContext);
 
-	typedef std::map<std::string, PFN_FunctionHandler>	
+	typedef std::map<std::string, PFN_FunctionHandler>
 												FUNCTION_NAME_TO_HANDLER_MAP;
 
 	// Data structure for inserting a synthetic IAT patch in debuggee
@@ -241,7 +241,7 @@ private:
 	// Variables to store breakpoints related information
 	ADDR_TO_BP_MAP				mAddrToBpInfoMap;
 	THREAD_TO_ADDR_STACK_MAP	mThreadToAddrStackMap;
-    
+
     // Variable to store information about the process that
     // we are debugging
     CD_PROCESS_INFO     mCrashedProcessInfo;
