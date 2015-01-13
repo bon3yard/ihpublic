@@ -73,9 +73,13 @@ main()
                         NULL);
 
     if (hFile)
-    {
+    {   
         WriteFile(hFile, "Test", 5, NULL, NULL);
         CloseHandle(hFile);
+    }
+    else
+    {
+        printf("Failed to open file.\n");
     }
 
     printf("Unicode CreateFile Done\n");

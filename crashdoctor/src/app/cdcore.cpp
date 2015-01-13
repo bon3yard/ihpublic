@@ -836,7 +836,7 @@ Return:
 	// in expDir uses RVA, which means they refer offset from the base of DLL
 	// and not the start of Export directory. We simply calculate a fake DLL
 	// image base address in debugger memory relative to expDir and do all the
-	// RVA to VA conversion based on this address
+	// RVA to VA conversion based on this address.
 	//
 	PBYTE dbgrRelImageBase = 
 						(PBYTE)((PBYTE)expDir - expDataDir->VirtualAddress);
@@ -881,7 +881,7 @@ Return:
 			}
 
 			// Calculate functions VA in the debuggee process
-			PBYTE func = (PBYTE)(inImageBase + fnAddrs[fnIndex]);
+            PBYTE func = (PBYTE)(inImageBase + fnAddrs[ordinal]);
 
 			InsertBreakPoint(func, fnName);
 		}
@@ -955,6 +955,10 @@ Return:
 				sizeof(BYTE),
 				dwOldProtect,
 				&dwTemp);
+
+        mRecoveryHandler->PrintMessage(
+            _T("Inserted breakpoint in Function: %S, at address: %x.\n"),
+            inFunctionName.c_str(), inAddress);
 	}
 	else
 	{
@@ -1614,6 +1618,10 @@ Return:
 
 	ADDR_TO_BP_MAP::iterator addrToBpMapIter = 
 								mAddrToBpInfoMap.find(exceptionAddress);
+
+    mRecoveryHandler->PrintWarning(
+        _T("Process generated a breakpoint exception at address: 0x%X\n"),
+        inDebugEvent.u.Exception.ExceptionRecord.ExceptionAddress);
 
 	//
 	// If an entry for this breakpoint is not found or if the original
