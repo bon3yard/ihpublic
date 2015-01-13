@@ -303,6 +303,7 @@ Return:
     // TODO: Make helper functions called read first parameter, read second
     // parameter etc.
     //
+
 #if defined(_M_IX86)
 	if (!DebuggeeReadMemory(
 			(LPVOID)(inContext.Esp + 8),
@@ -460,6 +461,21 @@ Return:
         
         mCrashedProcessInfo.processId =
                     inDebugEvent.dwProcessId;
+
+        //
+        // Check if this is a 32-bit process.
+        //
+        mCrashedProcessInfo.isProcess32bit = TRUE;
+
+#if defined (_M_AMD64)
+        mCrashedProcessInfo.isProcess32bit = FALSE;
+        
+        BOOL isWow64Process = FALSE;
+        if (IsWow64Process(mCrashedProcessInfo.hProcess, &isWow64Process) && isWow64Process)
+        {
+            mCrashedProcessInfo.isProcess32bit = TRUE;
+        }
+#endif
 
         //
         // TODO - One approach to recover the crash is to unwind the stack till
@@ -715,6 +731,22 @@ Return:
         //
         InsertBreakPoints(inImageAddress);
 	}
+
+    //
+    // For Win9x earlier code present here was. It is kept for history right now.
+    // Will be removed in next checkin.
+    //
+    else
+    {
+        //
+        // For windows 9x series, hook all the dlls IAT entries which import
+        // kernel32.dll's CreateFileW/A functions
+        //
+        //if (gOSVersion == WIN32_9X)
+        // {
+            //HookCreateFileIATEntries(inImageAddress);
+        //}
+    }
 }
 
 
@@ -885,8 +917,6 @@ Return:
 
 --*/
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-
 	BYTE	bp				= 0xCC;
 	BYTE	op				= 0;
 	DWORD	dwOldProtect;
@@ -937,12 +967,6 @@ Return:
 funcEnd:
 
 	return;
-
-#else
-
-	#error ("Uknown target machine type.")
-
-#endif
 }
 
 
@@ -965,15 +989,7 @@ Return:
 
 --*/
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-	
 	BYTE bp = 0xcc;
-
-#else
-
-	#error ("Uknown target machine type.")
-
-#endif
 
 	if (!DebuggeeWriteMemory(
 				(LPVOID)inAddress,

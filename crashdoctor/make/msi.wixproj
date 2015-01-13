@@ -6,19 +6,19 @@
     <ProductVersion>3.9</ProductVersion>
     <ProjectGuid>5aba179b-86d8-438b-b60c-fd3e7ff66a19</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>CrashDoctor</OutputName>
+    <OutputName>CrashDoctorSetup</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <Name>Msi</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>$(SolutionDir)..\bld\msi\$(Platform)\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(SolutionDir)..\bld\int\$(ProjectName)\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>$(SolutionDir)..\bld\tmp\msi\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(SolutionDir)..\bld\tmp\int\$(ProjectName)\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>$(SolutionDir)..\bld\msi\$(Platform)\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(SolutionDir)..\bld\msi\obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>$(SolutionDir)..\bld\tmp\msi\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(SolutionDir)..\bld\tmp\int\$(ProjectName)\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <WixExtension Include="WixUIExtension">
@@ -43,12 +43,11 @@
     </Content>
     <Content Include="make.licenseheader" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\src\msi\msi.wxl">
-      <Link>msi.wxl</Link>
-    </EmbeddedResource>
-  </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
+  <PropertyGroup>
+    <PostBuildEvent>if "$(Platform)" == "x64" echo f | xcopy /EY $(TargetPath) $(SolutionDir)..\bld\final\$(TargetName)64$(TargetExt)
+if "$(Platform)" == "x86" echo f | xcopy /EY $(TargetPath) $(SolutionDir)..\bld\final\$(TargetName)32$(TargetExt)</PostBuildEvent>
+  </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.

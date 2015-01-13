@@ -77,9 +77,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     UpgradeCode="$(var.ProductUpgradeCode)">
     
 	<Package 
-        InstallerVersion="200"
+        InstallerVersion="301"
         Compressed="yes"
         InstallScope="perMachine" />
+
+    <?if $(var.Platform) = x86 ?>
+        <Condition Message="You are running on 64-bit version of Windows. Please use 64-bit IntellectualHeaven CrashDoctor installer.">
+            <![CDATA[NOT Msix64]]>
+        </Condition>
+    <?endif?>
 
     <MediaTemplate 
         EmbedCab="yes" />
@@ -364,6 +370,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			/>
         </Component>
         
+        <?if $(var.Platform) = x64 ?>
         <Component
 			Id="MainEXE32Shortcut"
 			Guid="{C42306F2-D96C-48f1-80C4-D66E454A6031}"
@@ -407,6 +414,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				KeyPath="yes"
 			/>
         </Component>
+        <?endif?>
 
         <Component
 			Id="HelpShortcut"

@@ -41,41 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 //
-// Function prototypes typedefs from DbgHelp.dll
-//
-typedef BOOL (*PFN_SymInitialize)(
-							HANDLE hProcess,
-							PSTR UserSearchPath,
-							BOOL fInvadeProcess);
-
-
-typedef BOOL (*PFN_SymCleanup)(
-							HANDLE hProcess);
-
-
-typedef BOOL (*PFN_StackWalk64)(
-						DWORD MachineType,
-						HANDLE hProcess,
-						HANDLE hThread,
-						LPSTACKFRAME64 StackFrame,
-						PVOID ContextRecord,
-						PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
-						PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
-						PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
-						PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
-
-
-typedef PVOID (*PFN_SymFunctionTableAccess64)(
-									HANDLE hProcess,
-									DWORD64 AddrBase);
-
-
-typedef DWORD64 (*PFN_SymGetModuleBase64)(
-									HANDLE hProcess,
-									DWORD64 dwAddr);
-
-
-//
 // struct to store information about the process to initialize symbols DLL
 //
 typedef struct _CD_SYMBOL_PROCESS_INFO
@@ -85,23 +50,6 @@ typedef struct _CD_SYMBOL_PROCESS_INFO
     BOOL    SymbolInitialized;
 
 }CD_SYMBOL_PROCESS_INFO, *PCD_SYMBOL_PROCESS_INFO;
-
-
-//
-// Function prototypes from kernel32.dll
-//
-
-// typedef for XP/2K3 specific DebugSetProcessKillOnExit function
-typedef BOOL (WINAPI *PFN_DebugSetProcessKillOnExit)(BOOL);
-
-// Windows NT et al specific function
-typedef int (WINAPI *PFN_WideCharToMultiByte)
-					(UINT, DWORD, LPCWSTR, int, LPSTR, int, LPCSTR, LPBOOL);
-
-// Windows NT et al specific
-typedef LPVOID (WINAPI *PFN_VirtualAllocEx)
-					(HANDLE, LPVOID, SIZE_T, DWORD, DWORD);
-
 
 
 //
@@ -248,6 +196,7 @@ private:
     	HANDLE			hProcess;
     	DWORD			processId;
     	THREAD_LIST		threadList;
+        BOOL            isProcess32bit;
     
     }CD_PROCESS_INFO;
 

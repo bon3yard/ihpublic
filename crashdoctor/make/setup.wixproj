@@ -22,7 +22,9 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="setup.wxs" />
+    <Compile Include="..\src\setup\setup.wxs">
+      <Link>setup.wxs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--
