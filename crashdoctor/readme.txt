@@ -5,12 +5,15 @@ program. It is implemented as a JIT debugger and activated by windows
 whenever a program crashes.
 
 
-Directories
------------
-CoreApp - Is the core CrashDoctor application
-TestApp - Is a test application which crashes and its used to test crashdoctor
-
-
 Compile
+-----------
+- Use Visual Studio 2013 to compile the software.
+- Open crashdoctor.sln in make folder and build.
+- Please ensure that you have cloned ihulib as well.
+
+
+Install
 -------
-ihutil.lib is needed to build this.
+Just run CrashDoctor32.msi or CrashDoctor64.msi depending upon your
+OS version.
+

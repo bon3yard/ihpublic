@@ -1,14 +1,17 @@
 CrashDoctor:
 ============
 CrashDoctor is a program developed to recover crashing programs. It works
-as a JIT windows debugger and activates when a windows program crashes. It
-then attaches to the program and tries to recover the program from crashing
-state by careful analysis of the program. It is developed by Pankaj Garg for
-IntellectualHeaven (http://www.intellectualheaven.com)
+as a windows JIT debugger and activates when a program crashes. Once user
+selects to recover the crashing program, it attaches to the program and
+tries to recover them from the crash by either skipping the faulting
+instruction or skipping the faulting function. This can be useful in
+complex programs where a non-critical part of the software crashes. In
+such cases, it may be better to skip the faulting instruction or function
+than let the whole application crash, which may result in information loss.
 
-CrashDoctor has another useful feature, once a program crashes, CrashDoctor
+CrashDoctor has another useful feature. Once a program crashes, CrashDoctor
 monitors the execution of the program. If the program tries to open an existing
-file for writing CrashDoctor intercepts this and copies the original file
+file for writing, CrashDoctor intercepts this and copies the original file
 to a backup location. This prevents any further damage done by the misbehaving
 program. The current version of CrashDoctor however doesn't prevent this if
 program already has these files open.
@@ -16,7 +19,7 @@ program already has these files open.
 CrashDoctor also works like a debugger chooser. After installing CrashDoctor
 if a program crashes, the CrashDoctor recovery screen shows up. This screen
 lists debuggers available on the system and you can select a debugger to debug
-the crashing program instead of recovering its crash. Note here that once you
+the crashing program instead of recovering it from crash. Note that once you
 start debugging the program, you won't be able to recover it.
 
 
@@ -27,7 +30,7 @@ memory locations, resource constraints, resource unavailability etc. One thing
 to note here is that a crash almost always occur due to bad programming such as
 not handling error conditions properly.
 
-CrashDoctor tries to recover all the crashes, sometime the crash is so fatal
+CrashDoctor tries to recover all the crashes. Sometime the crash is so fatal
 that repeated attempts to recover it fails and in such case, CrashDoctor
 terminates the process and displays the exit code of the process.
 
@@ -36,13 +39,6 @@ Updates:
 ========
 Please check http://www.intellectualheaven.com to make sure that you have
 the latest version of CrashDoctor
-
-
-Installation:
-=============
-1. Extract all the files in CrashDoctor distribution to a folder
-2. Double-click on CrashDoctor.exe
-3. Click Install to install it
 
 
 Features:
@@ -66,7 +62,7 @@ Known Limitation:
   already open by the crashing program.
 
 
-Version:
+Changelog:
 ========
 v1.0 (Released) (2005/04/18)
 - Created a version for AMD64
@@ -83,23 +79,12 @@ a mail to x_pankaj_x@intellectualheaven.com
 
 Supported platforms:
 ====================
-Windows 95
-Windows 98
-Windows ME
-Windows NT 4.0
-Windows 2000
-Windows XP (32-bit)
-Windows 2003 (32-bit)
-Windows XP (AMD 64-bit) - For 64 bit processes as well as 32bit processes
-Windows 2003 (AMD 64-bit) - For 64 bit processes as well as 32bit processes
+Windows XP - Windows 8.1 (both 32-bit and 64-bit)
 
 
 License:
 ========
-These files are distributed under "Shared Binary License 1.0". Please take a
-look at the file binarylicense.txt for details. If this file is missing, you
-can get an electronic copy of the same from x_pankaj_x@intellectualheaven.com
-or visit http://www.intellectualheaven.com
+BSD License
 
 
 Warning:
@@ -116,11 +101,6 @@ crashes.
 
 Questions:
 ==========
-For questions or suggestions, contact x_pankaj_x@intellectualheaven.com
+For questions or suggestions, contact: pankaj _at_ intellectualheaven.com
 
-
---
-Regards,
-Pankaj Garg
-www.intellectualheaven.com
 
